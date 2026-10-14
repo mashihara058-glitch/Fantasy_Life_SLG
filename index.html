@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ファンタジー人生シミュレーション</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- タイトル -->
+  <section id="screen-title" class="screen">
+    <div class="title-box">
+      <h1>ファンタジー人生<br />シミュレーション</h1>
+      <p class="subtitle">剣と魔法の世界で、ひとつの人生を歩む</p>
+      <div class="menu">
+        <button id="btn-new" class="btn primary">新しい人生を始める</button>
+        <button id="btn-continue" class="btn">続きから</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 主人公作成 -->
+  <section id="screen-create" class="screen">
+    <div class="card create-card">
+      <h2>新しい人生</h2>
+      <div id="create-body"></div>
+      <div class="menu row">
+        <button id="btn-reroll" class="btn">別の人生を引く</button>
+        <button id="btn-start" class="btn primary">この人生を始める</button>
+      </div>
+      <button id="btn-create-back" class="btn link">タイトルへ戻る</button>
+    </div>
+  </section>
+
+  <!-- 人生進行 -->
+  <section id="screen-game" class="screen">
+    <header class="game-header">
+      <div id="header-name" class="header-name"></div>
+      <div class="header-actions">
+        <button id="btn-timeline" class="btn small">年表</button>
+        <button id="btn-to-title" class="btn small">タイトルへ</button>
+      </div>
+    </header>
+    <div class="game-layout">
+      <aside id="status-panel" class="card status-panel"></aside>
+      <main id="event-panel" class="card event-panel"></main>
+    </div>
+    <div id="debug-panel" class="card debug-panel" hidden></div>
+  </section>
+
+  <!-- エンディング -->
+  <section id="screen-ending" class="screen">
+    <div class="card ending-card">
+      <div id="ending-body"></div>
+      <div class="menu row">
+        <button id="btn-copy" class="btn">年表をコピー</button>
+        <button id="btn-new-life" class="btn primary">新しい人生を始める</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 年表（重ねて表示）-->
+  <div id="timeline-modal" class="modal" hidden>
+    <div class="card modal-card">
+      <div class="modal-header">
+        <h2>人生年表</h2>
+        <label class="toggle"><input type="checkbox" id="timeline-important" checked /> 重要な出来事のみ</label>
+        <button id="btn-timeline-close" class="btn small">閉じる</button>
+      </div>
+      <div id="timeline-body" class="timeline-scroll"></div>
+    </div>
+  </div>
+
+  <!-- 基盤 -->
+  <script src="js/core/util.js"></script>
+
+  <!-- 基本データ -->
+  <script src="js/data/species.js"></script>
+  <script src="js/data/origins.js"></script>
+  <script src="js/data/traits.js"></script>
+  <script src="js/data/jobs.js"></script>
+  <script src="js/data/names.js"></script>
+
+  <!-- イベントデータ（新しいファイルを作ったらここに追加） -->
+  <script src="js/events/system.js"></script>
+  <script src="js/events/childhood.js"></script>
+  <script src="js/events/adolescence.js"></script>
+  <script src="js/events/young.js"></script>
+  <script src="js/events/prime.js"></script>
+  <script src="js/events/elder.js"></script>
+  <script src="js/events/life.js"></script>
+
+  <!-- ゲーム本体 -->
+  <script src="js/core/engine.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
