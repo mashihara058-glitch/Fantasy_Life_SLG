@@ -159,6 +159,21 @@ GAME.registerEvents([
         },
       },
       {
+        conditions: { traitsAny: ["brave"] },
+        text: "先陣を切って敵陣に斬り込む",
+        check: { stat: "health", difficulty: 35 },
+        success: {
+          result: "{名前}の突撃が戦況を覆した。凱旋の列で、その名が叫ばれた。",
+          effects: { reputation: 25, health: -10, addFlags: ["war_veteran", "war_hero"] },
+          log: { title: "戦場で武勲を立てる", text: "先陣を切って敵陣を破り、英雄と称えられた。" },
+        },
+        failure: {
+          result: "敵陣の槍衾の中に、{名前}の姿は消えた。",
+          effects: { death: "戦死" },
+          log: { title: "先陣を切って散る", text: "勇猛に敵陣へ斬り込み、還らぬ人となった。" },
+        },
+      },
+      {
         conditions: { moneyUnlocked: true, stats: { money: { min: 100 } } },
         text: "金を払って兵役を免れる（100ゴールド）",
         effects: { money: -100, reputation: -5 },

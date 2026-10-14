@@ -8,6 +8,10 @@
   const params = new URLSearchParams(location.search);
   const debug = params.has("debug");
   const fixedSeed = params.has("seed") ? Number(params.get("seed")) : null;
+  const createOptions = {
+    species: params.get("species") || undefined,
+    changeling: params.has("changeling") ? params.get("changeling") !== "0" : undefined,
+  };
   const warnings = E.validateEvents();
   if (warnings.length) console.warn("イベントデータの警告:\n" + warnings.join("\n"));
 
@@ -52,7 +56,7 @@
   }
 
   function newCharacter(useFixedSeed) {
-    state = E.createCharacter(useFixedSeed ? fixedSeed : null);
+    state = E.createCharacter(useFixedSeed ? fixedSeed : null, createOptions);
     UI.renderCreate(state);
     UI.showScreen("screen-create");
   }

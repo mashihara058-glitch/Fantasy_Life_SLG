@@ -17,7 +17,7 @@ GAME.UI = (function () {
   }
 
   function traitNames(state) {
-    return state.traits.map((t) => data.traits[t].name).join("・");
+    return state.traits.map((t) => (data.traits[t] ? data.traits[t].name : t)).join("・") || "—";
   }
 
   function genderLabel(g) {
@@ -35,7 +35,7 @@ GAME.UI = (function () {
       <dl class="profile-list">
         <dt>家名</dt><dd>${esc(state.familyName)}</dd>
         <dt>性別</dt><dd>${genderLabel(state.gender)}</dd>
-        <dt>種族</dt><dd>${esc(data.species[state.species].name)}</dd>
+        <dt>種族</dt><dd>${esc(E.speciesLabel(state))}</dd>
         <dt>出自</dt><dd>${esc(data.origins[state.origin].name)}</dd>
         <dt>性格</dt><dd>${esc(traitNames(state))}</dd>
         <dt>父</dt><dd>${esc(E.activeNpcs(state, "father")[0].name)}</dd>
@@ -95,7 +95,7 @@ GAME.UI = (function () {
     $("status-panel").innerHTML = `
       <div class="age-big">${state.age}<small>歳</small></div>
       <dl class="profile-list">
-        <dt>種族</dt><dd>${esc(data.species[state.species].name)}・${genderLabel(state.gender)}</dd>
+        <dt>種族</dt><dd>${esc(E.speciesLabel(state))}・${genderLabel(state.gender)}</dd>
         <dt>出自</dt><dd>${esc(data.origins[state.origin].name)}</dd>
         <dt>性格</dt><dd>${esc(traitNames(state))}</dd>
         <dt>職業</dt><dd>${state.job || state.moneyUnlocked ? esc(E.jobName(state)) : "—"}</dd>
@@ -200,8 +200,8 @@ GAME.UI = (function () {
       <div class="ending-head">
         <h1 class="life-title">${esc(E.lifeTitle(state))}</h1>
         <p class="life-sub">${esc(E.fullName(state))}<br />
-          ${esc(data.species[state.species].name)}・${esc(E.mainJobName(state))}・享年${state.age}歳</p>
-        <p class="cause">死因：${esc(state.causeOfDeath || "不明")}</p>
+          ${esc(E.speciesLabel(state))}・${esc(E.mainJobName(state))}・享年${state.age}歳</p>
+        <p class="cause">最期：${esc(state.causeOfDeath || "不明")}</p>
       </div>
       <div class="ending-grid">
         <div>

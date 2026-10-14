@@ -29,13 +29,14 @@ GAME.Engine = (function () {
   const PLAYER_PLACEHOLDERS = ["名前", "姓", "フルネーム", "出身", "職業", "年齢", "種族"];
 
   const CONDITION_KEYS = [
-    "ageMin", "ageMax", "species", "origin", "gender", "traitsAny", "flags", "notFlags",
+    "ageMin", "ageMax", "species", "origin", "gender", "traitsAny", "notTraits", "flags", "notFlags",
     "stats", "hasJob", "jobs", "notJobs", "npcs", "noNpcs", "npcAgeMin", "moneyUnlocked",
     "lifespanReached", "custom",
   ];
   const EFFECT_KEYS = [
-    "health", "ability", "reputation", "money", "setStats", "addFlags", "removeFlags",
-    "addNpc", "npc", "npcRole", "npcState", "job", "incomeBonus", "unlockMoney", "death",
+    "health", "ability", "reputation", "money", "moneyRate", "setStats", "addFlags", "removeFlags",
+    "addNpc", "npc", "npcRole", "npcState", "addTraits", "removeTraits", "job", "incomeBonus",
+    "unlockMoney", "death",
   ];
 
   // ---------- 参照ヘルパー ----------
@@ -63,6 +64,15 @@ GAME.Engine = (function () {
 
   function fullName(state) {
     return `${state.name}・${state.familyName}`;
+  }
+
+  function traitName(id) {
+    return data.traits[id] ? data.traits[id].name : id;
+  }
+
+  function speciesLabel(state) {
+    const name = data.species[state.species].name;
+    return state.changeling && data.changeling ? `${name}（${data.changeling.name}）` : name;
   }
 
   function roleLabel(role) {
@@ -98,26 +108,34 @@ GAME.Engine = (function () {
     return npc;
   }
 
-  function createCharacter(seed) {
+  // options.species / options.changeling でテスト用に固定できる
+  function createCharacter(seed, options) {
+    const opts = options || {};
     const s = seed != null ? seed >>> 0 : Math.floor(Math.random() * 4294967296);
     const rng = { seed: s, state: s };
     U.setRng(rng);
 
-    const species = U.pick(data.enabledSpecies);
+    const species =
+      opts.species && data.species[opts.species]
+        ? opts.species
+        : U.weightedPick(data.enabledSpecies, (id) => data.species[id].weight || 1);
     const originId = U.weightedPick(Object.keys(data.origins), (id) => data.origins[id].weight || 1);
     const origin = data.origins[originId];
     const gender = U.pick(["male", "female"]);
     const traitNum = U.randInt(data.traitCount[0], data.traitCount[1]);
-    const traits = U.shuffle(Object.keys(data.traits)).slice(0, traitNum);
+    const innateTraits = Object.keys(data.traits).filter((t) => data.traits[t].innate !== false);
+    const traits = U.shuffle(innateTraits).slice(0, traitNum);
+    const cl = data.changeling;
+    const changeling = opts.changeling != null ? !!opts.changeling : !!cl && U.random() < cl.chance;
 
     const stats = { money: 0 };
     STAT_KEYS.forEach((k) => {
       stats[k] = U.resolve(origin.stats[k] != null ? origin.stats[k] : 30);
     });
-    traits.forEach((t) => {
-      const mod = data.traits[t].stats || {};
-      Object.keys(mod).forEach((k) => (stats[k] += mod[k]));
-    });
+    const addMods = (mod) => Object.keys(mod || {}).forEach((k) => (stats[k] += mod[k]));
+    addMods(data.species[species].stats);
+    traits.forEach((t) => addMods(data.traits[t].stats));
+    if (changeling) addMods(cl.stats);
     STAT_KEYS.forEach((k) => (stats[k] = U.clamp(stats[k], 0, 100)));
 
     const lifespanRange = data.species[species].lifespan;
@@ -128,6 +146,7 @@ GAME.Engine = (function () {
       familyName: U.pick(data.names.family),
       gender,
       species,
+      changeling,
       origin: originId,
       traits,
       age: 0,
@@ -139,7 +158,7 @@ GAME.Engine = (function () {
       job: null,
       incomeBonus: 0,
       jobHistory: [],
-      flags: [],
+      flags: changeling ? cl.flags.slice() : [],
       eventHistory: {},
       npcs: [],
       nextNpcId: 1,
@@ -165,6 +184,7 @@ GAME.Engine = (function () {
     if (c.origin && !c.origin.includes(state.origin)) return false;
     if (c.gender && !c.gender.includes(state.gender)) return false;
     if (c.traitsAny && !c.traitsAny.some((t) => state.traits.includes(t))) return false;
+    if (c.notTraits && c.notTraits.some((t) => state.traits.includes(t))) return false;
     if (c.flags && !c.flags.every((f) => hasFlag(state, f))) return false;
     if (c.notFlags && c.notFlags.some((f) => hasFlag(state, f))) return false;
     if (c.stats) {
@@ -212,6 +232,14 @@ GAME.Engine = (function () {
     choices: [{ text: "次の年へ" }],
   };
 
+  function eventWeight(state, ev, defaultWeight) {
+    let w = ev.weight != null ? ev.weight : defaultWeight;
+    (ev.weightMods || []).forEach((m) => {
+      if (checkConditions(state, m.conditions)) w *= m.multiply;
+    });
+    return w;
+  }
+
   function pickEvent(state) {
     const events = data.events;
 
@@ -219,12 +247,12 @@ GAME.Engine = (function () {
     if (forced.length) {
       const maxP = Math.max(...forced.map((e) => e.priority || 0));
       const top = forced.filter((e) => (e.priority || 0) === maxP);
-      return U.weightedPick(top, (e) => (e.weight != null ? e.weight : 1));
+      return U.weightedPick(top, (e) => eventWeight(state, e, 1));
     }
 
     const pool = events.filter((e) => !e.forced && isEligible(state, e));
     if (pool.length) {
-      return U.weightedPick(pool, (e) => (e.weight != null ? e.weight : e.fallback ? FALLBACK_WEIGHT : 10));
+      return U.weightedPick(pool, (e) => eventWeight(state, e, e.fallback ? FALLBACK_WEIGHT : 10));
     }
 
     const anyFallback = events.filter((e) => e.fallback && checkConditions(state, e.conditions));
@@ -373,6 +401,11 @@ GAME.Engine = (function () {
       state.stats.money += d;
       if (d !== 0) changes.push(`所持金 ${signed(d)}`);
     }
+    if (eff.moneyRate != null && state.moneyUnlocked && state.stats.money > 0) {
+      const d = Math.round(state.stats.money * eff.moneyRate);
+      state.stats.money += d;
+      if (d !== 0) changes.push(`所持金 ${signed(d)}`);
+    }
     if (eff.setStats) {
       Object.entries(eff.setStats).forEach(([k, v]) => {
         if (k === "money" && !state.moneyUnlocked) return;
@@ -413,6 +446,17 @@ GAME.Engine = (function () {
     });
     U.toArray(eff.removeFlags).forEach((f) => {
       state.flags = state.flags.filter((x) => x !== f);
+    });
+
+    U.toArray(eff.removeTraits).forEach((t) => {
+      if (!state.traits.includes(t)) return;
+      state.traits = state.traits.filter((x) => x !== t);
+      changes.push(`性格から「${traitName(t)}」が消えた`);
+    });
+    U.toArray(eff.addTraits).forEach((t) => {
+      if (state.traits.includes(t)) return;
+      state.traits.push(t);
+      changes.push(`性格に「${traitName(t)}」が加わった`);
     });
 
     if ("job" in eff) setJob(state, eff.job, changes);
@@ -559,7 +603,7 @@ GAME.Engine = (function () {
   function timelineAsText(state) {
     const lines = [];
     lines.push(lifeTitle(state));
-    lines.push(`${fullName(state)}／${data.species[state.species].name}・${mainJobName(state)}・享年${state.age}歳`);
+    lines.push(`${fullName(state)}／${speciesLabel(state)}・${mainJobName(state)}・享年${state.age}歳`);
     lines.push("");
     state.timeline
       .filter((e) => e.important)
@@ -637,6 +681,12 @@ GAME.Engine = (function () {
       [...(c.jobs || []), ...(c.notJobs || [])].forEach((j) => {
         if (j !== "none" && !data.jobs[j]) warn(id, `未定義の職業 "${j}"`);
       });
+      (c.species || []).forEach((sp) => {
+        if (!data.species[sp]) warn(id, `未定義の種族 "${sp}"`);
+      });
+      [...(c.traitsAny || []), ...(c.notTraits || [])].forEach((t) => {
+        if (!data.traits[t]) warn(id, `未定義の性格 "${t}"`);
+      });
     };
     const checkOutcome = (id, o) => {
       if (!o) return;
@@ -651,6 +701,9 @@ GAME.Engine = (function () {
       });
       const j = o.effects.job;
       if (j && !data.jobs[j]) warn(id, `未定義の職業 "${j}"`);
+      [...U.toArray(o.effects.addTraits), ...U.toArray(o.effects.removeTraits)].forEach((t) => {
+        if (!data.traits[t]) warn(id, `未定義の性格 "${t}"`);
+      });
     };
 
     data.events.forEach((ev) => {
@@ -660,6 +713,10 @@ GAME.Engine = (function () {
       if (!ev.text) warn(ev.id, "text がありません");
       checkText(ev.id, ev.text);
       checkCond(ev.id, ev.conditions);
+      (ev.weightMods || []).forEach((m, i) => {
+        checkCond(ev.id, m.conditions);
+        if (typeof m.multiply !== "number") warn(ev.id, `weightMods[${i}] に multiply（数値）がありません`);
+      });
       if (!Array.isArray(ev.choices) || ev.choices.length === 0) {
         warn(ev.id, "choices がありません");
         return;
@@ -697,6 +754,7 @@ GAME.Engine = (function () {
     npcAge,
     jobName,
     fullName,
+    speciesLabel,
     roleLabel,
     lifeTitle,
     mainJobName,

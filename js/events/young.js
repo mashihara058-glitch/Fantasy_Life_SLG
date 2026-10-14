@@ -88,6 +88,7 @@ GAME.registerEvents([
     tags: ["young", "love", "marriage"],
     conditions: { ageMin: 18, ageMax: 40, npcs: ["lover"], noNpcs: ["spouse"] },
     weight: 15,
+    weightMods: [{ conditions: { flags: ["changeling"], notFlags: ["changeling_accepted"] }, multiply: 0.3 }],
     text: "{恋人}との付き合いも長くなった。二人の将来について、考える時が来たようだ。",
     choices: [
       {
@@ -115,6 +116,7 @@ GAME.registerEvents([
     tags: ["young", "marriage", "noble"],
     conditions: { ageMin: 18, ageMax: 28, origin: ["noble"], noNpcs: ["spouse"] },
     weight: 15,
+    weightMods: [{ conditions: { flags: ["changeling"] }, multiply: 0.2 }],
     text: "家の都合で、名家との縁談が持ち込まれた。",
     choices: [
       {

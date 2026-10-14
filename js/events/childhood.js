@@ -24,6 +24,7 @@ GAME.registerEvents([
     tags: ["childhood", "friend"],
     conditions: { ageMin: 4, ageMax: 9, noNpcs: ["friend"] },
     weight: 15,
+    weightMods: [{ conditions: { flags: ["changeling"] }, multiply: 0.2 }],
     text: "広場の隅で、同じ年頃の子どもがひとりで石を積んで遊んでいた。",
     choices: [
       {

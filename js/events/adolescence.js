@@ -65,6 +65,7 @@ GAME.registerEvents([
     id: "common_adolescence_004",
     tags: ["adolescence", "love"],
     conditions: { ageMin: 14, ageMax: 17, noNpcs: ["lover", "spouse"] },
+    weightMods: [{ conditions: { flags: ["changeling"] }, multiply: 0.2 }],
     text: "収穫祭の夜。篝火の向こうで、ある人と目が合った。",
     choices: [
       {
