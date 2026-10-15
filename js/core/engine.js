@@ -20,23 +20,25 @@ GAME.Engine = (function () {
     rival: "ライバル",
     child: "子",
     pupil: "弟子",
+    sibling: "兄弟",
   };
   const PLACEHOLDER_ROLES = {};
   Object.entries(ROLE_LABELS).forEach(([role, label]) => {
     PLACEHOLDER_ROLES[label] = role;
     PLACEHOLDER_ROLES[role] = role;
   });
-  const PLAYER_PLACEHOLDERS = ["名前", "姓", "フルネーム", "出身", "職業", "年齢", "種族"];
+  const SPECIAL_PLACEHOLDERS = ["名前", "姓", "フルネーム", "出身", "職業", "年齢", "種族", "兄弟の続柄"];
+  const STATUS_LABELS = { dead: "故人", left: "疎遠", missing: "行方不明" };
 
   const CONDITION_KEYS = [
     "ageMin", "ageMax", "species", "origin", "gender", "traitsAny", "notTraits", "flags", "notFlags",
-    "stats", "hasJob", "jobs", "notJobs", "npcs", "noNpcs", "npcAgeMin", "moneyUnlocked",
-    "lifespanReached", "custom",
+    "stats", "hasJob", "jobs", "notJobs", "npcs", "noNpcs", "missingNpcs", "npcAgeMin", "npcAgeMax",
+    "moneyUnlocked", "lifespanReached", "custom",
   ];
   const EFFECT_KEYS = [
     "health", "ability", "reputation", "money", "moneyRate", "setStats", "addFlags", "removeFlags",
-    "addNpc", "npc", "npcRole", "npcState", "addTraits", "removeTraits", "job", "incomeBonus",
-    "unlockMoney", "death",
+    "addNpc", "npc", "npcRole", "npcState", "loseNpc", "addTraits", "removeTraits", "job",
+    "incomeBonus", "unlockMoney", "death",
   ];
 
   // ---------- 参照ヘルパー ----------
@@ -79,8 +81,28 @@ GAME.Engine = (function () {
     return ROLE_LABELS[role] || role;
   }
 
-  function randomName(gender) {
-    return U.pick(data.names[gender] || data.names.male);
+  // 兄弟姉妹は年齢と性別で「兄・姉・弟・妹」と呼ぶ
+  function npcLabel(state, npc) {
+    if (npc.role !== "sibling") return roleLabel(npc.role);
+    const older = npc.ageOffset >= 0;
+    if (npc.gender === "male") return older ? "兄" : "弟";
+    return older ? "姉" : "妹";
+  }
+
+  function statusLabel(status) {
+    return STATUS_LABELS[status] || status;
+  }
+
+  // 同じ人生の中ではなるべく名前が重ならないようにする
+  function randomName(gender, state) {
+    const list = data.names[gender] || data.names.male;
+    if (!state) return U.pick(list);
+    const used = new Set([state.name, ...state.npcs.map((n) => n.name)]);
+    for (let i = 0; i < 20; i++) {
+      const name = U.pick(list);
+      if (!used.has(name)) return name;
+    }
+    return U.pick(list);
   }
 
   // ---------- キャラクター作成 ----------
@@ -94,12 +116,12 @@ GAME.Engine = (function () {
     const age = spec.age != null ? U.resolve(spec.age) : Math.max(0, state.age + U.randInt(-3, 3));
     const npc = {
       id: state.nextNpcId++,
-      name: spec.name || randomName(gender),
+      name: spec.name || randomName(gender, state),
       gender,
       role: spec.role,
       ageOffset: age - state.age,
-      trust: spec.trust != null ? spec.trust : 50,
-      intimacy: spec.intimacy != null ? spec.intimacy : 30,
+      trust: spec.trust != null ? U.resolve(spec.trust) : 50,
+      intimacy: spec.intimacy != null ? U.resolve(spec.intimacy) : 30,
       tags: spec.tags ? spec.tags.slice() : [],
       status: "active",
       metAge: state.age,
@@ -168,13 +190,37 @@ GAME.Engine = (function () {
       lastResult: null,
     };
 
-    addNpc(state, { role: "father", age: [20, 35], trust: 60, intimacy: 60 });
-    addNpc(state, { role: "mother", age: [18, 32], trust: 60, intimacy: 70 });
+    const fam = data.family || {};
+    const olderCount = fam.olderSiblings ? U.weightedPick(fam.olderSiblings, (x) => x[1])[0] : 0;
+    const siblingAges = [];
+    for (let i = 0; i < olderCount; i++) siblingAges.push(U.randInt(1, 12));
+    siblingAges.sort((a, b) => b - a);
+    const oldest = siblingAges.length ? siblingAges[0] : 0;
+    const motherAge = Math.min(45, U.randInt(18, 30) + oldest);
+    const fatherAge = Math.max(18, motherAge + U.randInt(-2, 8));
+
+    addNpc(state, { role: "father", age: fatherAge, trust: 60, intimacy: 60 });
+    addNpc(state, { role: "mother", age: motherAge, trust: 60, intimacy: 70 });
+    siblingAges.forEach((age) => addNpc(state, { role: "sibling", age, trust: 50, intimacy: [40, 70] }));
     state.npcs.forEach((n) => (n.metAge = 0));
     return state;
   }
 
   // ---------- 条件判定 ----------
+
+  function missingNpcs(state, role) {
+    return state.npcs.filter((n) => n.status === "missing" && n.role === role);
+  }
+
+  // 条件の年齢指定（npcAgeMin / npcAgeMax）を満たす、その役割の人物
+  function npcCandidates(state, c, role) {
+    const min = c.npcAgeMin && c.npcAgeMin[role];
+    const max = c.npcAgeMax && c.npcAgeMax[role];
+    return activeNpcs(state, role).filter((n) => {
+      const age = npcAge(state, n);
+      return (min == null || age >= min) && (max == null || age <= max);
+    });
+  }
 
   function checkConditions(state, c) {
     if (!c) return true;
@@ -198,12 +244,11 @@ GAME.Engine = (function () {
     if (c.hasJob != null && !!state.job !== c.hasJob) return false;
     if (c.jobs && !c.jobs.includes(state.job || "none")) return false;
     if (c.notJobs && c.notJobs.includes(state.job || "none")) return false;
-    if (c.npcs && !c.npcs.every((role) => activeNpcs(state, role).length > 0)) return false;
+    if (c.npcs && !c.npcs.every((role) => npcCandidates(state, c, role).length > 0)) return false;
     if (c.noNpcs && c.noNpcs.some((role) => activeNpcs(state, role).length > 0)) return false;
-    if (c.npcAgeMin) {
-      for (const role of Object.keys(c.npcAgeMin)) {
-        if (!activeNpcs(state, role).some((n) => npcAge(state, n) >= c.npcAgeMin[role])) return false;
-      }
+    if (c.missingNpcs && !c.missingNpcs.every((role) => missingNpcs(state, role).length > 0)) return false;
+    for (const role of Object.keys({ ...c.npcAgeMin, ...c.npcAgeMax })) {
+      if (npcCandidates(state, c, role).length === 0) return false;
     }
     if (c.moneyUnlocked != null && state.moneyUnlocked !== c.moneyUnlocked) return false;
     if (c.lifespanReached != null && state.age >= state.lifespan !== c.lifespanReached) return false;
@@ -263,11 +308,19 @@ GAME.Engine = (function () {
   function startEvent(state, yearLines) {
     const ev = pickEvent(state);
     const bound = {};
-    const roles = (ev.conditions && ev.conditions.npcs) || [];
+    const c = ev.conditions || {};
+    const roles = new Set([...(c.npcs || []), ...Object.keys({ ...c.npcAgeMin, ...c.npcAgeMax })]);
     roles.forEach((role) => {
-      let candidates = activeNpcs(state, role);
-      const minAge = ev.conditions.npcAgeMin && ev.conditions.npcAgeMin[role];
-      if (minAge != null) candidates = candidates.filter((n) => npcAge(state, n) >= minAge);
+      const candidates = npcCandidates(state, c, role);
+      if (candidates.length) bound[role] = U.pick(candidates).id;
+    });
+    const missingRoles = new Set(c.missingNpcs || []);
+    (ev.choices || []).forEach((ch) => {
+      ((ch.conditions && ch.conditions.missingNpcs) || []).forEach((role) => missingRoles.add(role));
+    });
+    missingRoles.forEach((role) => {
+      if (bound[role] != null) return;
+      const candidates = missingNpcs(state, role);
       if (candidates.length) bound[role] = U.pick(candidates).id;
     });
     state.current = { eventId: ev.id, bound, age: state.age, yearLines: yearLines || [] };
@@ -304,6 +357,10 @@ GAME.Engine = (function () {
         case "職業": return jobName(state);
         case "年齢": return String(state.age);
         case "種族": return data.species[state.species].name;
+        case "兄弟の続柄": {
+          const sib = boundNpc(state, "sibling");
+          return sib ? npcLabel(state, sib) : "兄弟";
+        }
       }
       const role = PLACEHOLDER_ROLES[key];
       if (role) {
@@ -375,7 +432,7 @@ GAME.Engine = (function () {
     U.toArray(eff.addNpc).forEach((spec) => {
       const npc = addNpc(state, spec);
       if (cur) cur.bound[npc.role] = npc.id;
-      changes.push(`新たな${roleLabel(npc.role)}：${npc.name}`);
+      changes.push(`新たな${npcLabel(state, npc)}：${npc.name}`);
     });
 
     if (eff.npcRole) {
@@ -435,11 +492,28 @@ GAME.Engine = (function () {
       Object.entries(eff.npcState).forEach(([role, st]) => {
         const npc = boundNpc(state, role);
         if (!npc) return;
+        const before = npc.status;
         npc.status = st;
         if (st === "dead") changes.push(`${npc.name}が亡くなった`);
         else if (st === "left") changes.push(`${npc.name}と別れた`);
+        else if (st === "missing") changes.push(`${npc.name}が行方不明になった`);
+        else if (st === "active" && before !== "active") changes.push(`${npc.name}が戻ってきた`);
       });
     }
+
+    // 悲劇的な喪失。絆の強さで「復讐」か「厭世」が付く（js/data/traits.js の lossTraits）
+    const lossTraits = [];
+    U.toArray(eff.loseNpc).forEach((spec) => {
+      const npc = boundNpc(state, spec.role);
+      if (!npc || npc.status !== "active") return;
+      npc.status = spec.status || "dead";
+      changes.push(npc.status === "missing" ? `${npc.name}が行方不明になった` : `${npc.name}を失った`);
+      const rule = data.lossTraits;
+      if (rule && spec.trait !== false) {
+        const bond = (npc.trust + npc.intimacy) / 2;
+        lossTraits.push(bond >= rule.bondThreshold ? rule.high : rule.low);
+      }
+    });
 
     U.toArray(eff.addFlags).forEach((f) => {
       if (!hasFlag(state, f)) state.flags.push(f);
@@ -453,7 +527,7 @@ GAME.Engine = (function () {
       state.traits = state.traits.filter((x) => x !== t);
       changes.push(`性格から「${traitName(t)}」が消えた`);
     });
-    U.toArray(eff.addTraits).forEach((t) => {
+    [...U.toArray(eff.addTraits), ...lossTraits].forEach((t) => {
       if (state.traits.includes(t)) return;
       state.traits.push(t);
       changes.push(`性格に「${traitName(t)}」が加わった`);
@@ -667,7 +741,7 @@ GAME.Engine = (function () {
     const checkText = (id, text) => {
       if (!text) return;
       String(text).replace(/\{([^{}]+)\}/g, (m, key) => {
-        if (!PLAYER_PLACEHOLDERS.includes(key) && !PLACEHOLDER_ROLES[key]) {
+        if (!SPECIAL_PLACEHOLDERS.includes(key) && !PLACEHOLDER_ROLES[key]) {
           warn(id, `不明な差し込み文字 {${key}}`);
         }
         return m;
@@ -756,6 +830,8 @@ GAME.Engine = (function () {
     fullName,
     speciesLabel,
     roleLabel,
+    npcLabel,
+    statusLabel,
     lifeTitle,
     mainJobName,
     timelineAsText,

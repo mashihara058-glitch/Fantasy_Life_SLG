@@ -40,6 +40,11 @@ GAME.UI = (function () {
         <dt>性格</dt><dd>${esc(traitNames(state))}</dd>
         <dt>父</dt><dd>${esc(E.activeNpcs(state, "father")[0].name)}</dd>
         <dt>母</dt><dd>${esc(E.activeNpcs(state, "mother")[0].name)}</dd>
+        <dt>兄弟</dt><dd>${
+          E.activeNpcs(state, "sibling")
+            .map((n) => `${esc(E.npcLabel(state, n))}の${esc(n.name)}（${E.npcAge(state, n)}歳）`)
+            .join("、") || "なし（第一子）"
+        }</dd>
       </dl>
       ${statBars(state)}
     `;
@@ -72,21 +77,21 @@ GAME.UI = (function () {
     const gone = state.npcs.filter((n) => n.status !== "active");
     const item = (n) => `
       <li>
-        <span class="npc-role">${esc(E.roleLabel(n.role))}</span>
+        <span class="npc-role">${esc(E.npcLabel(state, n))}</span>
         <span class="npc-name">${esc(n.name)}</span>
         <span class="npc-age">${E.npcAge(state, n)}歳</span>
         <span class="npc-rel">信頼${n.trust}・親密${n.intimacy}</span>
       </li>`;
     const goneItem = (n) => `
       <li class="gone">
-        <span class="npc-role">${esc(E.roleLabel(n.role))}</span>
+        <span class="npc-role">${esc(E.npcLabel(state, n))}</span>
         <span class="npc-name">${esc(n.name)}</span>
-        <span class="npc-rel">${n.status === "dead" ? "故人" : "疎遠"}</span>
+        <span class="npc-rel">${esc(E.statusLabel(n.status))}</span>
       </li>`;
     return `
       <h3>人間関係</h3>
       <ul class="npc-list">${active.map(item).join("") || '<li class="muted">なし</li>'}</ul>
-      ${gone.length ? `<details><summary>亡くなった人・離れた人（${gone.length}）</summary><ul class="npc-list">${gone.map(goneItem).join("")}</ul></details>` : ""}
+      ${gone.length ? `<details><summary>亡くなった人・離れた人・行方不明（${gone.length}）</summary><ul class="npc-list">${gone.map(goneItem).join("")}</ul></details>` : ""}
     `;
   }
 

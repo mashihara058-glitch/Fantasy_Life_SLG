@@ -25,7 +25,10 @@
  *  【差し込み文字】文章中に書くと自動で置き換わります。
  *   {名前} {姓} {フルネーム} {出身} {職業} {年齢} {種族}
  *   {父} {母} {友人} {恋人} {配偶者} {師匠} {ライバル} {子} {弟子}
+ *   {兄弟}（兄弟姉妹の名前） {兄弟の続柄}（その人が兄・姉・弟・妹のどれか）
+ *     例：「{兄弟の続柄}の{兄弟}」→「妹のリーナ」
  *   ※人物の差し込みは、conditions.npcs で「その人物がいること」を条件にしておくと確実です。
+ *     行方不明の人物を差し込むときは conditions.missingNpcs を使います。
  *     同じ役割の人物が複数いる場合、イベント中は同じ1人に固定されます。
  *     いない場合は「誰か」と表示されます。
  */
@@ -70,9 +73,11 @@ GAME.registerEvents([
       hasJob: true,                   // 職に就いている(true) / いない(false)
       jobs: ["farmer", "none"],       // 現在の職業がいずれか（"none" は無職）
       notJobs: ["slave", "retired"],  // 現在の職業がいずれでもない
-      npcs: ["friend"],               // この役割の人物がいる（亡くなった・別れた人物は除く）
+      npcs: ["friend"],               // この役割の人物がいる（亡くなった・別れた・行方不明の人物は除く）
       noNpcs: ["spouse"],             // この役割の人物がいない
+      missingNpcs: ["mother"],        // この役割の人物が行方不明になっている
       npcAgeMin: { father: 55 },      // その人物が何歳以上
+      npcAgeMax: { mother: 42 },      // その人物が何歳以下
       moneyUnlocked: true,            // 家計（所持金）が解放済みか
       lifespanReached: false,         // 寿命に達しているか
       // custom: (state) => state.stats.health < state.stats.ability,  // 上記で書けない条件
@@ -111,8 +116,12 @@ GAME.registerEvents([
           // 人物
           npc: { friend: { trust: 5, intimacy: 3 } },  // 信頼度・親密度の変化
           // addNpc: { role: "friend", tags: ["scholar"] },  // 新しい人物（age, gender, name, trust, intimacy も指定可）
+          //   役割：father mother sibling friend lover spouse mentor rival child pupil
           // npcRole: { lover: "spouse" },   // 役割の変更（恋人 → 配偶者 など）
-          // npcState: { father: "dead" },   // "dead"（死亡）/ "left"（別れ・疎遠）
+          // npcState: { father: "dead" },   // "dead"（死亡）/ "left"（別れ・疎遠）/ "missing"（行方不明）/ "active"（戻ってくる）
+          // loseNpc: { role: "mother", status: "missing" },  // 悲劇的な喪失。status は "dead" か "missing"
+          //   絆が強ければ性格「復讐」、弱ければ「厭世」が付く。付けたくないときは trait: false
+          //   寿命や病気などの自然な死別には npcState を使う
 
           // 職業
           // job: "mage",             // 就職・転職。null で失業。初めての就職で家計が解放される

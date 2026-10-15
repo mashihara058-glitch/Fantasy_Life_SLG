@@ -17,6 +17,17 @@ GAME.data.traits = {
   // 人生の中で身につく性格
   brave: { name: "勇敢", innate: false },
   distrustful: { name: "人間不信", innate: false },
+  vengeful: { name: "復讐", innate: false },
+  worldweary: { name: "厭世", innate: false },
+};
+
+// effects.loseNpc で人物を失ったときに付く性格
+//   その人物との（信頼 + 親密）÷ 2 が bondThreshold 以上なら high、未満なら low
+//   loseNpc に trait: false を書くと付かない
+GAME.data.lossTraits = {
+  bondThreshold: 60,
+  high: "vengeful",
+  low: "worldweary",
 };
 
 // 1人あたりの生まれつきの性格の数 [最小, 最大]
