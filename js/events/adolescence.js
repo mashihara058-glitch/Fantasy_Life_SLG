@@ -118,6 +118,7 @@ GAME.registerEvents([
       { text: "剣の稽古に励む", effects: { health: 3, addFlags: ["swordplay"] } },
       { text: "本を読みふける", effects: { ability: 3 } },
       { text: "町の人と話して回る", effects: { reputation: 3 } },
+      { text: "料理を手伝う", effects: { health: 3, addFlags: ["cooking"] } },
     ],
   },
 ]);

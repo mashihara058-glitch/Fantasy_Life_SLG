@@ -10,10 +10,12 @@ GAME.data.jobs = {
   farmer: { name: "農夫", income: 55 },
   craftsman: { name: "職人", income: 65 },
   merchant: { name: "商人", income: [30, 120] },
+  cook: { name: "料理人", income: [30, 120] },
   soldier: { name: "兵士", income: 60 },
   adventurer: { name: "冒険者", income: [0, 160] },
   mage: { name: "魔術師", income: 90 },
   noble: { name: "貴族", income: 150, livingCost: 110 },
   slave: { name: "奴隷", income: 0, livingCost: 0 },
   retired: { name: "隠居", income: 0, livingCost: 25 },
+  gambler: { name: "博打師", income: [-50,100], livingCost: 50 },
 };

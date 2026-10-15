@@ -53,6 +53,30 @@ GAME.registerEvents([
       },
     ],
   },
+    {
+    id: "common_young_009",
+    tags: ["young", "work"],
+    forced: true,
+    conditions: { ageMin: 18, flags: ["cooking"] },
+    text: "最近、包丁を握ると、とてもしっくりくる。自分は料理の道を目指すべきだと感じる。",
+    choices: [
+      {
+        text: "町の飯屋で働く",
+        effects: { job: "cook", reputation: 5 },
+        log: { title: "町の料理人になる", text: "流行に敏感な人々の舌を満足させるため、勉強の日々が始まった。" },
+      },
+      {
+        text: "故郷で飯屋を開く",
+        effects: { job: "cook",  reputation: 10 },
+        log: { title: "飯屋の店主になる", text: "慣れ親しんだ故郷の味が、一番腹を満足させると知った。" },
+      },
+      {
+        text: "未知の食材を求めて冒険者になる",
+        effects: { job: "adventurer", ability: 3 },
+        log: { title: "料理人の冒険者になる", text: "まだ誰も味わったことのないごちそうを夢見て心を躍らせた。" },
+      },
+    ],
+  },
   {
     id: "common_young_002",
     tags: ["young", "prime", "work"],
@@ -80,6 +104,11 @@ GAME.registerEvents([
         text: "冒険者ギルドに登録する",
         effects: { job: "adventurer" },
         log: { title: "冒険者になる", text: "冒険者ギルドに登録し、危険と隣り合わせの日々が始まった。" },
+      },
+         {
+        text: "カジノへ行く",
+        effects: { job: "gambler" },
+        log: { title: "博打師になる", text: "有り金を握りしめ、運否天賦の綱渡りに挑んだ。" },
       },
     ],
   },
@@ -185,4 +214,44 @@ GAME.registerEvents([
       { text: "ほどほどに働く", effects: { health: 2 } },
     ],
   },
+  {
+    id: "common_young_008",
+    tags: ["young", "work"],
+    conditions: { ageMin: 18, ageMax: 50, notJobs: ["slave", "retired"] },
+    weight: 10,
+    text: "ベッドの中でふと思う。今の仕事は自分に合っているだろうか？",
+    choices: [
+       {
+        text: "日雇いの仕事を探す",
+        effects: { job: "laborer" },
+      },
+      {
+        text: "兵士に志願する",
+        check: { stat: "health", difficulty: 45 },
+        success: {
+          result: "体つきを見込まれ、王国軍に採用された。",
+          effects: { job: "soldier" },
+          log: { title: "王国軍の兵士になる", text: "槍を手に、国を守る務めに就いた。" },
+        },
+        failure: { result: "体力が足りないと追い返された。", effects: { reputation: -1 } },
+      },
+      {
+        text: "冒険者ギルドに登録する",
+        effects: { job: "adventurer" },
+        log: { title: "冒険者になる", text: "冒険者ギルドに登録し、危険と隣り合わせの日々が始まった。" },
+      },
+         {
+        text: "カジノへ行く",
+        effects: { job: "gambler" },
+        log: { title: "博打師になる", text: "有り金を握りしめ、運否天賦の綱渡りに挑んだ。" },
+      },
+        {
+        text: "美食を追求する",
+        effects: { job: "cook" },
+        log: { title: "料理人になる", text: "まだ見ぬ味を追い求めて、食材と格闘することに決めた。" },
+      },
+
+    ],
+  },
+
 ]);

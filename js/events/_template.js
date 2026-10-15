@@ -140,7 +140,8 @@ GAME.registerEvents([
         text: "返事と一緒に贈り物を送る",
 
         // 成功判定つきの選択肢
-        //   成功率 = 50% + (ステータス - difficulty) × 2%（5〜95%）
+        //   ステータスで判定：成功率 = 50% + (ステータス - difficulty) × 2%（5〜95%）
+        //   確率を固定する  ：check: { chance: 30 } で成功率30%（0〜100で指定）
         check: { stat: "ability", difficulty: 50 },
         success: {
           result: "{友人}はとても喜んだ。",

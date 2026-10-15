@@ -374,6 +374,7 @@ GAME.Engine = (function () {
   // ---------- 選択肢 ----------
 
   function successChance(state, check) {
+    if (check.chance != null) return U.clamp(check.chance / 100, 0, 1);
     const v = state.stats[check.stat] || 0;
     return U.clamp(0.5 + (v - check.difficulty) * 0.02, 0.05, 0.95);
   }
@@ -388,7 +389,9 @@ GAME.Engine = (function () {
         let hint = "";
         if (choice.check) {
           const p = Math.round(successChance(state, choice.check) * 100);
-          hint = `${STAT_LABELS[choice.check.stat] || choice.check.stat}判定・成功率${p}%`;
+          hint = choice.check.chance != null
+            ? `成功率${p}%`
+            : `${STAT_LABELS[choice.check.stat] || choice.check.stat}判定・成功率${p}%`;
         }
         return { index, text: renderText(state, choice.text), hint };
       });
@@ -637,7 +640,7 @@ GAME.Engine = (function () {
       const income = job ? U.resolve(job.income) + state.incomeBonus : 0;
       const cost = job && job.livingCost != null ? job.livingCost : data.livingCost;
       state.stats.money += income - cost;
-      lines.push(`収入 +${income} ／ 生活費 -${cost}`);
+      lines.push(`収入 ${income >= 0 ? "+" : ""}${income} ／ 生活費 -${cost}`);
     }
     return lines;
   }
@@ -804,6 +807,9 @@ GAME.Engine = (function () {
         checkCond(ev.id, c.conditions);
         if (c.check) {
           if (!c.success || !c.failure) warn(ev.id, `choices[${i}] は check があるのに success / failure が揃っていません`);
+          if (c.check.chance == null && !(c.check.stat in STAT_LABELS)) {
+            warn(ev.id, `choices[${i}] の check には stat（health / ability / reputation / money）か chance が必要です`);
+          }
           checkOutcome(ev.id, c.success);
           checkOutcome(ev.id, c.failure);
         } else {
