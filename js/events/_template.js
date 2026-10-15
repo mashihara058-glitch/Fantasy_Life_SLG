@@ -58,7 +58,7 @@ GAME.registerEvents([
     conditions: {
       ageMin: 18,                     // 何歳から
       ageMax: 29,                     // 何歳まで
-      species: ["human"],             // 種族 human / dwarf / beastfolk
+      species: ["human"],             // 種族 human / dwarf / beastfolk / elf / lizardfolk
       // チェンジリング限定なら flags: ["changeling"]、除外するなら notFlags: ["changeling"]
       origin: ["farmer", "merchant"], // 出自 farmer / craftsman / merchant / noble
       gender: ["female"],             // 性別 male / female

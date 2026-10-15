@@ -40,6 +40,12 @@ GAME.Engine = (function () {
     "addNpc", "npc", "npcRole", "npcState", "loseNpc", "addTraits", "removeTraits", "job", "keepIncomeBonus",
     "incomeBonus", "unlockMoney", "death",
   ];
+  const EVENT_KEYS = [
+    "id", "tags", "conditions", "weight", "weightMods", "repeatable", "cooldown", "maxTimes",
+    "forced", "priority", "fallback", "logOnce", "text", "choices", "log",
+  ];
+  const CHOICE_KEYS = ["text", "conditions", "check", "success", "failure", "result", "effects", "log"];
+  const OUTCOME_KEYS = ["result", "effects", "log"];
 
   // ---------- 参照ヘルパー ----------
 
@@ -791,8 +797,16 @@ GAME.Engine = (function () {
         if (!data.traits[t]) warn(id, `未定義の性格 "${t}"`);
       });
     };
-    const checkOutcome = (id, o) => {
+    const checkKeys = (id, obj, allowed, where) => {
+      Object.keys(obj).forEach((k) => {
+        if (allowed.includes(k)) return;
+        const hint = EFFECT_KEYS.includes(k) ? `（効果なら effects: { } の中に書きます）` : "";
+        warn(id, `${where}に不明な項目 "${k}"${hint}`);
+      });
+    };
+    const checkOutcome = (id, o, where) => {
       if (!o) return;
+      if (where) checkKeys(id, o, OUTCOME_KEYS, where);
       checkText(id, o.result);
       if (o.log) {
         checkText(id, o.log.title);
@@ -814,6 +828,7 @@ GAME.Engine = (function () {
       else if (ids.has(ev.id)) warn(ev.id, "id が重複しています");
       ids.add(ev.id);
       if (!ev.text) warn(ev.id, "text がありません");
+      checkKeys(ev.id, ev, EVENT_KEYS, "イベント");
       checkText(ev.id, ev.text);
       checkCond(ev.id, ev.conditions);
       (ev.weightMods || []).forEach((m, i) => {
@@ -829,6 +844,7 @@ GAME.Engine = (function () {
       }
       ev.choices.forEach((c, i) => {
         if (!c.text) warn(ev.id, `choices[${i}] に text がありません`);
+        checkKeys(ev.id, c, CHOICE_KEYS, `choices[${i}] `);
         checkText(ev.id, c.text);
         checkCond(ev.id, c.conditions);
         if (c.check) {
@@ -836,8 +852,8 @@ GAME.Engine = (function () {
           if (c.check.chance == null && !(c.check.stat in STAT_LABELS)) {
             warn(ev.id, `choices[${i}] の check には stat（health / ability / reputation / money）か chance が必要です`);
           }
-          checkOutcome(ev.id, c.success);
-          checkOutcome(ev.id, c.failure);
+          checkOutcome(ev.id, c.success, `choices[${i}] の success `);
+          checkOutcome(ev.id, c.failure, `choices[${i}] の failure `);
         } else {
           checkOutcome(ev.id, c);
         }
