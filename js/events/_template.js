@@ -73,6 +73,7 @@ GAME.registerEvents([
       hasJob: true,                   // 職に就いている(true) / いない(false)
       jobs: ["farmer", "none"],       // 現在の職業がいずれか（"none" は無職）
       notJobs: ["slave", "retired"],  // 現在の職業がいずれでもない
+      jobYearsMin: 10,                // 今の職業に就いてから何年以上か（昇格イベントなどに）
       npcs: ["friend"],               // この役割の人物がいる（亡くなった・別れた・行方不明の人物は除く）
       noNpcs: ["spouse"],             // この役割の人物がいない
       missingNpcs: ["mother"],        // この役割の人物が行方不明になっている
@@ -80,6 +81,7 @@ GAME.registerEvents([
       npcAgeMax: { mother: 42 },      // その人物が何歳以下
       moneyUnlocked: true,            // 家計（所持金）が解放済みか
       lifespanReached: false,         // 寿命に達しているか
+      aged: true,                     // 老いが始まっているか（寿命の80%以上。species.js の aging で調整）
       // custom: (state) => state.stats.health < state.stats.ability,  // 上記で書けない条件
     },
 
@@ -125,6 +127,7 @@ GAME.registerEvents([
 
           // 職業
           // job: "mage",             // 就職・転職。null で失業。初めての就職で家計が解放される
+          // keepIncomeBonus: true,   // 転職しても incomeBonus（昇給分）を引き継ぐ。昇格のときに使う
           // unlockMoney: true,       // 職に関係なく家計を解放する
 
           // 死亡

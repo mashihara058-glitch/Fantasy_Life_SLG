@@ -179,7 +179,7 @@ GAME.registerEvents([
     id: "sys_quiet_adult",
     tags: ["young", "prime", "quiet"],
     fallback: true,
-    conditions: { ageMin: 18, ageMax: 59, notFlags: ["slave"] },
+    conditions: { ageMin: 18, aged: false, notFlags: ["slave"] },
     text: "大きな出来事もなく、{職業}としての一年が過ぎた。",
     choices: [
       { text: "仕事に精を出す", effects: { money: 15, ability: 1 } },
@@ -191,7 +191,7 @@ GAME.registerEvents([
     id: "sys_quiet_elder",
     tags: ["elder", "quiet"],
     fallback: true,
-    conditions: { ageMin: 60, notFlags: ["slave"] },
+    conditions: { aged: true, notFlags: ["slave"] },
     text: "季節がまたひとつ巡った。窓の外では、若い者たちが忙しそうに行き交っている。",
     choices: [
       { text: "散歩をして過ごす", effects: { health: 1 } },

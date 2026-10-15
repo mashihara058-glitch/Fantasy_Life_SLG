@@ -32,12 +32,12 @@ GAME.Engine = (function () {
 
   const CONDITION_KEYS = [
     "ageMin", "ageMax", "species", "origin", "gender", "traitsAny", "notTraits", "flags", "notFlags",
-    "stats", "hasJob", "jobs", "notJobs", "npcs", "noNpcs", "missingNpcs", "npcAgeMin", "npcAgeMax",
-    "moneyUnlocked", "lifespanReached", "custom",
+    "stats", "hasJob", "jobs", "notJobs", "jobYearsMin", "npcs", "noNpcs", "missingNpcs", "npcAgeMin", "npcAgeMax",
+    "moneyUnlocked", "lifespanReached", "aged", "custom",
   ];
   const EFFECT_KEYS = [
     "health", "ability", "reputation", "money", "moneyRate", "setStats", "addFlags", "removeFlags",
-    "addNpc", "npc", "npcRole", "npcState", "loseNpc", "addTraits", "removeTraits", "job",
+    "addNpc", "npc", "npcRole", "npcState", "loseNpc", "addTraits", "removeTraits", "job", "keepIncomeBonus",
     "incomeBonus", "unlockMoney", "death",
   ];
 
@@ -62,6 +62,21 @@ GAME.Engine = (function () {
   function jobName(state) {
     if (!state.job) return "無職";
     return data.jobs[state.job] ? data.jobs[state.job].name : state.job;
+  }
+
+  function agingStartAge(state) {
+    return Math.floor(state.lifespan * data.aging.startRatio);
+  }
+
+  function isAged(state) {
+    return state.age >= agingStartAge(state);
+  }
+
+  // 現在の職に就いてからの年数（無職なら 0）
+  function jobYears(state) {
+    const last = state.jobHistory[state.jobHistory.length - 1];
+    if (!state.job || !last || last.job !== state.job) return 0;
+    return state.age - last.fromAge;
   }
 
   function fullName(state) {
@@ -244,6 +259,7 @@ GAME.Engine = (function () {
     if (c.hasJob != null && !!state.job !== c.hasJob) return false;
     if (c.jobs && !c.jobs.includes(state.job || "none")) return false;
     if (c.notJobs && c.notJobs.includes(state.job || "none")) return false;
+    if (c.jobYearsMin != null && jobYears(state) < c.jobYearsMin) return false;
     if (c.npcs && !c.npcs.every((role) => npcCandidates(state, c, role).length > 0)) return false;
     if (c.noNpcs && c.noNpcs.some((role) => activeNpcs(state, role).length > 0)) return false;
     if (c.missingNpcs && !c.missingNpcs.every((role) => missingNpcs(state, role).length > 0)) return false;
@@ -252,6 +268,7 @@ GAME.Engine = (function () {
     }
     if (c.moneyUnlocked != null && state.moneyUnlocked !== c.moneyUnlocked) return false;
     if (c.lifespanReached != null && state.age >= state.lifespan !== c.lifespanReached) return false;
+    if (c.aged != null && isAged(state) !== c.aged) return false;
     if (c.custom && !c.custom(state)) return false;
     return true;
   }
@@ -399,13 +416,13 @@ GAME.Engine = (function () {
 
   // ---------- 効果の適用 ----------
 
-  function setJob(state, jobId, changes) {
+  function setJob(state, jobId, changes, keepIncomeBonus) {
     const next = jobId || null;
     if (state.job === next) return;
     const last = state.jobHistory[state.jobHistory.length - 1];
     if (last && last.toAge == null) last.toAge = state.age;
     state.job = next;
-    state.incomeBonus = 0;
+    if (!keepIncomeBonus) state.incomeBonus = 0;
     if (next) {
       state.jobHistory.push({ job: next, fromAge: state.age, toAge: null });
       changes.push(`職業：${jobName(state)}`);
@@ -536,7 +553,7 @@ GAME.Engine = (function () {
       changes.push(`性格に「${traitName(t)}」が加わった`);
     });
 
-    if ("job" in eff) setJob(state, eff.job, changes);
+    if ("job" in eff) setJob(state, eff.job, changes, !!eff.keepIncomeBonus);
     if (eff.incomeBonus != null) {
       state.incomeBonus += eff.incomeBonus;
       changes.push(`年収 ${signed(eff.incomeBonus)}`);
@@ -627,9 +644,18 @@ GAME.Engine = (function () {
     }
 
     let decline = 0;
-    if (state.age >= 40) decline += U.randInt(0, 1);
-    if (state.age >= 55) decline += U.randInt(0, 2);
-    if (state.age >= 70) decline += U.randInt(1, 2);
+    if (isAged(state)) {
+      const aging = data.aging;
+      const start = agingStartAge(state);
+      const span = Math.max(1, state.lifespan - start);
+      const progress = (state.age - start) / span;
+      // 老いの期間が長い種族ほど、衰える年がまばらになる（合計の衰えは種族によらずほぼ同じ）
+      if (U.random() < Math.min(1, aging.baseYears / span)) {
+        decline += U.randInt(0, 1);
+        if (progress >= 0.5) decline += U.randInt(0, 2);
+        if (progress >= 0.85) decline += U.randInt(1, 2);
+      }
+    }
     if (decline > 0) {
       state.stats.health = U.clamp(state.stats.health - decline, 0, 100);
       lines.push(`老い：健康 -${decline}`);

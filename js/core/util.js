@@ -5,6 +5,7 @@ GAME.data = {
   events: [],
   species: {},
   enabledSpecies: [],
+  aging: { startRatio: 0.8, baseYears: 15 },
   origins: {},
   traits: {},
   traitCount: [1, 2],

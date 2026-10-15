@@ -1,9 +1,9 @@
-// 老年期（60歳以降）
+// 老年期（老いが始まってから。寿命の80%以降）
 GAME.registerEvents([
   {
     id: "common_elder_001",
     tags: ["elder", "work"],
-    conditions: { ageMin: 58, hasJob: true, notJobs: ["slave", "retired"] },
+    conditions: { aged: true, hasJob: true, notJobs: ["slave", "retired"] },
     weight: 25,
     repeatable: true,
     cooldown: 3,
@@ -23,7 +23,7 @@ GAME.registerEvents([
   {
     id: "common_elder_002",
     tags: ["elder", "family", "successor"],
-    conditions: { ageMin: 60, notFlags: ["slave", "has_successor"] },
+    conditions: { aged: true, notFlags: ["slave", "has_successor"] },
     weight: 15,
     text: "自分の知識や技を、誰かに残しておきたいと思うようになった。",
     choices: [
@@ -47,7 +47,7 @@ GAME.registerEvents([
   {
     id: "common_elder_003",
     tags: ["elder", "family", "death"],
-    conditions: { ageMin: 55, npcs: ["spouse"], npcAgeMin: { spouse: 60 } },
+    conditions: { aged: true, npcs: ["spouse"] },
     weight: 6,
     text: "{配偶者}が床に伏せ、日に日に弱っていく。",
     choices: [
@@ -61,7 +61,7 @@ GAME.registerEvents([
   {
     id: "common_elder_004",
     tags: ["elder", "friend"],
-    conditions: { ageMin: 60, npcs: ["friend"] },
+    conditions: { aged: true, npcs: ["friend"] },
     weight: 10,
     text: "{友人}から手紙が届いた。「久しぶりに、あの広場で会わないか」",
     choices: [
@@ -80,7 +80,7 @@ GAME.registerEvents([
   {
     id: "common_elder_005",
     tags: ["elder", "health"],
-    conditions: { ageMin: 60 },
+    conditions: { aged: true },
     repeatable: true,
     cooldown: 4,
     text: "最近、咳が止まらない。",

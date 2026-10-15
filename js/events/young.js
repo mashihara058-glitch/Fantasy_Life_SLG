@@ -57,7 +57,7 @@ GAME.registerEvents([
     id: "common_young_009",
     tags: ["young", "work"],
     forced: true,
-    conditions: { ageMin: 18, flags: ["cooking"] },
+    conditions: { ageMin: 18, flags: ["cooking"], notFlags: ["slave"] },
     text: "最近、包丁を握ると、とてもしっくりくる。自分は料理の道を目指すべきだと感じる。",
     choices: [
       {
@@ -74,6 +74,10 @@ GAME.registerEvents([
         text: "未知の食材を求めて冒険者になる",
         effects: { job: "adventurer", ability: 3 },
         log: { title: "料理人の冒険者になる", text: "まだ誰も味わったことのないごちそうを夢見て心を躍らせた。" },
+      },
+      {
+        text: "料理は趣味にとどめ、今の暮らしを続ける",
+        effects: { health: 2 },
       },
     ],
   },
@@ -250,8 +254,117 @@ GAME.registerEvents([
         effects: { job: "cook" },
         log: { title: "料理人になる", text: "まだ見ぬ味を追い求めて、食材と格闘することに決めた。" },
       },
-
+      {
+        conditions: { hasJob: true },
+        text: "今の仕事を続ける",
+      },
+    ],
+  },
+  {
+    id: "common_young_011",
+    tags: ["young","noble"],
+    conditions: { ageMin: 18, origin: ["noble"], jobs: ["noble"] },
+    weight: 5,
+    repeatable: true,
+    cooldown: 8,
+    text: "領地で洪水があり、橋が流されてしまった。",
+    choices: [
+      {
+        conditions: { stats: { money: { min: 100 } } },
+        text: "100ゴールドかけて修理する",
+        check: { stat: "reputation", difficulty: 50 },
+        success: {
+          result: "交通は維持された。その年、交易で多くの利益が出た。",
+          effects: { money: 20 },
+          log: { title: "橋を修理する", text: "領民は領主に感謝した。" },
+        },
+        failure: { result: "手抜き工事だった。橋は再び流された。", effects: { money: -150 } },
+      },
+      {
+        text: "借金をしてでも修理する",
+        check: { stat: "reputation", difficulty: 60 },
+        success: {
+          result: "その年の交易で、修理費を上回る利益が出た。",
+          effects: { money: 120 },
+        },
+        failure: {
+          result: "手抜き工事で、再び橋が流れてしまった。手元には借用書だけが残った。",
+          effects: { money: -150},
+          log: { title: "橋の修理で借金を作った", text: "悪徳業者に当たってしまった。", important: true },
+        },
+      },
+      {
+         text: "何もしない",
+          check: { stat: "reputation", difficulty: 70 },
+        success: {
+          result: "領民の有志が橋を直してくれた。",
+        },
+        failure: { result: "領民は領主に不満を覚えた。", effects: { reputation: -10 } },
+         },
+    ],
+  },
+    {
+    id: "common_young_010",
+    tags: ["young","farmer"],
+    conditions: { ageMin: 16, jobs: ["farmer"] },
+    weight: 5,
+    repeatable: true,
+    cooldown: 8,
+    text: "獣害によって、収穫間近の畑が荒らされてしまった。残る食料は乏しい。",
+    choices: [
+      {
+        text: "他の村や町から食料を買う",
+        effects:{ money: -50, health: 2},
+      },
+      {
+        text: "狩りをして獣の肉を得る",
+        effects:{ health: -2,ability: 1}
+      },
+      {
+         text: "わずかな食料で耐え忍ぶ",
+         effects:{ health: -3}
+         },
     ],
   },
 
+      {
+    id: "gambler_001",
+    tags: ["gambler"],
+    conditions: { ageMin: 16, jobs: ["gambler"] },
+    weight: 10,
+    repeatable: true,
+    text: "ポーカーの勝負に挑んだ。",
+    choices: [
+      {
+        text: "コール",
+        check: { chance: 50 },
+        success: {
+          result: "ツーペア。勝負に勝った。",
+          effects: { money: 50 },
+        },
+        failure: {
+          result: "ワンペア。悪くない手だったが、相手の運が上回った。", 
+          effects: { money: -50 } },
+      },
+      {
+        text: "レイズ",
+        check: { chance: 30 },
+        success: {
+          result: "フォーカード。大勝ちだ。",
+          effects: { money: 100 },
+           log: { title: "大勝負に勝つ", text: "一夜にして大金を得た。" },
+        },
+        failure: {
+          result: "フルハウス……しかし相手の役はストレートフラッシュだった。",
+          effects: { money: -150},
+          log: { title: "大勝負に負ける", text: "大金を溶かした。" },
+        },
+      },
+      {
+         text: "フォールド",
+         result: "勝負を降りた。チップは失ったが、傷は浅く済んだ。",
+         effects: { money: -10},
+ },
+    ],
+  },
 ]);

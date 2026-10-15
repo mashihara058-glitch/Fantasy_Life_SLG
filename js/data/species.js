@@ -12,6 +12,12 @@ GAME.data.species = {
   // elf: { name: "エルフ", weight: 10, lifespan: [400, 600], stats: { ability: 5 } },
 };
 
+// 老い（全種族共通）
+//   startRatio : 寿命のこの割合の年齢から老いが始まる（0.8 なら寿命70歳の人は56歳から）
+//                老いが始まると健康が少しずつ下がり、conditions.aged: true のイベントが起きるようになる
+//   baseYears  : 老いによる衰えの総量の目安。老いの期間がこの年数より長い種族は、衰える年がまばらになる
+GAME.data.aging = { startRatio: 0.8, baseYears: 15 };
+
 // 新しい人生で抽選される種族
 GAME.data.enabledSpecies = ["human", "dwarf", "beastfolk","elf","lizardfolk"];
 
