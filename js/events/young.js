@@ -119,7 +119,7 @@ GAME.registerEvents([
   {
     id: "common_young_003",
     tags: ["young", "love", "marriage"],
-    conditions: { ageMin: 18, ageMax: 40, npcs: ["lover"], noNpcs: ["spouse"] },
+    conditions: { ageMin: 18, ageMax: 40, npcs: ["lover"], noNpcs: ["spouse"], notJobs: ["mistress"], notFlags: ["mistress"] },
     weight: 15,
     weightMods: [{ conditions: { flags: ["changeling"], notFlags: ["changeling_accepted"] }, multiply: 0.3 }],
     text: "{恋人}との付き合いも長くなった。二人の将来について、考える時が来たようだ。",
@@ -147,7 +147,14 @@ GAME.registerEvents([
   {
     id: "common_young_004",
     tags: ["young", "marriage", "noble"],
-    conditions: { ageMin: 18, ageMax: 28, origin: ["noble"], noNpcs: ["spouse"] },
+    conditions: {
+      ageMin: 18,
+      ageMax: 28,
+      origin: ["noble"],
+      noNpcs: ["spouse"],
+      notJobs: ["slave", "miner", "prostitute", "mistress"],
+      notFlags: ["slave", "mistress", "prostitute"],
+    },
     weight: 15,
     weightMods: [{ conditions: { flags: ["changeling"] }, multiply: 0.2 }],
     text: "家の都合で、名家との縁談が持ち込まれた。",
@@ -171,39 +178,9 @@ GAME.registerEvents([
     ],
   },
   {
-    id: "common_young_005",
-    tags: ["young", "prime", "adventure"],
-    conditions: { ageMin: 17, ageMax: 50, jobs: ["adventurer"] },
-    weight: 20,
-    repeatable: true,
-    cooldown: 2,
-    logOnce: true,
-    text: "ギルドの掲示板に、竜の巣の調査依頼が貼り出されている。報酬は破格だ。",
-    choices: [
-      {
-        text: "依頼を引き受ける",
-        check: { stat: "ability", difficulty: 55 },
-        success: {
-          result: "竜の目を盗んで巣を調べ上げ、無事に帰還した。ギルド中の噂の的だ。",
-          effects: { money: 150, reputation: 10, addFlags: ["dragon_survey"] },
-          log: { title: "竜の巣の調査に成功する", text: "危険な依頼を成し遂げ、名を上げた。" },
-        },
-        failure: {
-          result: "竜の吐息に焼かれ、命からがら逃げ帰った。",
-          effects: { health: [-35, -15] },
-          log: { title: "竜の吐息に焼かれる", text: "竜の巣の調査に失敗し、深手を負った。" },
-        },
-      },
-      {
-        text: "地道な依頼をこなす",
-        effects: { money: 30, ability: 1 },
-      },
-    ],
-  },
-  {
     id: "common_young_006",
     tags: ["young", "prime", "work"],
-    conditions: { ageMin: 18, ageMax: 59, hasJob: true, notJobs: ["slave", "retired","gambler"] },
+    conditions: { ageMin: 18, ageMax: 59, hasJob: true, notJobs: ["slave", "retired","gambler","mistress"] },
     repeatable: true,
     cooldown: 3,
     text: "{職業}としての仕事にも、すっかり慣れてきた。",
@@ -349,246 +326,164 @@ GAME.registerEvents([
     },
   ],
 },
-
-      {
-    id: "gambler_001",
-    tags: ["gambler"],
-    conditions: { ageMin: 16, jobs: ["gambler"] },
-    weight: 10,
+  {
+    id: "common_young_013",
+    tags: ["young", "prime", "elder", "friend", "money"],
+    conditions: {
+      ageMin: 18,
+      moneyUnlocked: true,
+      stats: { money: { max: -10 } },
+      npcs: ["friend"],
+      notFlags: ["debt_to_friend", "slave"],
+    },
+    weight: 8,
     repeatable: true,
-    text: "ポーカーの勝負に挑んだ。",
+    cooldown: 3,
+    text: "家計が苦しい。{名前}家に残された時間はあとわずかだ。",
     choices: [
       {
-        text: "コール",
-        check: { chance: 50 },
-        success: {
-          result: "ツーペア。わずかな差で、場のチップをかき集めた。",
-          effects: { money: 50 },
-        },
-        failure: {
-          result: "ワンペア。悪くない手だったが、相手はそれを上回っていた。",
-          effects: { money: -50 } },
+        text: "{友人}に借金を申し込む",
+        result: "{友人}を拝み倒し、なんとか80ゴールド借りた。",
+        effects: { money: 80, addFlags: ["debt_to_friend"], npc: { friend: { trust: -5 } } },
+        log: { title: "{友人}に借金をする", text: "{友人}に金を借りた。" },
       },
       {
-        text: "レイズ",
-        check: { chance: 30 },
-        success: {
-          result: "フォーカード。卓を囲む全員が、息を呑んだ。",
-          effects: { money: 100 },
-           log: { title: "ポーカーで大勝ちする", text: "四枚の札が、一夜にして財布を膨らませた。" },
-        },
-        failure: {
-          result: "フルハウス……しかし相手の役はストレートフラッシュだった。",
-          effects: { money: -150},
-          log: { title: "ポーカーで大負けする", text: "フルハウスを握りしめたまま、有り金を失った。" },
-        },
+        text: "仕事を増やす",
+        effects: { health: -3, money: 30 },
       },
       {
-         text: "フォールド",
-         result: "勝負を降りた。賭けたチップは戻らないが、傷は浅い。",
-         effects: { money: -10},
- },
-    ],
-  },
-        {
-    id: "gambler_002",
-    tags: ["gambler"],
-    conditions: { ageMin: 16, jobs: ["gambler"] },
-    weight: 10,
-    repeatable: true,
-    text: "賭場で腕利きの博打師に勝負を持ちかけられた。",
-    choices: [
-      {
-        text: "小さく賭ける",
-        check: { chance: 60 },
-        success: {
-          result: "手堅く張った賭けが、確かな稼ぎになった。",
-          effects: { money: 40 },
-        },
-        failure: {
-          result: "相手の読みが、一枚上手だった。",
-          effects: { money: -30 } },
-      },
-      {
-        text: "大きく賭ける",
-        check: { chance: 30 },
-        success: {
-          result: "腕利きの顔から、余裕の笑みが消えた。",
-          effects: { money: 100 },
-           log: { title: "賭場で腕利きを打ち負かす", text: "名うての博打師を相手に、大金をせしめた。" },
-        },
-        failure: {
-          result: "身ぐるみを剥がされ、夜風の冷たさが身に染みた。",
-          effects: { money: -150},
-          log: { title: "賭場で身ぐるみ剥がされる", text: "名うての博打師に挑み、すべてを失った。" },
-        },
-      },
-      {
-         text: "勝負を降りる",
-         result: "誘いを断り、場代だけ置いて賭場を出た。",
-         effects: { money: -10},
- },
-    ],
-  },
-        {
-    id: "gambler_003",
-    tags: ["gambler"],
-    conditions: { ageMin: 16, jobs: ["gambler"] },
-    weight: 10,
-    repeatable: true,
-    text: "王都で大きな競馬大会が開かれる。どの馬に賭けるか。",
-    choices: [
-      {
-        text: "人気馬",
-        check: { chance: 60 },
-        success: {
-          result: "人気馬は危なげなく、先頭でゴールを駆け抜けた。",
-          effects: { money: 40 },
-        },
-        failure: {
-          result: "人気馬は最後の直線で失速した。手元には、紙くずになった馬券だけが残った。",
-          effects: { money: -30 } },
-      },
-      {
-        text: "穴馬",
-        check: { chance: 30 },
-        success: {
-          result: "誰も見向きもしなかった馬が、大外から全頭を差し切った。",
-          effects: { money: 100 },
-           log: { title: "競馬で大穴を当てる", text: "誰も信じなかった馬に賭け、競馬場の噂の的になった。" },
-        },
-        failure: {
-          result: "穴馬は、最後まで穴馬のままだった。",
-          effects: { money: -150},
-          log: { title: "競馬で大損する", text: "穴馬に夢を託し、大金を失った。" },
-        },
-      },
-      {
-        text: "知り合いの馬主から情報を買う",
-        check: { chance: 65 },
-        success: {
-          result: "情報は本物だった。教えられた馬が、ゆうゆうと一着でゴールした。",
-          effects: { money: 50, reputation: -2 },
-        },
-        failure: {
-          result: "情報はガセだった。どうやら馬主自身も騙されていたらしい。",
-          effects: { money: -40, reputation: -2 },
-          log: { title: "競馬でガセ情報をつかまされる", text: "馬主の耳打ちを信じ、まんまと大損した。" },
-        },
+        text: "生活費を削る",
+        effects: { health: -1, money: 5 },
       },
     ],
   },
-        {
-    id: "gambler_004",
-    tags: ["gambler"],
-    conditions: { ageMin: 16, jobs: ["gambler"], npcs: ["friend"] },
-    weight: 10,
+  {
+    id: "common_young_014",
+    tags: ["young", "prime", "elder", "friend", "money"],
+    conditions: { flags: ["debt_to_friend"], npcs: ["friend"] },
+    weight: 12,
     repeatable: true,
-    text: "{友人}とカードで勝負した。",
+    cooldown: 3,
+    text: "{友人}が訪ねてきた。以前借りた金を返してほしいらしい。",
     choices: [
       {
-        text: "いかさまをする",
-        check: { chance: 90 },
-        success: {
-          result: "勝った。だが{友人}は、どこか腑に落ちない顔をしていた。",
-          effects: { money: 40, npc: { friend: { trust: -5, intimacy: -5 } } },
-        },
-        failure: {
-          result: "袖から札が滑り落ちた。{友人}は黙って席を立った。",
-          effects: { money: -30, npcState: { friend: "left" } },
-          log: { title: "友とのカードでいかさまがばれる", text: "{友人}の信頼を、たった一枚の札で失った。" },
-        },
+        text: "{友人}に借金を返す",
+        effects: { removeFlags: ["debt_to_friend"], money: -80, npc: { friend: { trust: 5 } } },
+        log: { title: "{友人}に借金を返す", text: "{友人}の信用に報いた。" },
       },
       {
-        text: "正々堂々と勝負する",
-        check: { chance: 50 },
-        success: {
-          result: "勝った。{友人}は悔しがりながらも笑っていた。",
-          effects: { money: 50, npc: { friend: { trust: 1, intimacy: 1 } } },
-        },
-        failure: {
-          result: "負けた。{友人}は勝ち誇って、酒をおごらせた。",
-          effects: { money: -50, npc: { friend: { trust: 1, intimacy: 1 } } },
-        },
+        text: "返済を断る",
+        effects: { npcState: { friend: "left" }, removeFlags: ["debt_to_friend"] },
+        log: { title: "{友人}への借金を踏み倒す", text: "{友人}を裏切った。" },
+      },
+      {
+        text: "待ってほしいと懇願する",
+        result: "{友人}に利子を払い、返済を待ってもらうことにした。",
+        effects: { money: -8 },
       },
     ],
   },
-        {
-    id: "gambler_005",
-    tags: ["gambler"],
-    conditions: { ageMin: 16, jobs: ["gambler"] },
+  {
+    id: "common_young_015",
+    tags: ["young", "prime", "friend", "slave"],
+    conditions: { jobs: ["slave", "miner", "prostitute"], npcs: ["friend"], flags: ["slave"] },
     weight: 10,
     repeatable: true,
-    text: "大貴族に腕前を見込まれ、特別な勝負に招かれた。",
+    cooldown: 3,
+    text: "{友人}が訪ねてきた。{名前}が{職業}をしていると知り、駆けつけてくれたようだ。",
     choices: [
       {
-        text: "いかさまをする",
-        check: { chance: 60 },
-        success: {
-          result: "鮮やかな手さばきで相手を出し抜いた。大貴族は感嘆の声を上げた。",
-          effects: { money: 100, reputation: 10, addFlags: ["cheat"] },
-        },
-        failure: {
-          result: "仕込みは完璧だった。それでも、相手の運が上回った。",
-          effects: { money: -30 } },
-      },
-      {
-        text: "正々堂々と勝負する",
+        text: "助けを求める",
         check: { chance: 30 },
         success: {
-          result: "正面からの勝負を制し、大貴族から惜しみない賛辞を受けた。",
-          effects: { money: 100 ,reputation:5},
+          result: "{友人}の尽力により、{職業}の道から解放された。",
+          effects: {
+            job: null,
+            removeFlags: ["slave", "prostitute"],
+            addFlags: ["debt_to_friend"],
+            npc: { friend: { trust: 10, intimacy: 10 } },
+          },
+          log: { title: "{友人}に助けられ、{職業}から足を洗う", text: "{友人}が借金を肩代わりしてくれた。" },
         },
         failure: {
-          result: "居並ぶ貴族たちの前で、身ぐるみを剥がされた。",
-          effects: { money: -150},
+          result: "脱出に失敗し、折檻を受けることになった。",
+          effects: { reputation: -3, health: -5 },
         },
       },
       {
-         text: "勝負を断る",
-         result: "誘いを断ったことで、「臆病者」という噂が広まった。",
-         effects: {reputation:-10},
- },
+        text: "自分が仕事に誇りを持っていると話す",
+        result: "{友人}は{名前}が元気であることに安心し、「また来る」と告げて去った。",
+        effects: { ability: 1, npc: { friend: { intimacy: 5 } } },
+      },
+      {
+        text: "愚痴をこぼす",
+        result: "{友人}は{名前}の苦境に涙し、差し入れをくれた。",
+        effects: { money: 10, npc: { friend: { intimacy: 5 } } },
+      },
     ],
   },
-        {
-    id: "gambler_006",
-    tags: ["gambler"],
-    conditions: { ageMin: 16, jobs: ["gambler"] ,flags: ["cheat"], },
-    weight: 10,
+  {
+    id: "common_young_016",
+    tags: ["young", "prime", "elder", "friend", "money"],
+    conditions: {
+      ageMin: 18,
+      npcs: ["friend"],
+      notFlags: ["guarantor_for_friend", "slave"],
+      notJobs: ["slave", "miner"],
+    },
+    weight: 5,
     repeatable: true,
-    text: "過去、大貴族に仕掛けたいかさまが発覚した。",
+    cooldown: 8,
+    text: "{友人}が店を開くらしい。保証人になってほしいと頼んできた。",
     choices: [
       {
-        text: "賠償金を払う",
-          result: "賠償金を支払い、深々と頭を下げた。",
-          effects: { money: -100, reputation: -5, removeFlags: ["cheat"] }
+        text: "承諾する",
+        result: "{友人}は{名前}に感謝を告げ、決して迷惑はかけないと誓った。",
+        effects: { reputation: 5, addFlags: ["guarantor_for_friend"], npc: { friend: { trust: 10 } } },
+        log: { title: "{友人}の借金の保証人になる", text: "{友人}を信じた。" },
       },
       {
-        text: "言いくるめる",
-        check: { chance: 30 },
+        text: "断る",
+        result: "ない袖は振れないと告げると、{友人}との関係が少しぎこちなくなった。",
+        effects: { npc: { friend: { intimacy: -5 } } },
+      },
+    ],
+  },
+  {
+    id: "common_young_017",
+    tags: ["young", "prime", "elder", "friend", "money"],
+    conditions: { flags: ["guarantor_for_friend"], npcs: ["friend"] },
+    weight: 8,
+    repeatable: true,
+    cooldown: 4,
+    text: "借金取りが訪ねてきた。{友人}が借金を置いて逃げたらしい。保証人欄には{名前}の名が記されている。",
+    choices: [
+      {
+        text: "{友人}のかわりに返済する",
+        check: { stat: "reputation", difficulty: 45 },
         success: {
-          result: "なんとか言い逃れることができたが、疑惑は晴れなかった。",
-          effects: { reputation: -5 },
+          result: "{友人}の借金を肩代わりした。",
+          effects: { money: -80, removeFlags: ["guarantor_for_friend"], npc: { friend: { trust: -10 } } },
+          log: { title: "{友人}の借金を肩代わりする", text: "{友人}を助けた。" },
         },
         failure: {
-          result: "言い訳は通らず、多額の賠償金を取られた。",
-          effects: { money: -150, reputation: -15, removeFlags: ["cheat"] },
+          result: "{友人}の借金は莫大で、返済しきれなかった。{名前}は奴隷として売られることになった。",
+          effects: {
+            job: "slave",
+            addFlags: ["slave"],
+            removeFlags: ["guarantor_for_friend"],
+            setStats: { money: 0 },
+            reputation: -10,
+          },
+          log: { title: "他人の身代わりに奴隷へ落ちる", text: "{友人}の借金を背負い、自由を失った。" },
         },
       },
       {
-         text: "交渉する",
-              check: { chance: 30 },
-        success: {
-          result: "和解金を支払い、手打ちになった。",
-          effects: { money: -50, reputation: -5, removeFlags: ["cheat"] }
-        },
-        failure: {
-          result: "交渉は決裂し、多額の賠償金を取られた。",
-          effects: { money: -150, reputation: -15, removeFlags: ["cheat"] },
-          log: { title: "大貴族へのいかさまが公になる", text: "不正を暴かれ、財布も名声も大きく削られた。" },
-        },
- },
+        text: "断る",
+        result: "{友人}のことなど知らないと、きっぱり断った。",
+        effects: { npcState: { friend: "left" }, removeFlags: ["guarantor_for_friend"], reputation: -5 },
+        log: { title: "保証人の責任を拒む", text: "{友人}を見捨て、保証の義務から逃げた。" },
+      },
     ],
   },
 ]);

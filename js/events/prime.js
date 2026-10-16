@@ -42,7 +42,7 @@ GAME.registerEvents([
   {
     id: "common_prime_003",
     tags: ["prime", "work"],
-    conditions: { ageMin: 28, ageMax: 55, hasJob: true, notJobs: ["slave", "retired", "laborer","gambler"], notFlags: ["promoted"], stats: { ability: { min: 45 } } },
+    conditions: { ageMin: 28, ageMax: 55, hasJob: true, notJobs: ["slave", "retired", "laborer", "gambler", "mistress", "miner", "prostitute"], notFlags: ["promoted"], stats: { ability: { min: 45 } } },
     weight: 15,
     text: "長年の働きぶりが認められ、責任ある立場を任されることになった。",
     choices: [

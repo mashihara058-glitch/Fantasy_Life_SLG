@@ -124,4 +124,65 @@ GAME.registerEvents([
       },
     ],
   },
+
+// ---------- 奴隷 → 鉱夫or娼婦 ----------
+  {
+    id: "common_career_slave",
+    tags: ["young", "prime", "work", "career"],
+    conditions: { jobs: ["slave"], stats: { health: { min: 30 }, reputation: { min: 20 } } },
+    weight: 15,
+    repeatable: true,
+    cooldown: 2,
+    text: "奴隷商が、覚悟を問うてきた。",
+    choices: [
+      {
+        text: "鉱山奴隷になる",
+        result: "暗くて狭い土の中で、つるはしをふるうことにした。",
+        effects: { job: "miner" },
+        log: { title: "鉱山奴隷になる", text: "借金を返すため、重労働に携わった。" },
+      },
+      {
+        text: "娼館へ行く",
+        result: "借金を返すには、これしかないと思った。",
+        // slave フラグは残す（逃亡イベントなどが続く）。結婚除外用に prostitute も付ける
+        effects: { job: "prostitute", addFlags: ["prostitute"] },
+        log: { title: "娼婦になる", text: "借金を返すため、夜の街へ行くことにした。" },
+      },
+      {
+        text: "まだ買い手を待つ",
+        result: "生活費を負担することになるが、まだ見ぬ主を待つことにした。",
+        effects: { health: 2, money: -5 },
+      },
+    ],
+  },
+
+  // ---------- 娼婦 → 愛人 ----------
+  {
+    id: "common_career_mistress",
+    tags: ["young", "prime", "work", "career"],
+    conditions: { jobs: ["prostitute"], jobYearsMin: 3, stats: { health: { min: 45 }, reputation: { min: 40 } } },
+    weight: 5,
+    repeatable: true,
+    cooldown: 4,
+    text: "常連客の一人が身請けを申し出てきた。",
+    choices: [
+      {
+        text: "受け入れる",
+        result: "正当な婚姻ではないが、少なくとも見知らぬ人とベッドをともにしなくてもよくなる。",
+        // npcState は役割ごとに "left" などを書く。{ lover, spouse: "left" } だと lover が未定義変数になる
+        effects: {
+          job: "mistress",
+          addFlags: ["mistress"],
+          removeFlags: ["slave", "prostitute", "married"],
+          npcState: { lover: "left", spouse: "left" },
+        },
+        log: { title: "愛人になる", text: "夜の街から足を洗った。" },
+      },
+      {
+        text: "断る",
+        result: "愛人になるのを断った。",
+        effects: { ability: 2 },
+      },
+    ],
+  },
 ]);

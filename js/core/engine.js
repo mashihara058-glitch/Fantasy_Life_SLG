@@ -19,6 +19,7 @@ GAME.Engine = (function () {
     mentor: "師匠",
     rival: "ライバル",
     child: "子",
+    grandchild: "孫",
     pupil: "弟子",
     sibling: "兄弟",
   };

@@ -101,4 +101,79 @@ GAME.registerEvents([
       },
     ],
   },
+
+  // ---------- 孫 ----------
+  // 子が成人したあと発生する。主人公の実年齢ではなく「子の年齢」で判定するので、
+  // 長寿種族でも、子どもがいれば自然に孫が生まれる。
+  {
+    id: "common_family_grandchild",
+    tags: ["prime", "elder", "family"],
+    conditions: {
+      npcs: ["child"],
+      npcAgeMin: { child: 18 },
+      custom: (s) => s.npcs.filter((n) => n.role === "grandchild").length < 6,
+    },
+    weight: 12,
+    repeatable: true,
+    cooldown: 4,
+    maxTimes: 5,
+    text: "{子}のもとから使いが来た。新しい命が授かったという。",
+    choices: [
+      {
+        text: "生まれた孫に会いに行く",
+        result: "小さな手が、{名前}の指を握った。名は{孫}。",
+        effects: {
+          addNpc: { role: "grandchild", age: 0, trust: 60, intimacy: 65 },
+          npc: { child: { trust: 5, intimacy: 10 } },
+          health: 2,
+        },
+        log: { title: "孫の{孫}が生まれる", text: "{子}に子どもが生まれ、{名前}は祖父母になった。" },
+      },
+      {
+        conditions: { moneyUnlocked: true, stats: { money: { min: 40 } } },
+        text: "祝い金を持って会いに行く（40ゴールド）",
+        result: "{子}は涙ぐんで礼を言った。赤子の名は{孫}。",
+        effects: {
+          money: -40,
+          addNpc: { role: "grandchild", age: 0, trust: 65, intimacy: 70 },
+          npc: { child: { trust: 10, intimacy: 15 } },
+          reputation: 2,
+        },
+        log: { title: "孫の{孫}が生まれる", text: "祝い金を持参し、{子}の子・{孫}と対面した。" },
+      },
+      {
+        text: "手紙で祝福を伝える",
+        result: "返事とともに、{孫}という名が記されていた。",
+        effects: {
+          addNpc: { role: "grandchild", age: 0, trust: 50, intimacy: 40 },
+          npc: { child: { intimacy: 5 } },
+        },
+        log: { title: "孫の{孫}が生まれる", text: "遠方から、{子}に子どもが生まれた知らせを受けた。" },
+      },
+    ],
+  },
+  {
+    id: "common_family_grandchild_visit",
+    tags: ["elder", "family"],
+    conditions: { aged: true, npcs: ["grandchild"], npcAgeMin: { grandchild: 3 } },
+    weight: 10,
+    repeatable: true,
+    cooldown: 5,
+    text: "孫の{孫}が、はしゃぎながら訪ねてきた。",
+    choices: [
+      {
+        text: "昔話を聞かせる",
+        effects: { health: 2, npc: { grandchild: { trust: 5, intimacy: 10 } } },
+      },
+      {
+        conditions: { moneyUnlocked: true, stats: { money: { min: 20 } } },
+        text: "小遣いを渡す（20ゴールド）",
+        effects: { money: -20, npc: { grandchild: { intimacy: 15 } } },
+      },
+      {
+        text: "外で一緒に遊ぶ",
+        effects: { health: -2, npc: { grandchild: { intimacy: 12 } } },
+      },
+    ],
+  },
 ]);

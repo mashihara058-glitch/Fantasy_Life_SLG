@@ -24,7 +24,7 @@
  *
  *  【差し込み文字】文章中に書くと自動で置き換わります。
  *   {名前} {姓} {フルネーム} {出身} {職業} {年齢} {種族}
- *   {父} {母} {友人} {恋人} {配偶者} {師匠} {ライバル} {子} {弟子}
+ *   {父} {母} {友人} {恋人} {配偶者} {師匠} {ライバル} {子} {孫} {弟子}
  *   {兄弟}（兄弟姉妹の名前） {兄弟の続柄}（その人が兄・姉・弟・妹のどれか）
  *     例：「{兄弟の続柄}の{兄弟}」→「妹のリーナ」
  *   ※人物の差し込みは、conditions.npcs で「その人物がいること」を条件にしておくと確実です。
@@ -118,7 +118,7 @@ GAME.registerEvents([
           // 人物
           npc: { friend: { trust: 5, intimacy: 3 } },  // 信頼度・親密度の変化
           // addNpc: { role: "friend", tags: ["scholar"] },  // 新しい人物（age, gender, name, trust, intimacy も指定可）
-          //   役割：father mother sibling friend lover spouse mentor rival child pupil
+          //   役割：father mother sibling friend lover spouse mentor rival child grandchild pupil
           // npcRole: { lover: "spouse" },   // 役割の変更（恋人 → 配偶者 など）
           // npcState: { father: "dead" },   // "dead"（死亡）/ "left"（別れ・疎遠）/ "missing"（行方不明）/ "active"（戻ってくる）
           // loseNpc: { role: "mother", status: "missing" },  // 悲劇的な喪失。status は "dead" か "missing"

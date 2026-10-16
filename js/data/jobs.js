@@ -19,6 +19,9 @@ GAME.data.jobs = {
   wizard:{ name:"上級魔術師", income: 100 },
   noble: { name: "貴族", income: 150, livingCost: 110 },
   slave: { name: "奴隷", income: 0, livingCost: 0 },
+  miner: { name: "鉱夫", income: [0,5], livingCost: 0 },
+  prostitute: { name: "娼婦", income: [30,55], livingCost: 25 },
+  mistress:{ name: "愛人", income: 60, livingCost: 20 },
   retired: { name: "隠居", income: 0, livingCost: 25 },
   gambler: { name: "博打師", income: [-50,100], livingCost: 50 },
 };

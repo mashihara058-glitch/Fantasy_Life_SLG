@@ -115,6 +115,12 @@ GAME.registerEvents([
     text: "ある朝、{名前}は窓から差し込む光の中で、自分の時が満ちたことを静かに悟った。",
     choices: [
       {
+        conditions: { npcs: ["grandchild"] },
+        text: "孫の{孫}に看取られて眠る",
+        effects: { death: "老衰" },
+        log: { title: "孫に見守られ、生涯を終える", text: "{孫}の小さな手を握り、穏やかに息を引き取った。" },
+      },
+      {
         conditions: { npcs: ["child"] },
         text: "{子}たち家族に見守られて眠る",
         effects: { death: "老衰" },
