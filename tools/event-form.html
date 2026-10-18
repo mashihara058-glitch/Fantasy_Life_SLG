@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>イベントコード出力</title>
+  <style>
+    :root {
+      --bg: #f3efe6;
+      --ink: #2a241c;
+      --muted: #6a5f52;
+      --line: #c9bba8;
+      --card: #fffdf8;
+      --accent: #3d5a45;
+      --accent-soft: #dce8df;
+      --warn: #8a3b2a;
+      --mono: "Cascadia Code", "Consolas", "Courier New", monospace;
+      --sans: "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 1.5rem clamp(1rem, 3vw, 2.5rem) 3rem;
+      background:
+        radial-gradient(ellipse at top, #faf6ee 0%, var(--bg) 55%),
+        repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(201, 187, 168, 0.18) 24px);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.5;
+    }
+    h1 { font-size: 1.4rem; margin: 0 0 0.35rem; letter-spacing: 0.04em; }
+    .lead { color: var(--muted); margin: 0 0 1.5rem; max-width: 42rem; font-size: 0.95rem; }
+    h2 {
+      font-size: 0.85rem;
+      text-transform: none;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 0.35rem;
+      margin: 1.5rem 0 0.85rem;
+    }
+    label.field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    label.field > span { font-weight: 600; color: var(--ink); }
+    input[type="text"], input[type="number"], textarea, select {
+      font: inherit;
+      color: var(--ink);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 0.45rem 0.55rem;
+      width: 100%;
+    }
+    textarea { min-height: 4.5rem; resize: vertical; }
+    input:focus, textarea:focus, select:focus {
+      outline: 2px solid var(--accent-soft);
+      border-color: var(--accent);
+    }
+    .grid { display: grid; gap: 0.75rem; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 800px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .checks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.85rem;
+    }
+    .checks label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.88rem;
+      color: var(--ink);
+      cursor: pointer;
+    }
+    .hint { font-size: 0.78rem; color: var(--muted); margin: 0.2rem 0 0; }
+    .row-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0; }
+    button {
+      font: inherit;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--ink);
+      padding: 0.45rem 0.85rem;
+    }
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #f7faf7;
+    }
+    button.danger { color: var(--warn); border-color: #d4a99e; }
+    button:hover { filter: brightness(0.97); }
+    #output {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      min-height: 18rem;
+      white-space: pre;
+      line-height: 1.45;
+    }
+    .status { font-size: 0.85rem; color: var(--accent); min-height: 1.2em; }
+    .choice-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .choice-head strong { font-size: 0.95rem; }
+    .check-mode { display: flex; gap: 1rem; margin: 0.4rem 0 0.7rem; font-size: 0.88rem; }
+    .outcome { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--line); }
+    .outcome h3 { margin: 0 0 0.55rem; font-size: 0.82rem; color: var(--muted); }
+    details.advanced { margin-top: 0.6rem; }
+    details.advanced summary { cursor: pointer; color: var(--muted); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <h1>イベントコード出力</h1>
+  <p class="lead">
+    フォームに入力すると、下のテキストエリアに貼り付け用の JavaScript が出ます。
+    出力をコピーして、<code>adventurer.js</code> などの <code>GAME.registerEvents([...])</code> 配列の中に貼ってください。
+    ゲーム本体には読み込まれません。
+  </p>
+
+  <h2>基本</h2>
+  <div class="grid grid-2">
+    <label class="field"><span>id（必須）</span>
+      <input id="ev-id" type="text" placeholder="adventurer_006" value="common_event_001" />
+    </label>
+    <label class="field"><span>tags（カンマ区切り）</span>
+      <input id="ev-tags" type="text" placeholder="young, prime, adventure" value="young, work" />
+      <p class="hint">例：childhood / adolescence / young / prime / elder</p>
+    </label>
+    <label class="field"><span>weight</span>
+      <input id="ev-weight" type="number" value="10" min="0" step="1" />
+    </label>
+    <label class="field"><span>繰り返し</span>
+      <select id="ev-repeat">
+        <option value="">なし（一生に一度）</option>
+        <option value="repeat">repeatable</option>
+        <option value="repeat-logonce">repeatable + logOnce</option>
+      </select>
+    </label>
+    <label class="field"><span>cooldown（repeatable 時）</span>
+      <input id="ev-cooldown" type="number" placeholder="3" min="0" />
+    </label>
+    <label class="field"><span>maxTimes（任意）</span>
+      <input id="ev-maxtimes" type="number" placeholder="省略可" min="1" />
+    </label>
+  </div>
+  <label class="field" style="margin-top:0.75rem"><span>text（本文）</span>
+    <textarea id="ev-text" placeholder="{名前}のもとに、一通の手紙が届いた。"></textarea>
+    <p class="hint">差し込み：{名前} {職業} {友人} {子} {孫} など。人物を使うときは下の「いるNPC」にもチェック。</p>
+  </label>
+
+  <h2>発生条件 conditions</h2>
+  <div class="grid grid-4">
+    <label class="field"><span>ageMin</span><input id="c-ageMin" type="number" placeholder="例: 18" /></label>
+    <label class="field"><span>ageMax</span><input id="c-ageMax" type="number" placeholder="例: 50" /></label>
+    <label class="field"><span>jobYearsMin</span><input id="c-jobYearsMin" type="number" placeholder="例: 5" /></label>
+    <label class="field"><span>aged（老い開始後）</span>
+      <select id="c-aged">
+        <option value="">指定なし</option>
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+    </label>
+    <label class="field"><span>hasJob</span>
+      <select id="c-hasJob">
+        <option value="">指定なし</option>
+        <option value="true">true（職あり）</option>
+        <option value="false">false（無職）</option>
+      </select>
+    </label>
+    <label class="field"><span>moneyUnlocked</span>
+      <select id="c-moneyUnlocked">
+        <option value="">指定なし</option>
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </select>
+    </label>
+    <label class="field"><span>flags（カンマ区切り・すべて必要）</span>
+      <input id="c-flags" type="text" placeholder="slave, debt_to_friend" />
+    </label>
+    <label class="field"><span>notFlags（カンマ区切り）</span>
+      <input id="c-notFlags" type="text" placeholder="slave, mistress" />
+    </label>
+  </div>
+
+  <div class="card" style="margin-top:0.85rem">
+    <strong>職業 jobs（いずれか）</strong>
+    <div class="checks" id="c-jobs"></div>
+    <p class="hint" style="margin-top:0.5rem">除外したい職業は notJobs</p>
+    <strong>除外 notJobs</strong>
+    <div class="checks" id="c-notJobs"></div>
+  </div>
+  <div class="card">
+    <strong>いるNPC npcs</strong>
+    <div class="checks" id="c-npcs"></div>
+    <strong style="display:block;margin-top:0.6rem">いないNPC noNpcs</strong>
+    <div class="checks" id="c-noNpcs"></div>
+  </div>
+  <div class="card">
+    <strong>種族 species</strong>
+    <div class="checks" id="c-species"></div>
+    <strong style="display:block;margin-top:0.6rem">出自 origin</strong>
+    <div class="checks" id="c-origin"></div>
+  </div>
+  <div class="grid grid-4" style="margin-top:0.5rem">
+    <label class="field"><span>health min</span><input id="c-healthMin" type="number" /></label>
+    <label class="field"><span>health max</span><input id="c-healthMax" type="number" /></label>
+    <label class="field"><span>ability min</span><input id="c-abilityMin" type="number" /></label>
+    <label class="field"><span>ability max</span><input id="c-abilityMax" type="number" /></label>
+    <label class="field"><span>reputation min</span><input id="c-reputationMin" type="number" /></label>
+    <label class="field"><span>reputation max</span><input id="c-reputationMax" type="number" /></label>
+    <label class="field"><span>money min</span><input id="c-moneyMin" type="number" /></label>
+    <label class="field"><span>money max</span><input id="c-moneyMax" type="number" /></label>
+  </div>
+
+  <h2>選択肢 choices</h2>
+  <div id="choices"></div>
+  <div class="row-actions">
+    <button type="button" id="btn-add-choice">選択肢を追加</button>
+  </div>
+
+  <h2>出力</h2>
+  <div class="row-actions">
+    <button type="button" class="primary" id="btn-generate">コードを生成</button>
+    <button type="button" id="btn-copy">コピー</button>
+    <span class="status" id="status"></span>
+  </div>
+  <label class="field">
+    <span>貼り付け用コード</span>
+    <textarea id="output" readonly spellcheck="false"></textarea>
+  </label>
+  <p class="hint">配列の途中に貼るときは、前後のイベントとのカンマに注意してください。最後の要素のあとに余分なカンマが付かないよう、出力はオブジェクト1件分です。</p>
+
+  <template id="tpl-choice">
+    <div class="card choice">
+      <div class="choice-head">
+        <strong>選択肢 <span class="choice-num"></span></strong>
+        <button type="button" class="danger btn-remove-choice">削除</button>
+      </div>
+      <label class="field"><span>text（必須）</span>
+        <input class="ch-text" type="text" placeholder="依頼を引き受ける" />
+      </label>
+      <div class="check-mode">
+        <label><input type="radio" class="ch-check-mode" name="" value="none" checked /> 判定なし</label>
+        <label><input type="radio" class="ch-check-mode" name="" value="stat" /> ステータス判定</label>
+        <label><input type="radio" class="ch-check-mode" name="" value="chance" /> 固定確率</label>
+      </div>
+      <div class="grid grid-3 ch-check-fields" hidden>
+        <label class="field ch-stat-only"><span>stat</span>
+          <select class="ch-stat">
+            <option value="ability">ability（能力）</option>
+            <option value="health">health（健康）</option>
+            <option value="reputation">reputation（評判）</option>
+            <option value="money">money（所持金）</option>
+          </select>
+        </label>
+        <label class="field ch-stat-only"><span>difficulty</span>
+          <input class="ch-difficulty" type="number" value="50" />
+        </label>
+        <label class="field ch-chance-only" hidden><span>chance（%）</span>
+          <input class="ch-chance" type="number" value="50" min="0" max="100" />
+        </label>
+      </div>
+
+      <div class="outcome ch-simple">
+        <h3>判定なしの結果</h3>
+        <div class="grid grid-2">
+          <label class="field"><span>result</span><input class="ch-result" type="text" /></label>
+          <label class="field"><span>effects（中身だけ。例: money: 50, health: -3）</span>
+            <input class="ch-effects" type="text" placeholder="money: 30, ability: 1" />
+          </label>
+          <label class="field"><span>log title</span><input class="ch-log-title" type="text" /></label>
+          <label class="field"><span>log text</span><input class="ch-log-text" type="text" /></label>
+        </div>
+        <details class="advanced">
+          <summary>よく使う effects 補助</summary>
+          <div class="grid grid-4" style="margin-top:0.5rem">
+            <label class="field"><span>health</span><input class="fx-health" type="text" placeholder="-5 や [-15,-5]" /></label>
+            <label class="field"><span>ability</span><input class="fx-ability" type="text" /></label>
+            <label class="field"><span>reputation</span><input class="fx-reputation" type="text" /></label>
+            <label class="field"><span>money</span><input class="fx-money" type="text" /></label>
+            <label class="field"><span>addFlags</span><input class="fx-addFlags" type="text" placeholder="cheat, debt_to_friend" /></label>
+            <label class="field"><span>removeFlags</span><input class="fx-removeFlags" type="text" /></label>
+            <label class="field"><span>job</span>
+              <select class="fx-job"><option value="">変更なし</option><option value="null">失業（null）</option></select>
+            </label>
+            <label class="field"><span>npc 役割</span>
+              <select class="fx-npc-role"><option value="">なし</option></select>
+            </label>
+            <label class="field"><span>npc trust</span><input class="fx-npc-trust" type="number" /></label>
+            <label class="field"><span>npc intimacy</span><input class="fx-npc-intimacy" type="number" /></label>
+            <label class="field"><span>npcState</span>
+              <select class="fx-npc-state">
+                <option value="">変更なし</option>
+                <option value="left">left（別れ）</option>
+                <option value="dead">dead</option>
+                <option value="missing">missing</option>
+                <option value="active">active</option>
+              </select>
+            </label>
+          </div>
+        </details>
+      </div>
+
+      <div class="outcome ch-success" hidden>
+        <h3>success</h3>
+        <div class="grid grid-2">
+          <label class="field"><span>result</span><input class="ok-result" type="text" /></label>
+          <label class="field"><span>effects</span><input class="ok-effects" type="text" placeholder="money: 50, reputation: 3" /></label>
+          <label class="field"><span>log title</span><input class="ok-log-title" type="text" /></label>
+          <label class="field"><span>log text</span><input class="ok-log-text" type="text" /></label>
+        </div>
+      </div>
+      <div class="outcome ch-failure" hidden>
+        <h3>failure</h3>
+        <div class="grid grid-2">
+          <label class="field"><span>result</span><input class="ng-result" type="text" /></label>
+          <label class="field"><span>effects</span><input class="ng-effects" type="text" placeholder="health: [-15, -5]" /></label>
+          <label class="field"><span>log title</span><input class="ng-log-title" type="text" /></label>
+          <label class="field"><span>log text</span><input class="ng-log-text" type="text" /></label>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    const JOBS = [
+      ["apprentice", "見習い"], ["laborer", "日雇い"], ["farmer", "農夫"],
+      ["craftsman", "職人"], ["master_craftsman", "名工"], ["merchant", "商人"],
+      ["cook", "料理人"], ["soldier", "兵士"], ["knight", "騎士"],
+      ["adventurer", "冒険者"], ["mage", "魔術師"], ["wizard", "上級魔術師"],
+      ["noble", "貴族"], ["slave", "奴隷"], ["miner", "鉱夫"],
+      ["prostitute", "娼婦"], ["mistress", "愛人"], ["retired", "隠居"],
+      ["gambler", "博打師"], ["none", "無職"],
+    ];
+    const NPCS = [
+      ["father", "父"], ["mother", "母"], ["friend", "友人"], ["lover", "恋人"],
+      ["spouse", "配偶者"], ["mentor", "師匠"], ["rival", "ライバル"],
+      ["child", "子"], ["grandchild", "孫"], ["pupil", "弟子"], ["sibling", "兄弟"],
+    ];
+    const SPECIES = [
+      ["human", "人間"], ["dwarf", "ドワーフ"], ["beastfolk", "獣人"],
+      ["elf", "エルフ"], ["lizardfolk", "竜人"],
+    ];
+    const ORIGINS = [
+      ["farmer", "農家"], ["craftsman", "職人"], ["merchant", "商人"], ["noble", "貴族"],
+    ];
+
+    function fillChecks(containerId, items, name) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = items.map(([id, label]) =>
+        `<label><input type="checkbox" name="${name}" value="${id}" /> ${label} <code>${id}</code></label>`
+      ).join("");
+    }
+    fillChecks("c-jobs", JOBS, "jobs");
+    fillChecks("c-notJobs", JOBS.filter(([id]) => id !== "none"), "notJobs");
+    fillChecks("c-npcs", NPCS, "npcs");
+    fillChecks("c-noNpcs", NPCS, "noNpcs");
+    fillChecks("c-species", SPECIES, "species");
+    fillChecks("c-origin", ORIGINS, "origin");
+
+    function checkedValues(name) {
+      return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map((i) => i.value);
+    }
+    function csv(str) {
+      return String(str || "").split(/[,、\s]+/).map((s) => s.trim()).filter(Boolean);
+    }
+    function numOrEmpty(id) {
+      const v = document.getElementById(id).value;
+      return v === "" ? null : Number(v);
+    }
+    function escapeStr(s) {
+      return String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n");
+    }
+    function quote(s) { return `"${escapeStr(s)}"`; }
+    function quoteList(arr) { return `[${arr.map(quote).join(", ")}]`; }
+
+    function parseEffectsBlob(text, helpers) {
+      const parts = [];
+      const raw = (text || "").trim();
+      if (raw) parts.push(raw.replace(/,\s*$/, ""));
+
+      if (helpers) {
+        const pushNum = (key, val) => {
+          if (val == null || val === "") return;
+          const t = String(val).trim();
+          if (/^-?\d+(\.\d+)?$/.test(t) || /^\[[^\]]+\]$/.test(t)) parts.push(`${key}: ${t}`);
+        };
+        pushNum("health", helpers.health);
+        pushNum("ability", helpers.ability);
+        pushNum("reputation", helpers.reputation);
+        pushNum("money", helpers.money);
+        if (helpers.addFlags && helpers.addFlags.length) {
+          parts.push(`addFlags: ${quoteList(helpers.addFlags)}`);
+        }
+        if (helpers.removeFlags && helpers.removeFlags.length) {
+          parts.push(`removeFlags: ${quoteList(helpers.removeFlags)}`);
+        }
+        if (helpers.job === "null") parts.push("job: null");
+        else if (helpers.job) parts.push(`job: ${quote(helpers.job)}`);
+        if (helpers.npcRole) {
+          const bits = [];
+          if (helpers.npcTrust != null && helpers.npcTrust !== "") bits.push(`trust: ${Number(helpers.npcTrust)}`);
+          if (helpers.npcIntimacy != null && helpers.npcIntimacy !== "") bits.push(`intimacy: ${Number(helpers.npcIntimacy)}`);
+          if (bits.length) parts.push(`npc: { ${helpers.npcRole}: { ${bits.join(", ")} } }`);
+          if (helpers.npcState) parts.push(`npcState: { ${helpers.npcRole}: ${quote(helpers.npcState)} }`);
+        }
+      }
+      if (!parts.length) return null;
+      return `{ ${parts.join(", ")} }`;
+    }
+
+    function buildLog(title, text) {
+      title = (title || "").trim();
+      text = (text || "").trim();
+      if (!title && !text) return null;
+      const bits = [];
+      if (title) bits.push(`title: ${quote(title)}`);
+      if (text) bits.push(`text: ${quote(text)}`);
+      return `{ ${bits.join(", ")} }`;
+    }
+
+    let choiceCount = 0;
+    function addChoice() {
+      const tpl = document.getElementById("tpl-choice");
+      const node = tpl.content.cloneNode(true);
+      const card = node.querySelector(".choice");
+      choiceCount += 1;
+      const name = `check-mode-${choiceCount}`;
+      card.querySelectorAll(".ch-check-mode").forEach((r) => { r.name = name; });
+      card.querySelector(".choice-num").textContent = choiceCount;
+
+      const jobSel = card.querySelector(".fx-job");
+      JOBS.filter(([id]) => id !== "none").forEach(([id, label]) => {
+        const opt = document.createElement("option");
+        opt.value = id;
+        opt.textContent = `${label} (${id})`;
+        jobSel.appendChild(opt);
+      });
+      const npcSel = card.querySelector(".fx-npc-role");
+      NPCS.forEach(([id, label]) => {
+        const opt = document.createElement("option");
+        opt.value = id;
+        opt.textContent = `${label} (${id})`;
+        npcSel.appendChild(opt);
+      });
+
+      const syncCheck = () => {
+        const mode = card.querySelector(".ch-check-mode:checked").value;
+        const fields = card.querySelector(".ch-check-fields");
+        const simple = card.querySelector(".ch-simple");
+        const ok = card.querySelector(".ch-success");
+        const ng = card.querySelector(".ch-failure");
+        const hasCheck = mode !== "none";
+        fields.hidden = !hasCheck;
+        card.querySelectorAll(".ch-stat-only").forEach((el) => { el.hidden = mode !== "stat"; });
+        card.querySelectorAll(".ch-chance-only").forEach((el) => { el.hidden = mode !== "chance"; });
+        simple.hidden = hasCheck;
+        ok.hidden = !hasCheck;
+        ng.hidden = !hasCheck;
+      };
+      card.querySelectorAll(".ch-check-mode").forEach((r) => r.addEventListener("change", syncCheck));
+      card.querySelector(".btn-remove-choice").addEventListener("click", () => {
+        card.remove();
+        renumberChoices();
+      });
+      document.getElementById("choices").appendChild(card);
+      syncCheck();
+    }
+    function renumberChoices() {
+      [...document.querySelectorAll(".choice")].forEach((c, i) => {
+        c.querySelector(".choice-num").textContent = i + 1;
+      });
+    }
+
+    function readHelpers(card, prefix) {
+      // only for simple (no-check) choice which has fx-* fields
+      if (prefix) return null;
+      return {
+        health: card.querySelector(".fx-health").value,
+        ability: card.querySelector(".fx-ability").value,
+        reputation: card.querySelector(".fx-reputation").value,
+        money: card.querySelector(".fx-money").value,
+        addFlags: csv(card.querySelector(".fx-addFlags").value),
+        removeFlags: csv(card.querySelector(".fx-removeFlags").value),
+        job: card.querySelector(".fx-job").value,
+        npcRole: card.querySelector(".fx-npc-role").value,
+        npcTrust: card.querySelector(".fx-npc-trust").value,
+        npcIntimacy: card.querySelector(".fx-npc-intimacy").value,
+        npcState: card.querySelector(".fx-npc-state").value,
+      };
+    }
+
+    function buildConditions() {
+      const lines = [];
+      const ageMin = numOrEmpty("c-ageMin");
+      const ageMax = numOrEmpty("c-ageMax");
+      const jobYearsMin = numOrEmpty("c-jobYearsMin");
+      if (ageMin != null) lines.push(`ageMin: ${ageMin}`);
+      if (ageMax != null) lines.push(`ageMax: ${ageMax}`);
+      if (jobYearsMin != null) lines.push(`jobYearsMin: ${jobYearsMin}`);
+
+      const boolSel = (id, key) => {
+        const v = document.getElementById(id).value;
+        if (v === "true") lines.push(`${key}: true`);
+        if (v === "false") lines.push(`${key}: false`);
+      };
+      boolSel("c-aged", "aged");
+      boolSel("c-hasJob", "hasJob");
+      boolSel("c-moneyUnlocked", "moneyUnlocked");
+
+      const jobs = checkedValues("jobs");
+      const notJobs = checkedValues("notJobs");
+      const npcs = checkedValues("npcs");
+      const noNpcs = checkedValues("noNpcs");
+      const species = checkedValues("species");
+      const origin = checkedValues("origin");
+      if (jobs.length) lines.push(`jobs: ${quoteList(jobs)}`);
+      if (notJobs.length) lines.push(`notJobs: ${quoteList(notJobs)}`);
+      if (npcs.length) lines.push(`npcs: ${quoteList(npcs)}`);
+      if (noNpcs.length) lines.push(`noNpcs: ${quoteList(noNpcs)}`);
+      if (species.length) lines.push(`species: ${quoteList(species)}`);
+      if (origin.length) lines.push(`origin: ${quoteList(origin)}`);
+
+      const flags = csv(document.getElementById("c-flags").value);
+      const notFlags = csv(document.getElementById("c-notFlags").value);
+      if (flags.length) lines.push(`flags: ${quoteList(flags)}`);
+      if (notFlags.length) lines.push(`notFlags: ${quoteList(notFlags)}`);
+
+      const stats = [];
+      const addStat = (key, minId, maxId) => {
+        const min = numOrEmpty(minId);
+        const max = numOrEmpty(maxId);
+        if (min == null && max == null) return;
+        const bits = [];
+        if (min != null) bits.push(`min: ${min}`);
+        if (max != null) bits.push(`max: ${max}`);
+        stats.push(`${key}: { ${bits.join(", ")} }`);
+      };
+      addStat("health", "c-healthMin", "c-healthMax");
+      addStat("ability", "c-abilityMin", "c-abilityMax");
+      addStat("reputation", "c-reputationMin", "c-reputationMax");
+      addStat("money", "c-moneyMin", "c-moneyMax");
+      if (stats.length) lines.push(`stats: { ${stats.join(", ")} }`);
+
+      return lines;
+    }
+
+    function indent(n) { return "  ".repeat(n); }
+
+    function buildChoice(card, depth) {
+      const lines = [];
+      const text = card.querySelector(".ch-text").value.trim();
+      if (!text) return null;
+      lines.push(`${indent(depth)}{`);
+      lines.push(`${indent(depth + 1)}text: ${quote(text)},`);
+
+      const mode = card.querySelector(".ch-check-mode:checked").value;
+      if (mode === "stat") {
+        const stat = card.querySelector(".ch-stat").value;
+        const diff = Number(card.querySelector(".ch-difficulty").value);
+        lines.push(`${indent(depth + 1)}check: { stat: ${quote(stat)}, difficulty: ${diff} },`);
+        lines.push(...buildOutcome(card, "ok", "success", depth + 1));
+        lines.push(...buildOutcome(card, "ng", "failure", depth + 1));
+      } else if (mode === "chance") {
+        const chance = Number(card.querySelector(".ch-chance").value);
+        lines.push(`${indent(depth + 1)}check: { chance: ${chance} },`);
+        lines.push(...buildOutcome(card, "ok", "success", depth + 1));
+        lines.push(...buildOutcome(card, "ng", "failure", depth + 1));
+      } else {
+        const result = card.querySelector(".ch-result").value.trim();
+        const effects = parseEffectsBlob(card.querySelector(".ch-effects").value, readHelpers(card));
+        const log = buildLog(card.querySelector(".ch-log-title").value, card.querySelector(".ch-log-text").value);
+        if (result) lines.push(`${indent(depth + 1)}result: ${quote(result)},`);
+        if (effects) lines.push(`${indent(depth + 1)}effects: ${effects},`);
+        if (log) lines.push(`${indent(depth + 1)}log: ${log},`);
+      }
+
+      // trailing comma cleanup on last property is fine in modern JS; keep simple
+      let block = lines.join("\n");
+      block = block.replace(/,\n$/, "\n");
+      return `${block}\n${indent(depth)}}`;
+    }
+
+    function buildOutcome(card, prefix, key, depth) {
+      const result = card.querySelector(`.${prefix}-result`).value.trim();
+      const effects = parseEffectsBlob(card.querySelector(`.${prefix}-effects`).value, null);
+      const log = buildLog(card.querySelector(`.${prefix}-log-title`).value, card.querySelector(`.${prefix}-log-text`).value);
+      const inner = [];
+      if (result) inner.push(`${indent(depth + 1)}result: ${quote(result)},`);
+      if (effects) inner.push(`${indent(depth + 1)}effects: ${effects},`);
+      if (log) inner.push(`${indent(depth + 1)}log: ${log},`);
+      if (!inner.length) {
+        return [`${indent(depth)}${key}: {},`];
+      }
+      let body = inner.join("\n").replace(/,\n$/, "\n");
+      return [
+        `${indent(depth)}${key}: {`,
+        body,
+        `${indent(depth)}},`,
+      ];
+    }
+
+    function generate() {
+      const id = document.getElementById("ev-id").value.trim();
+      const text = document.getElementById("ev-text").value.trim();
+      const status = document.getElementById("status");
+      if (!id) { status.textContent = "id を入力してください"; return; }
+      if (!text) { status.textContent = "本文 text を入力してください"; return; }
+
+      const lines = [];
+      lines.push("{");
+      lines.push(`  id: ${quote(id)},`);
+
+      const tags = csv(document.getElementById("ev-tags").value);
+      if (tags.length) lines.push(`  tags: ${quoteList(tags)},`);
+
+      const weight = document.getElementById("ev-weight").value;
+      if (weight !== "") lines.push(`  weight: ${Number(weight)},`);
+
+      const repeat = document.getElementById("ev-repeat").value;
+      if (repeat) {
+        lines.push("  repeatable: true,");
+        if (repeat === "repeat-logonce") lines.push("  logOnce: true,");
+      }
+      const cooldown = document.getElementById("ev-cooldown").value;
+      if (cooldown !== "") lines.push(`  cooldown: ${Number(cooldown)},`);
+      const maxTimes = document.getElementById("ev-maxtimes").value;
+      if (maxTimes !== "") lines.push(`  maxTimes: ${Number(maxTimes)},`);
+
+      const cond = buildConditions();
+      if (cond.length) {
+        lines.push("  conditions: {");
+        cond.forEach((c, i) => {
+          lines.push(`    ${c}${i < cond.length - 1 ? "," : ""}`);
+        });
+        lines.push("  },");
+      }
+
+      lines.push(`  text: ${quote(text)},`);
+
+      const choiceCards = [...document.querySelectorAll(".choice")];
+      const choiceBlocks = choiceCards.map((c) => buildChoice(c, 2)).filter(Boolean);
+      if (!choiceBlocks.length) {
+        status.textContent = "選択肢を1つ以上入力してください（text 必須）";
+        return;
+      }
+      lines.push("  choices: [");
+      choiceBlocks.forEach((block, i) => {
+        lines.push(block + (i < choiceBlocks.length - 1 ? "," : ""));
+      });
+      lines.push("  ],");
+      lines.push("},");
+
+      // tidy trailing commas inside objects is ok for this project's JS
+      document.getElementById("output").value = lines.join("\n");
+      status.textContent = "生成しました。コピーして JS に貼り付けてください";
+    }
+
+    document.getElementById("btn-add-choice").addEventListener("click", addChoice);
+    document.getElementById("btn-generate").addEventListener("click", generate);
+    document.getElementById("btn-copy").addEventListener("click", async () => {
+      const out = document.getElementById("output");
+      if (!out.value) { generate(); }
+      try {
+        await navigator.clipboard.writeText(out.value);
+        document.getElementById("status").textContent = "コピーしました";
+      } catch {
+        out.select();
+        document.getElementById("status").textContent = "テキストを選択したので Ctrl+C でコピーしてください";
+      }
+    });
+
+    // 初期：選択肢2つ
+    addChoice();
+    addChoice();
+    document.querySelector(".ch-text").value = "引き受ける";
+    document.querySelectorAll(".choice")[1].querySelector(".ch-text").value = "見送る";
+  </script>
+</body>
+</html>
