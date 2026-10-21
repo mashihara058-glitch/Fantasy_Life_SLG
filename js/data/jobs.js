@@ -12,6 +12,7 @@ GAME.data.jobs = {
   master_craftsman: { name: "名工", income: 75 },
   merchant: { name: "商人", income: [30, 80] },
   cook: { name: "料理人", income: [20, 70] },
+  medic: { name: "薬師", income: [20, 70] },
   soldier: { name: "兵士", income: 50 },
   knight: { name: "騎士", income: 70 },
   adventurer: { name: "冒険者", income: [0, 80] },
