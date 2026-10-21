@@ -188,7 +188,7 @@ GAME.registerEvents([
       {
         text: "昇給を願い出る",
         check: { stat: "reputation", difficulty: 45 },
-        success: { result: "日頃の働きぶりが認められた。", effects: { incomeBonus: 10 } },
+        success: { result: "日頃の働きぶりが認められた。しかし、報酬に見合うだけの責任をも求められた。", effects: { incomeBonus: 10,ability:-15 } },
         failure: { result: "「生意気を言うな」と一蹴された。", effects: { reputation: -3 } },
       },
       { text: "腕を磨く", effects: { ability: 3 } },
@@ -486,4 +486,31 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+  id: "common_young_017",
+  tags: ["young", "friend", "prime", "elder"],
+  weight: 10,
+  repeatable: true,
+  conditions: {
+    ageMin: 20,
+    npcs: ["friend"]
+  },
+  text: "{友人｝が訪ねてきた。",
+  choices: [
+    {
+      text: "旧交を温める",
+      result: "お互い会えなかった期間の話をした。",
+      effects: { health:5 },
+    },
+    {
+      text: "ごちそうをふるまい歓待する",
+      result: "上等なワインを開け、一晩中語り合った。",
+      effects: { money:-5,health:10 },
+    },
+    {
+      text: "帰ってもらう",
+      result: "とても忙しいので、{友人}との時間を持てなかった。",
+    }
+  ],
+},
 ]);

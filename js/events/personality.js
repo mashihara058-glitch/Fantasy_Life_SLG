@@ -112,7 +112,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 55 },
         success: {
           result: "合格者の名簿に、{名前}の名があった。",
-          effects: { reputation: 15, incomeBonus: 40, addFlags: ["royal_official"] },
+          effects: { reputation: 15, incomeBonus: 40, ability: -25, addFlags: ["royal_official"] },
           log: { title: "王都の登用試験に合格する", text: "身分の壁を越え、王国の官吏に取り立てられた。" },
         },
         failure: {

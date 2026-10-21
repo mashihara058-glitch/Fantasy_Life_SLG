@@ -17,7 +17,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 60 },
         success: {
           result: "審査員たちは、しばし言葉を失った。",
-          effects: { job: "master_craftsman", keepIncomeBonus: true, reputation: 10 },
+          effects: { job: "master_craftsman", keepIncomeBonus: true, reputation: 10,ability:-30 },
           log: { title: "名工の称号を得る", text: "ギルドの審査を通り、名工として認められた。" },
         },
         failure: {
@@ -31,7 +31,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 50 },
         success: {
           result: "{師匠}は黙って筆を取った。その推薦状が、審査員たちを頷かせた。",
-          effects: { job: "master_craftsman", keepIncomeBonus: true, reputation: 8, npc: { mentor: { trust: 10 } } },
+          effects: { job: "master_craftsman", keepIncomeBonus: true, reputation: 8, ability:-30 ,npc: { mentor: { trust: 10 } } },
           log: { title: "名工の称号を得る", text: "{師匠}の推薦を受け、名工として認められた。" },
         },
         failure: {
@@ -59,7 +59,7 @@ GAME.registerEvents([
         conditions: { flags: ["war_hero"] },
         text: "戦場での武勲を携えて、叙任の儀に臨む",
         result: "王の剣が、{名前}の肩に触れた。",
-        effects: { job: "knight", keepIncomeBonus: true, reputation: 15 },
+        effects: { job: "knight", keepIncomeBonus: true, reputation: 15 ,ability:-30 },
         log: { title: "騎士に叙任される", text: "戦場での武勲を認められ、騎士の列に加わった。" },
       },
       {
@@ -67,7 +67,7 @@ GAME.registerEvents([
         check: { stat: "reputation", difficulty: 50 },
         success: {
           result: "王の剣が、{名前}の肩に触れた。",
-          effects: { job: "knight", keepIncomeBonus: true, reputation: 10 },
+          effects: { job: "knight", keepIncomeBonus: true, reputation: 10 ,ability:-30 },
           log: { title: "騎士に叙任される", text: "長年の忠勤を認められ、騎士の列に加わった。" },
         },
         failure: {
@@ -97,7 +97,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 65 },
         success: {
           result: "長老たちは論文を回し読みし、やがて静かに頷いた。",
-          effects: { job: "wizard", keepIncomeBonus: true, reputation: 10 },
+          effects: { job: "wizard", keepIncomeBonus: true, reputation: 10 ,ability:-30 },
           log: { title: "上級魔術師に認定される", text: "長年の研究が実を結び、上級魔術師の位を得た。" },
         },
         failure: {
@@ -110,7 +110,7 @@ GAME.registerEvents([
         check: { chance: 50 },
         success: {
           result: "禁じられた術式が、{名前}の手の中で完璧に組み上がった。",
-          effects: { job: "wizard", keepIncomeBonus: true, ability: 10, addFlags: ["forbidden_knowledge"] },
+          effects: { job: "wizard", keepIncomeBonus: true, ability: -20, addFlags: ["forbidden_knowledge"] },
           log: { title: "禁断の知識で上級魔術師に上り詰める", text: "禁書庫の術式を修め、長老たちを黙らせた。" },
         },
         failure: {

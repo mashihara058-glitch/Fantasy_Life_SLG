@@ -142,4 +142,193 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+  id: "adventurer_006",
+  tags: ["young", "work", "adventure"],
+  weight: 10,
+  repeatable: true,
+  logOnce: true,
+  conditions: {
+    ageMin: 18,
+    hasJob: true,
+    jobs: ["adventurer"]
+  },
+  text: "古い遺跡の入口を調べる依頼を受けた。",
+  choices: [
+    {
+      text: "奥まで進む",
+      check: { stat: "ability", difficulty: 50 },
+      success: {
+        result: "財宝を発見した。発見物は提出を求められたが、いくらかの報奨金を受け取った。",
+        effects: { money: 10,reputation:2 },
+      },
+      failure: {
+        result: "罠にかかって負傷してしまった。",
+        effects: { health:-2 },
+      },
+    },
+    {
+      text: "入口付近だけ調べる",
+      result: "安全に配慮して必要十分に調査した。",
+      effects: { ability:1 },
+    },
+    {
+      text: "仲間を募る",
+      result: "報酬を出して仲間を募った。依頼はもちろん、人脈を作ることにも成功した。",
+      effects: { ability: 1, reputation: 1, money: -5 },
+    }
+  ],
+},
+{
+  id: "adventurer_007",
+  tags: ["young", "work", "adventure"],
+  weight: 10,
+  repeatable: true,
+  conditions: {
+    ageMin: 18,
+    hasJob: true,
+    jobs: ["adventurer"]
+  },
+  text: "魔物との戦闘で、愛用の武器や防具が壊れかけている。",
+  choices: [
+    {
+      text: "修理する",
+      result: "かなりの出費になったが、安全性は確保された。",
+      effects: { ability: 2, money: -15 },
+    },
+    {
+      text: "新調する",
+      result: "大変な出費になった。しかし、良品に巡り合えた。",
+      effects: { ability:3,money:-30 },
+    },
+    {
+      text: "そのまま使う",
+      result: "次の仕事で装備を破損、負傷してしまった。",
+      effects: { health: -5, ability: -3, money: -2 },
+    }
+  ],
+},
+{
+  id: "adventurer_008",
+  tags: ["young", "work", "adventure"],
+  weight: 10,
+  repeatable: true,
+  conditions: {
+    ageMin: 18,
+    hasJob: true,
+    jobs: ["adventurer"]
+  },
+  text: "ダンジョンで宝箱を発見したが、仕掛けがあるようだ。",
+  choices: [
+    {
+      text: "罠を解除する",
+      check: { stat: "ability", difficulty: 50 },
+      success: {
+        result: "財宝を発見した。発見物は提出を求められたが、いくらかの報奨金を受け取った。",
+        effects: { money: 10,reputation:2 },
+      },
+      failure: {
+        result: "罠にかかって負傷してしまった。",
+        effects: { health:-2 },
+      },
+    },
+    {
+      text: "力づくで開ける",
+      check: { stat: "ability", difficulty: 50 },
+      success: {
+        result: "財宝を発見した。発見物は提出を求められたが、いくらかの報奨金を受け取った。",
+        effects: { money: 10,reputation:2 },
+      },
+      failure: {
+        result: "罠にかかって負傷してしまった。",
+        effects: { health:-5 },
+      },
+    },
+    {
+      text: "あきらめる",
+    }
+  ],
+},
+{
+  id: "adventurer_009",
+  tags: ["young", "work", "adventure"],
+  weight: 10,
+  repeatable: true,
+  conditions: {
+    ageMin: 18,
+    hasJob: true,
+    jobs: ["adventurer"]
+  },
+  text: "洞窟の奥で巨大蜘蛛の巣に行く手を阻まれた。",
+  choices: [
+    {
+      text: "戦う",
+      check: { stat: "ability", difficulty: 50 },
+      success: {
+        result: "魔物を撃破し、素材を持ち帰った。",
+        effects: { money: 10,reputation:2 },
+      },
+      failure: {
+        result: "負傷してしまった。",
+        effects: { health:-2 },
+      },
+    },
+    {
+      text: "巣を焼く",
+      check: { stat: "ability", difficulty: 50 },
+      success: {
+        result: "安全に魔物を撃破した。",
+        effects: { ability:2,reputation:2 },
+      },
+      failure: {
+        result: "火災によって負傷してしまった。",
+        effects: { health:-5 },
+      },
+    },
+    {
+      text: "戦闘を回避する",
+    }
+  ],
+},
+{
+  id: "adventurer_010",
+  tags: ["young", "work", "adventure"],
+  weight: 10,
+  repeatable: true,
+  conditions: {
+    ageMin: 18,
+    hasJob: true,
+    jobs: ["adventurer"]
+  },
+  text: "古い墓所で、動く骸骨たちに遭遇した。",
+  choices: [
+    {
+      text: "戦う",
+      check: { stat: "ability", difficulty: 50 },
+      success: {
+        result: "魔物を撃破し、素材を持ち帰った。",
+        effects: { money: 10,reputation:2 },
+      },
+      failure: {
+        result: "負傷してしまった。",
+        effects: { health:-2 },
+      },
+    },
+    {
+      text: "聖職者に助力を頼む",
+      check: { stat: "reputation", difficulty: 50 },
+      success: {
+        result: "安全に魔物を撃破した。",
+        effects: { ability:2,reputation:2 },
+      },
+      failure: {
+        result: "思ったよりも費用が掛かってしまった。",
+        effects: { money:-5 },
+      },
+    },
+    {
+      text: "戦闘を回避する",
+    }
+  ],
+},
 ]);

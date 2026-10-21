@@ -48,7 +48,7 @@ GAME.registerEvents([
     choices: [
       {
         text: "謹んで引き受ける",
-        effects: { reputation: 10, incomeBonus: 40, health: -3, addFlags: ["promoted"] },
+        effects: { reputation: 10, incomeBonus: 40, health: -3, ability: -25, addFlags: ["promoted"] },
         log: { title: "{職業}として昇進する", text: "重責を担う立場となった。" },
       },
       {

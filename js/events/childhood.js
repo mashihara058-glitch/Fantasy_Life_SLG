@@ -146,4 +146,44 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+  id: "common_childhhod_008",
+  tags: ["childfood"],
+  weight: 5,
+  weightMods: [{ conditions: { flags: ["elf"] }, multiply: 1.5 }],
+  conditions: {
+    ageMax: 16
+  },
+  text: "深夜、納屋から火が出た。",
+  choices: [
+    {
+      text: "逃げ出す",
+      check: { chance: 50 },
+      success: {
+        result: "火は村中に延焼したが、どうにか生き延びることができた。",
+        effects: { health:-5 },
+        log: { title: "深夜の大惨事", text: "村が炎上した。" },
+      },
+      failure: {
+        result: "火事は盗賊の放火のせいだった。焼け出されたところ、捕らえられてしまった。",
+        effects: { job:slave },
+        log: { title: "深夜の襲撃者", text: "人さらいにさらわれた。" },
+      },
+    },
+    {
+      text: "消火する",
+      check: { chance: 50 },
+      success: {
+        result: "酷いけがを負ったが、火を食い止めることができた。",
+        effects: { health:-10 },
+        log: { title: "深夜の惨事", text: "納屋で火事が起こった。" },
+      },
+      failure: {
+        result: "住人が火事に気を取られている間、盗賊が何人かをさらっていった。被害者の中には{友人}もいた。",
+        effects: { health: -15, loseNpc: { role: "friend", status: "missing" }, addFlags: ["enemy_bandits"] },
+        log: { title: "深夜の襲撃者", text: "{友人}がさらわれた。" },
+      },
+    }
+  ],
+},
 ]);
