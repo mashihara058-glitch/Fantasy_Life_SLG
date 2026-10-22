@@ -29,7 +29,7 @@ GAME.registerEvents([
     tags: ["young", "work", "mentor"],
     conditions: { ageMin: 18, ageMax: 30, jobs: ["apprentice"] },
     weight: 40,
-    text: "長い修行の日々が実を結び、一人前と認められる日が来た。",
+    text: "長い修行の日々が実を結び、一人前と認められる日が来た。この先、どの道を歩むか。",
     choices: [
       {
         conditions: { npcs: ["mentor"] },
@@ -46,10 +46,39 @@ GAME.registerEvents([
           log: { title: "独立して工房を構える", text: "自分の名を冠した工房を開いた。" },
         },
         failure: {
-          result: "客はつかず、工房はすぐに畳むことになった。",
+          result: "客はつかず、工房はすぐに畳むことになった。雇われ職人として働き始める。",
           effects: { job: "craftsman", money: -50 },
           log: { title: "独立に失敗し、雇われ職人になる", text: "工房を畳み、他人の工房で働くことになった。" },
         },
+      },
+      {
+        conditions: { origin: ["farmer"] },
+        text: "修行で得た腕を活かしつつ、家業の農家へ戻る",
+        effects: { job: "farmer", reputation: 2 },
+        log: { title: "修行を終え、農家へ戻る", text: "年季明けを機に、故郷の畑へ戻った。" },
+      },
+      {
+        text: "職人の道を離れ、兵士に志願する",
+        check: { stat: "health", difficulty: 45 },
+        success: {
+          result: "鍛えた体を見込まれ、王国軍に採用された。",
+          effects: { job: "soldier" },
+          log: { title: "修行のあと兵士になる", text: "職人の道を降り、槍を取った。" },
+        },
+        failure: {
+          result: "体力が足りないと追い返された。とりあえず日雇いで食いつなぐ。",
+          effects: { job: "laborer", reputation: -1 },
+        },
+      },
+      {
+        text: "冒険者ギルドに登録する",
+        effects: { job: "adventurer", ability: 1 },
+        log: { title: "修行のあと冒険者になる", text: "工房を出て、危険と隣り合わせの道を選んだ。" },
+      },
+      {
+        text: "日雇いの仕事で食いつなぐ",
+        effects: { job: "laborer" },
+        log: { title: "修行のあと日雇いになる", text: "職人にはならず、その日暮らしを選んだ。" },
       },
     ],
   },
@@ -230,6 +259,12 @@ GAME.registerEvents([
         text: "美食を追求する",
         effects: { job: "cook" },
         log: { title: "料理人になる", text: "まだ見ぬ味を追い求めて、食材と格闘することに決めた。" },
+      },
+      {
+        conditions: { origin: ["farmer"], notJobs: ["farmer"] },
+        text: "家業の農家に戻る",
+        effects: { job: "farmer", reputation: 1 },
+        log: { title: "家業の農家に戻る", text: "出自の畑仕事へ、足を向け直した。" },
       },
       {
         conditions: { hasJob: true },
