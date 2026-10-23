@@ -176,4 +176,157 @@ GAME.registerEvents([
       },
     ],
   },
+  // ---------- 夫婦 ----------
+  {
+    id: "common_family_spouse01",
+    tags: ["young", "prime", "elder", "family"],
+    weight: 10,
+    repeatable: true,
+    cooldown: 4,
+    conditions: { ageMin: 18, npcs: ["spouse"], flags: ["married"] },
+    text: "最近{配偶者}との時間を持てていない。",
+    choices: [
+      {
+        text: "ゆっくり話をする",
+        result: "{配偶者}は、{名前}の苦労をねぎらってくれた。",
+        effects: { health: 5, npc: { spouse: { intimacy: 5 } } },
+      },
+      {
+        text: "気にしない",
+        effects: { npc: { spouse: { intimacy: -5 } } },
+      },
+    ],
+  },
+  {
+    id: "common_family_spouse02",
+    tags: ["young", "prime", "elder", "family"],
+    weight: 10,
+    repeatable: true,
+    cooldown: 4,
+    conditions: { ageMin: 18, npcs: ["spouse"], flags: ["married"] },
+    text: "{配偶者}がお茶を淹れて、話したそうにしている。",
+    choices: [
+      {
+        text: "ゆっくり話をする",
+        result: "{配偶者}との絆が深まった気がする。",
+        effects: { health: 5, npc: { spouse: { trust: 5 } } },
+      },
+      {
+        text: "忙しいと断る",
+        effects: { npc: { spouse: { trust: -5 } } },
+      },
+    ],
+  },
+  {
+    id: "common_family_spouse03",
+    tags: ["prime", "elder", "family"],
+    weight: 10,
+    repeatable: true,
+    cooldown: 6,
+    conditions: {
+      ageMin: 30,
+      npcs: ["spouse"],
+      flags: ["married"],
+      // 配偶者の信頼か親密度が20以下のときだけ（専用キーはないので custom で書く）
+      custom: (s) => {
+        const sp = s.npcs.find((n) => n.role === "spouse" && n.status === "active");
+        return !!sp && (sp.trust <= 20 || sp.intimacy <= 20);
+      },
+    },
+    text: "{配偶者}が「もう{名前}には付き合いきれない」と言い出した。",
+    choices: [
+      {
+        text: "拒否する",
+        check: { chance: 50 },
+        success: {
+          result: "離婚はありえないと断言した。なんとか{配偶者}を説得できた。",
+          effects: { health: -3, npc: { spouse: { trust: 3 } } },
+        },
+        failure: {
+          result: "{配偶者}の意志は固かった。何を言っても受け入れられなかった。",
+          effects: {
+            npcState: { spouse: "left" },
+            removeFlags: ["married"],
+            health: -3,
+            moneyRate: -0.5,
+          },
+          log: { title: "{配偶者}と離婚する", text: "家庭を顧みなかったつけが回った。" },
+        },
+      },
+      {
+        text: "なぜそう思うのか尋ねる",
+        check: { stat: "reputation", difficulty: 50 },
+        success: {
+          result: "{配偶者}とひざを突き合わせて話した。些細なすれ違いが積もっていたと分かった。話し合ったことで、絆は前より強まった。",
+          effects: { health: 5, npc: { spouse: { trust: 8, intimacy: 8 } } },
+          log: { title: "{配偶者}との離婚を回避する", text: "話し合いで関係を立て直した。" },
+        },
+        failure: {
+          result: "話し合いを試みたが、口論になってしまった。",
+          effects: { health: -5, npc: { spouse: { trust: -5, intimacy: -5 } } },
+        },
+      },
+      {
+        text: "受け入れる",
+        result: "{配偶者}との別れを受け入れた。",
+        effects: {
+          npcState: { spouse: "left" },
+          removeFlags: ["married"],
+          health: -3,
+          moneyRate: -0.5,
+        },
+        log: { title: "{配偶者}と離婚する", text: "家庭を顧みなかったつけが回った。" },
+      },
+    ],
+  },
+  {
+  id: "common_family_spouse04",
+  tags: ["family", "prime", "elder", "young"],
+  weight: 5,
+  repeatable: true,
+  cooldown: 5,
+  conditions: {
+    npcs: ["spouse"],
+    stats: { health: { max: 35 } }
+  },
+  text: "{配偶者}が、最近疲れている{名前}を見かねて、滋養強壮に効く薬を買ってきてくれた。",
+  choices: [
+    {
+      text: "感謝して飲む",
+      result: "{配偶者}との絆が深まった気がする。",
+      effects: { npc:{spouse: { trust: 5 ,intimacy: 5}},health:5 },
+    },
+    {
+      text: "必要ないと断る",
+      result: "{配偶者}は悲しそうな顔をした。",
+      effects: { npc:{spouse: { trust: -5,intimacy:-5 } }},
+    }
+  ],
+},
+{
+  id: "common_family_child01",
+  tags: ["family", "prime", "elder"],
+  weight: 5,
+  repeatable: true,
+  cooldown: 5,
+  conditions: {
+    hasJob: true,
+    notJobs: ["apprentice", "gambler"],
+    npcs: ["spouse", "child"],
+    stats: { health: { max: 35 } }
+  },
+  text: "{子}は最近悩みがあるらしい。人生の先輩である{名前}に助言を求めてきた。",
+  choices: [
+    {
+      text: "ゆっくり話を聞く",
+      result: "ワインを酌み交わし、{子}と語り合った。若い者との対話では気づきを得られた。",
+      effects: { npc:{child: { trust: 5 ,intimacy: 5}},ability:5 },
+    },
+    {
+      text: "必要ないと断る",
+      result: "{子}の頼みを断った。{配偶者}は心配そうに二人を見ていた。",
+      effects: { npc:{child: { trust: -5,intimacy:-5 }, spouse: { trust: -1,intimacy:-1 }} },
+    }
+  ],
+},
 ]);
