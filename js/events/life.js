@@ -220,7 +220,7 @@ GAME.registerEvents([
   // ---------- 借金・奴隷 ----------
   {
     id: "common_life_debt",
-    tags: ["money", "slave"],
+    tags: ["money", "slave", "housing"],
     conditions: { ageMin: 16, ageMax: 65, moneyUnlocked: true, stats: { money: { max: -50 } }, notFlags: ["slave"] },
     weight: 30,
     repeatable: true,
@@ -228,28 +228,61 @@ GAME.registerEvents([
     text: "借金取りが、ついに戸を叩いた。返済の期限はとうに過ぎている。",
     choices: [
       {
+        conditions: { housing: ["house"] },
+        text: "一軒家を借金のかたに渡す",
+        result: "鍵を渡した。屋根は失ったが、帳面の赤い数字はいったん消えた。また間借り暮らしだ。",
+        effects: { housing: "none", setStats: { money: 0 }, reputation: -5 },
+        log: { title: "家を借金のかたに渡す", text: "一軒家を手放し、借金を清算した。" },
+      },
+      {
+        conditions: { housing: ["mansion"] },
+        text: "豪邸を借金のかたに渡し、一軒家へ移る",
+        result: "門と広間は債権者のものになった。残ったのは、昔なじみの規模の家だけだ。",
+        effects: { housing: "house", setStats: { money: 0 }, reputation: -3 },
+        log: { title: "豪邸を手放す", text: "豪邸をかたに出し、一軒家へ戻った。" },
+      },
+      {
+        conditions: { housing: ["mansion"] },
+        text: "豪邸ごとすべて差し出し、無一文の間借りに戻る",
+        result: "屋敷も家具も持っていかれた。借金は消えたが、手元には袋ひとつ残っていない。",
+        effects: { housing: "none", setStats: { money: 0 }, reputation: -8, health: -3 },
+        log: { title: "豪邸をすべて失う", text: "借金のかたに豪邸を渡し、間借りへ落ちた。" },
+      },
+      {
         text: "夜逃げする",
         check: { stat: "ability", difficulty: 45 },
         success: {
-          result: "闇に紛れて町を出た。借金は消えないが、ひとまず追っ手は撒いた。",
+          result: "闇に紛れて町を出た。借金は消えないが、ひとまず追っ手は撒いた。家があれば、それも追っ手の目に残る。",
           effects: { reputation: -10, addFlags: ["fugitive"] },
         },
         failure: {
-          result: "町の門で捕まった。借金のかたに、奴隷商人へ売り渡された。",
-          effects: { job: "slave", addFlags: ["slave"], setStats: { money: 0 }, reputation: -20 },
-          log: { title: "借金のかたに奴隷として売られる", text: "夜逃げに失敗し、自由を失った。" },
+          result: "町の門で捕まった。借金のかたに、奴隷商人へ売り渡された。住まいの権利など、もう残らない。",
+          effects: {
+            job: "slave",
+            addFlags: ["slave"],
+            housing: "none",
+            setStats: { money: 0 },
+            reputation: -20,
+          },
+          log: { title: "借金のかたに奴隷として売られる", text: "夜逃げに失敗し、自由も住まいも失った。" },
         },
       },
       {
         text: "自らの身で借金を返す",
-        result: "{名前}の首に、奴隷の鉄輪がはめられた。",
-        effects: { job: "slave", addFlags: ["slave"], setStats: { money: 0 }, reputation: -15 },
-        log: { title: "借金のかたに奴隷として売られる", text: "返しきれない借金のために、自由を差し出した。" },
+        result: "{名前}の首に、奴隷の鉄輪がはめられた。家があれば、それも債権者のものだ。",
+        effects: {
+          job: "slave",
+          addFlags: ["slave"],
+          housing: "none",
+          setStats: { money: 0 },
+          reputation: -15,
+        },
+        log: { title: "借金のかたに奴隷として売られる", text: "自由と住まいを差し出し、借金を終えた。" },
       },
       {
         conditions: { npcs: ["friend"], flags: ["helped_friend"] },
         text: "{友人}に助けを求める",
-        result: "{友人}は何も聞かずに借金を肩代わりしてくれた。",
+        result: "{友人}は何も聞かずに借金を肩代わりしてくれた。家までは取り上げられなかった。",
         effects: { setStats: { money: 0 }, npc: { friend: { trust: -5, intimacy: 5 } } },
         log: { title: "{友人}に借金を肩代わりしてもらう", text: "かつて助けた友に、今度は救われた。" },
       },

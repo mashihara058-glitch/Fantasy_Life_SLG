@@ -34,12 +34,12 @@ GAME.Engine = (function () {
   const CONDITION_KEYS = [
     "ageMin", "ageMax", "species", "origin", "gender", "traitsAny", "notTraits", "flags", "notFlags",
     "stats", "hasJob", "jobs", "notJobs", "jobYearsMin", "npcs", "noNpcs", "missingNpcs", "npcAgeMin", "npcAgeMax",
-    "moneyUnlocked", "lifespanReached", "aged", "custom",
+    "moneyUnlocked", "lifespanReached", "aged", "housing", "custom",
   ];
   const EFFECT_KEYS = [
     "health", "ability", "reputation", "money", "moneyRate", "setStats", "addFlags", "removeFlags",
     "addNpc", "npc", "npcRole", "npcState", "loseNpc", "addTraits", "removeTraits", "job", "keepIncomeBonus",
-    "incomeBonus", "unlockMoney", "death",
+    "incomeBonus", "unlockMoney", "housing", "death",
   ];
   const EVENT_KEYS = [
     "id", "tags", "conditions", "weight", "weightMods", "repeatable", "cooldown", "maxTimes",
@@ -69,6 +69,25 @@ GAME.Engine = (function () {
   function jobName(state) {
     if (!state.job) return "無職";
     return data.jobs[state.job] ? data.jobs[state.job].name : state.job;
+  }
+
+  function housingId(state) {
+    const id = state.housing || "none";
+    return data.housing && data.housing[id] ? id : "none";
+  }
+
+  function housingName(state) {
+    const h = data.housing && data.housing[housingId(state)];
+    return h ? h.name : "間借り";
+  }
+
+  // 職業の基本生活費 ＋ 住居の上乗せ
+  function yearlyLivingCost(state) {
+    const job = state.job ? data.jobs[state.job] : null;
+    const base = job && job.livingCost != null ? job.livingCost : data.livingCost;
+    const house = data.housing && data.housing[housingId(state)];
+    const extra = house && house.livingCost != null ? house.livingCost : 0;
+    return base + extra;
   }
 
   function agingStartAge(state) {
@@ -201,6 +220,7 @@ GAME.Engine = (function () {
       moneyUnlocked: false,
       job: null,
       incomeBonus: 0,
+      housing: "none",
       jobHistory: [],
       flags: changeling ? cl.flags.slice() : [],
       eventHistory: {},
@@ -276,6 +296,7 @@ GAME.Engine = (function () {
     if (c.moneyUnlocked != null && state.moneyUnlocked !== c.moneyUnlocked) return false;
     if (c.lifespanReached != null && state.age >= state.lifespan !== c.lifespanReached) return false;
     if (c.aged != null && isAged(state) !== c.aged) return false;
+    if (c.housing && !c.housing.includes(state.housing || "none")) return false;
     if (c.custom && !c.custom(state)) return false;
     return true;
   }
@@ -566,6 +587,13 @@ GAME.Engine = (function () {
       changes.push(`年収 ${signed(eff.incomeBonus)}`);
     }
     if (eff.unlockMoney) unlockMoney(state, changes);
+    if (eff.housing != null) {
+      const id = eff.housing || "none";
+      if (data.housing && data.housing[id]) {
+        state.housing = id;
+        changes.push(`住居：${data.housing[id].name}`);
+      }
+    }
 
     if (eff.death) {
       state.alive = false;
@@ -671,9 +699,15 @@ GAME.Engine = (function () {
     if (state.moneyUnlocked) {
       const job = state.job ? data.jobs[state.job] : null;
       const income = job ? U.resolve(job.income) + state.incomeBonus : 0;
-      const cost = job && job.livingCost != null ? job.livingCost : data.livingCost;
+      const cost = yearlyLivingCost(state);
+      const house = data.housing && data.housing[housingId(state)];
+      const extra = house && house.livingCost ? house.livingCost : 0;
       state.stats.money += income - cost;
-      lines.push(`収入 ${income >= 0 ? "+" : ""}${income} ／ 生活費 -${cost}`);
+      if (extra > 0) {
+        lines.push(`収入 ${income >= 0 ? "+" : ""}${income} ／ 生活費 -${cost}（${house.name} +${extra}）`);
+      } else {
+        lines.push(`収入 ${income >= 0 ? "+" : ""}${income} ／ 生活費 -${cost}`);
+      }
     }
     return lines;
   }
@@ -797,6 +831,9 @@ GAME.Engine = (function () {
       [...(c.traitsAny || []), ...(c.notTraits || [])].forEach((t) => {
         if (!data.traits[t]) warn(id, `未定義の性格 "${t}"`);
       });
+      (c.housing || []).forEach((h) => {
+        if (!data.housing || !data.housing[h]) warn(id, `未定義の住居 "${h}"`);
+      });
     };
     const checkKeys = (id, obj, allowed, where) => {
       Object.keys(obj).forEach((k) => {
@@ -819,6 +856,9 @@ GAME.Engine = (function () {
       });
       const j = o.effects.job;
       if (j && !data.jobs[j]) warn(id, `未定義の職業 "${j}"`);
+      if (o.effects.housing != null && (!data.housing || !data.housing[o.effects.housing])) {
+        warn(id, `未定義の住居 "${o.effects.housing}"`);
+      }
       [...U.toArray(o.effects.addTraits), ...U.toArray(o.effects.removeTraits)].forEach((t) => {
         if (!data.traits[t]) warn(id, `未定義の性格 "${t}"`);
       });
@@ -876,6 +916,8 @@ GAME.Engine = (function () {
     activeNpcs,
     npcAge,
     jobName,
+    housingName,
+    yearlyLivingCost,
     fullName,
     speciesLabel,
     roleLabel,

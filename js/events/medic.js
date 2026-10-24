@@ -253,7 +253,75 @@ GAME.registerEvents([
       },
     ],
   },
+{
+  id: "medic_008",
+  tags: ["young", "work", "elder", "prime", "medic"],
+  weight: 6,
+  conditions: {
+    ageMin: 18,
+    jobs: ["medic"]
+  },
+  text: "質の悪い感染症が流行した。その特効薬は、生きた人間の体から採れるものを材料としている。だいたい1人の体から5人分の薬が作れる計算だ。",
+  choices: [
+    {
+      text: "人間を材料に特効薬を作る",
+      check: { chance: 70 },
+      success: {
+        result: "何人かが肉体を提供してくれた。それで大勢が救われ、自らを提供した人は聖人として教会で手厚く葬られた。",
+        effects: { reputation: 5,ability:5 },
+        log: { title: "禁忌　人体を使った薬", text: "尊い犠牲に誰もが敬意を払った。" },
+      },
+      failure: {
+        result: "薬の材料を取るため、死刑囚が連れてこられた。多くの命が救われたが、後味は悪かった。",
+        log: { title: "禁忌　人体を使った薬", text: "命を有効活用したと自分に言い聞かせた。" },
+      },
+    },
+    {
+      text: "代替品を探す",
+      check: { chance: 30 },
+      success: {
+        result: "時間がかかった。その間に取りこぼした命もあった。だが、少なくない命を救えた。",
+        effects: { reputation: 10,ability:10,health:-5 },
+      },
+      failure: {
+        result: "いたずらに時間が過ぎた。多くのものが帰らなかった。だが、少しは持ちこたえた。",
+        effects: { reputation: 2,ability:2,health:-5 },
+      },
+    }
+  ],
+},
 
+{
+  id: "medic_009",
+  tags: ["young", "work", "elder", "prime", "medic"],
+  weight: 6,
+  conditions: {
+    ageMin: 18,
+    jobs: ["medic"]
+  },
+  text: "施療院からの依頼だ。もう手の施しようのない患者のために、痛みを和らげる薬を作ってほしいとのこと。しかし、その薬は使い方を間違えると、健康な人を廃人にする危険性がある。",
+  choices: [
+    {
+      text: "依頼を引き受ける",
+      check: { chance: 70 },
+      success: {
+        result: "納品後、患者からの長い感謝の手紙が届いた。{名前}の薬のおかげでずいぶん楽になったと書かれていた。",
+        effects: { reputation: 5,ability:5,money:10 },
+        log: { title: "禁忌　死にゆく人のための薬", text: "先のない患者に一時の安らぎを与えた。" },
+      },
+      failure: {
+        result: "後日、貧民街で正気を失った者が見つかった。症状から、あの施療院から薬を盗んで使っていたのだろうと推測できた。",
+        effects: { reputation: -5,money:10 },
+        log: { title: "禁忌　死にゆく人のための薬", text: "薬は時として毒にもなる。" },
+      },
+    },
+    {
+      text: "断る",
+      result: "かわりに危険のないものの中で、なるべく効果の高いものを納品した。",
+      effects: { money:10 },
+    }
+  ],
+},
   // ---------- 集大成の分岐（材料クエストへ続く）----------
   {
     id: "medic_007",
@@ -299,6 +367,60 @@ GAME.registerEvents([
   },
 
   // TODO: medic_resuscitation 後の材料イベント（3つ想定）
+{
+  id: "medic_resuscitation_01",
+  tags: ["young", "work", "medic", "elder", "prime"],
+  weight: 8,
+  repeatable: true,
+  logOnce: true,
+  cooldown: 4,
+  conditions: {
+    jobs: ["medic"],
+    flags: ["medic_resuscitation"]
+  },
+  text: "死者蘇生薬の材料の一つ、「火竜の心臓」を得るには、火竜の住処まで現地のドワーフに案内してもらう必要がある。",
+  choices: [
+    {
+      text: "強い酒を手土産にする",
+      check: { stat: "ability", difficulty: 50 },
+      success: {
+        result: "火が着くような強烈な酒を持ってドワーフの集落を訪れた。ドワーフたちは気分を良くし、素材の収集まで手伝ってくれた。",
+        effects: { money:10,health:-2, reputation: 5,ability:5 },
+        log: { title: "火竜の心臓", text: "死者蘇生薬の材料の一つを得た。" },
+      },
+      failure: {
+        result: "火が着くような強烈な酒を持ってドワーフの集落を訪れた。ドワーフたちは快く協力してくれたが、火竜の討伐まではかなわなかった。",
+        effects: { money:-10,health:-2,ability:5 },
+      },
+    },
+    {
+      text: "珍しい鉱石を手土産にする",
+      check: { stat: "reputation", difficulty: 50 },
+      success: {
+        result: "ドワーフたちは{名前}が持ち込んだ鉱石を見て唸った。対価として全面的な協力を得た。費用は掛かったが、目的のものは手に入れることができた。",
+        effects: { money:-10,reputation: 10 },
+        log: { title: "火竜の心臓", text: "死者蘇生薬の材料の一つを得た。" },
+      },
+      failure: {
+        result: "ドワーフたちは手土産を喜び、全面協力を申し出てくれた。しかし、火竜のブレスの前にはひとたまりもなかった。",
+        effects: { money:-50,health:-10,reputation: 5 },
+      },
+    },
+    {
+      text: "自身の情熱をぶつける",
+      check: { chance: 40 },
+      success: {
+        result: "ドワーフたちは{名前}の熱い演説に心を打たれた。火竜のところまで案内してくれた。討伐のために人を雇ったので、別途依頼料がかかったが、目的のものは得られた。",
+        effects: { money:-50,reputation: 5 },
+        log: { title: "火竜の心臓", text: "死者蘇生薬の材料の一つを得た。" },
+      },
+      failure: {
+        result: "ドワーフたちは話を聞いてくれはした。しかし、危険だからやめておけと説得された。",
+      },
+    }
+  ],
+},
+
   // TODO: medic_panacea 後の材料イベント（3つ想定）
   // TODO: 材料が揃ったあとの完成イベント／aged 時の振り返り（cook_farewell 相当）
 ]);

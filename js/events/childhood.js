@@ -384,5 +384,49 @@ GAME.registerEvents([
       },
     ],
   },
+{
+  id: "common_childhood_015",
+  tags: ["childhood", "work"],
+  weight: 10,
+  conditions: {
+    ageMin: 6,
+    ageMax: 12
+  },
+  text: "{名前}の住んでいるところに旅の薬師が訪れた。",
+  choices: [
+    {
+      text: "話しかける",
+      result: "薬師は薬草や調合について教えてくれた。それからは、道端の雑草ひとつひとつが貴重なものに思えるようになった。",
+      effects: { addFlags: ["dream_medic"] },
+    },
+    {
+      text: "遠くから見ている",
+      result: "薬師は何件かの家を回り、去っていった。",
+    }
+  ],
+},
+{
+  id: "common_childhood_016",
+  tags: ["childhood", "work"],
+  weight: 10,
+  conditions: {
+    ageMin: 13,
+    ageMax: 18,
+    hasJob: false,
+    flags: ["dream_medic"],
+    notFlags: ["slave"]
+  },
+  text: "将来の夢について考えていると、あの旅の薬師のことが思い出された。",
+  choices: [
+    {
+      text: "製薬ギルドの門をたたく",
+      result: "{名前}は薬師になった。",
+      effects: { removeFlags: ["dream_medic"],job:"medic" },
+    },
+    {
+      text: "もう少し考える",
+    }
+  ],
+},
 ]);
 

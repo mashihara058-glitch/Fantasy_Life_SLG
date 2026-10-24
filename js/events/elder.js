@@ -86,9 +86,16 @@ GAME.registerEvents([
     text: "最近、咳が止まらない。",
     choices: [
       {
-        conditions: { moneyUnlocked: true, stats: { money: { min: 30 } } },
+        // 薬師本人には「他の薬師にかかる」を出さない
+        conditions: { moneyUnlocked: true, stats: { money: { min: 30 } }, notJobs: ["medic"] },
         text: "薬師にかかる",
         effects: { money: -30, health: 5 },
+      },
+      {
+        // Jobs ではなく jobs（小文字）。大文字だと条件が無視される
+        conditions: { moneyUnlocked: true, jobs: ["medic"], stats: { money: { min: 10 } } },
+        text: "自分で薬を調合する",
+        effects: { money: -10, health: 5 },
       },
       {
         text: "放っておく",

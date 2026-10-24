@@ -80,6 +80,7 @@ GAME.registerEvents([
       npcAgeMin: { father: 55 },      // その人物が何歳以上
       npcAgeMax: { mother: 42 },      // その人物が何歳以下
       moneyUnlocked: true,            // 家計（所持金）が解放済みか
+      housing: ["none", "house"],     // 現在の住居がいずれか（none / house / mansion）
       lifespanReached: false,         // 寿命に達しているか
       aged: true,                     // 老いが始まっているか（寿命の80%以上。species.js の aging で調整）
       // custom: (state) => state.stats.health < state.stats.ability,  // 上記で書けない条件
@@ -129,6 +130,7 @@ GAME.registerEvents([
           // job: "mage",             // 就職・転職。null で失業。初めての就職で家計が解放される
           // keepIncomeBonus: true,   // 転職しても incomeBonus（昇給分）を引き継ぐ。昇格のときに使う
           // unlockMoney: true,       // 職に関係なく家計を解放する
+          // housing: "house",        // 住居 none / house / mansion（生活費が上乗せされる）
 
           // 死亡
           // death: "病死",           // 死因。この選択で人生が終わる

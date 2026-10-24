@@ -4,6 +4,14 @@
 // イベントの effects.job で就職・転職、effects.job: null で失業する。
 GAME.data.livingCost = 40;
 
+// 住居。年間生活費は「職業の livingCost（なければ livingCost）＋住居の livingCost」
+// state.housing に id を持つ。effects.housing で変更。conditions.housing で絞り込み可。
+GAME.data.housing = {
+  none: { name: "間借り", livingCost: 0 },
+  house: { name: "一軒家", livingCost: 35 },
+  mansion: { name: "豪邸", livingCost: 90 },
+};
+
 GAME.data.jobs = {
   apprentice: { name: "見習い", income: 20, livingCost: 15 },
   laborer: { name: "日雇い労働者", income: [15, 40] },

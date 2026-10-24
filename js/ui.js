@@ -104,6 +104,7 @@ GAME.UI = (function () {
         <dt>出自</dt><dd>${esc(data.origins[state.origin].name)}</dd>
         <dt>性格</dt><dd>${esc(traitNames(state))}</dd>
         <dt>職業</dt><dd>${state.job || state.moneyUnlocked ? esc(E.jobName(state)) : "—"}</dd>
+        <dt>住居</dt><dd>${state.moneyUnlocked ? esc(E.housingName(state)) : "—"}</dd>
       </dl>
       ${statBars(state)}
       ${npcList(state)}
@@ -216,6 +217,7 @@ GAME.UI = (function () {
             <dt>能力</dt><dd>${state.stats.ability}</dd>
             <dt>評判</dt><dd>${state.stats.reputation}</dd>
             <dt>財産</dt><dd>${money}</dd>
+            <dt>住居</dt><dd>${state.moneyUnlocked ? esc(E.housingName(state)) : "—"}</dd>
             <dt>最後の職業</dt><dd>${esc(lastJob)}</dd>
             <dt>出自</dt><dd>${esc(data.origins[state.origin].name)}</dd>
             <dt>性格</dt><dd>${esc(traitNames(state))}</dd>
