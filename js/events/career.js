@@ -143,10 +143,20 @@ GAME.registerEvents([
       },
       {
         text: "娼館へ行く",
+        // 18歳以上: 最初から娼婦フラグ（客取り可）。ageMin は「以上」
+        conditions: { ageMin: 18 },
         result: "借金を返すには、これしかないと思った。",
-        // slave フラグは残す（逃亡イベントなどが続く）。結婚除外用に prostitute も付ける
+        // slave フラグは残す（逃亡イベントなどが続く）
         effects: { job: "prostitute", addFlags: ["prostitute"] },
         log: { title: "娼婦になる", text: "借金を返すため、夜の街へ行くことにした。" },
+      },
+      {
+        text: "娼館へ行く",
+        // 17歳以下: 下働きのみ。ageMax は「以下」（18歳は上の分岐）
+        conditions: { ageMax: 17 },
+        result: "まずは下働きとして、夜の街で暮らすことにした。",
+        effects: { job: "prostitute", addFlags: ["prostitute_apprentice"] },
+        log: { title: "娼館に勤める", text: "借金を返すため、夜の街へ行くことにした。" },
       },
       {
         text: "まだ買い手を待つ",
@@ -160,7 +170,7 @@ GAME.registerEvents([
   {
     id: "common_career_mistress",
     tags: ["young", "prime", "work", "career"],
-    conditions: { jobs: ["prostitute"], jobYearsMin: 3, stats: { health: { min: 45 }, reputation: { min: 40 } } },
+    conditions: { jobs: ["prostitute"], jobYearsMin: 3,ageMin: 18, stats: { health: { min: 45 }, reputation: { min: 40 } } },
     weight: 5,
     repeatable: true,
     cooldown: 4,
@@ -173,7 +183,7 @@ GAME.registerEvents([
         effects: {
           job: "mistress",
           addFlags: ["mistress"],
-          removeFlags: ["slave", "prostitute", "married"],
+          removeFlags: ["slave", "prostitute", "prostitute_apprentice", "married"],
           npcState: { lover: "left", spouse: "left" },
         },
         log: { title: "愛人になる", text: "夜の街から足を洗った。" },

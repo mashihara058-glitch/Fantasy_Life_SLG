@@ -227,7 +227,7 @@ GAME.registerEvents([
   {
     id: "common_young_008",
     tags: ["young", "work"],
-    conditions: { ageMin: 18, ageMax: 50, notJobs: ["slave", "retired"] },
+    conditions: { ageMin: 18, ageMax: 50, notJobs: ["slave", "retired"," miner"," prostitute","mistress"] },
     weight: 10,
     text: "ベッドの中でふと思う。今の仕事は自分に合っているだろうか？",
     choices: [
@@ -342,7 +342,7 @@ GAME.registerEvents([
 {
   id: "common_young_012",
   tags: ["young", "elder"],
-  conditions: { ageMin: 18, stats: { health: { max: 19 } } },
+  conditions: { ageMin: 18, stats: { health: { max: 19 } } ,notJobs: ["slave", "retired"," miner"," prostitute","mistress"] },
   weight: 10,
   repeatable: true,
   text: "近頃疲れを感じる。",
@@ -369,7 +369,7 @@ GAME.registerEvents([
       moneyUnlocked: true,
       stats: { money: { max: -10 } },
       npcs: ["friend"],
-      notFlags: ["debt_to_friend", "slave"],
+      notFlags: ["debt_to_friend"],
     },
     weight: 8,
     repeatable: true,
