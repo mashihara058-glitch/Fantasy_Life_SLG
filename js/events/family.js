@@ -101,8 +101,106 @@ GAME.registerEvents([
       },
     ],
   },
-
+  {
+    id: "common_family_sibling_004",
+    tags: ["childhood", "family"],
+    conditions: { ageMin: 3, ageMax: 11, npcs: ["sibling"] },
+    repeatable: true,
+    cooldown: 4,
+    maxTimes: 2,
+    text: "{兄弟の続柄}の{兄弟}が、一緒に遊ぼうと誘ってきた。",
+    choices: [
+      {
+        text: "本を読む",
+        result: "読めない文字を教えあい、物語に没頭した。",
+        effects: { reputation: 1, ability: 1, npc: { sibling: { intimacy: 10 } } },
+      },
+      {
+        text: "おいかけっこをする",
+        result: "汗だくになって駆け回った。",
+        effects: { reputation: 1, health: 1, npc: { sibling: { intimacy: 10 } } },
+      },
+      {
+        text: "地面に絵を描く",
+        result: "地面におかしな線を引いて遊んだ。腹の底から大笑いした。",
+        effects: { ability: 1, npc: { sibling: { intimacy: 8 } } },
+      },
+      {
+        text: "近場を散策する",
+        result: "{兄弟}と近所を探検した。小さな発見がいくつもあった。",
+        effects: { health: 2, npc: { sibling: { intimacy: 8 } } },
+      },
+      {
+        text: "遊ばない",
+        effects: { npc: { sibling: { trust: -5, intimacy: -3 } } },
+      },
+    ],
+  },
+  {
+    id: "common_family_sibling_005",
+    tags: ["childhood", "adolescence", "family"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    maxTimes: 2,
+    conditions: { ageMin: 5, ageMax: 14, npcs: ["sibling"], notFlags: ["slave"] },
+    text: "家の壺が割れていた。{兄弟の続柄}の{兄弟}と、顔を見合わせる。",
+    choices: [
+      {
+        text: "自分がやったと言う",
+        result: "叱られたが、{兄弟}の肩は少し下がった。あとで「ありがとう」とだけ言われた。",
+        effects: { reputation: 2, npc: { sibling: { trust: 12, intimacy: 8 } } },
+        log: { title: "{兄弟}の身代わりになる", text: "割れた壺の咎を、自分が被った。" },
+      },
+      {
+        text: "{兄弟}のせいにする",
+        result: "{兄弟}が泣きながら叱られている間、胸の奥が重かった。",
+        effects: { reputation: -3, npc: { sibling: { trust: -15, intimacy: -10 } } },
+      },
+      {
+        text: "二人で正直に話す",
+        check: { chance: 55 },
+        success: {
+          result: "怒られたが、罰は半分ずつだった。不思議と、距離が縮まった気がした。",
+          effects: { reputation: 1, npc: { sibling: { trust: 8, intimacy: 5 } } },
+        },
+        failure: {
+          result: "どちらも言い訳に聞こえ、叱責は倍になった。",
+          effects: { reputation: -2, health: -1, npc: { sibling: { intimacy: 2 } } },
+        },
+      },
+    ],
+  },
+  {
+    id: "common_family_sibling_006",
+    tags: ["adolescence", "family"],
+    weight: 7,
+    repeatable: true,
+    cooldown: 5,
+    maxTimes: 2,
+    conditions: { ageMin: 12, ageMax: 18, npcs: ["sibling"], notFlags: ["slave"] },
+    text: "{兄弟の続柄}の{兄弟}が、夜更けに起こしてきた。どうしても話したいことがある、と。",
+    choices: [
+      {
+        text: "本気で聞いてやる",
+        result: "くだらないことから将来の不安まで、長く話した。明け方、二人とも目が腫れていた。",
+        effects: { health: -2, npc: { sibling: { trust: 10, intimacy: 12 } } },
+        log: { title: "{兄弟}の夜話を聞く", text: "兄弟だけで、長い夜を分け合った。" },
+      },
+      {
+        text: "眠いから明日にしてくれと返す",
+        result: "{兄弟}は「そうだね」と短く言って、足音を忍ばせて戻っていった。",
+        effects: { npc: { sibling: { intimacy: -5 } } },
+      },
+      {
+        text: "一緒に夜食を探す",
+        result: "禁じられたはずの菓子を分け合い、話は自然と途切れた。それでも、悪くない夜だった。",
+        effects: { health: 2, npc: { sibling: { intimacy: 8 } } },
+      },
+    ],
+  },
   // ---------- 孫 ----------
+
   // 子が成人したあと発生する。主人公の実年齢ではなく「子の年齢」で判定するので、
   // 長寿種族でも、子どもがいれば自然に孫が生まれる。
   {

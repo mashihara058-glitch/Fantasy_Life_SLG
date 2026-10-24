@@ -102,7 +102,7 @@ GAME.registerEvents([
     ],
   },
   {
-    id: "common_life_accident",
+    id: "common_life_accident01",
     tags: ["health", "death"],
     conditions: { ageMin: 3 },
     weight: 1,
@@ -132,6 +132,37 @@ GAME.registerEvents([
       },
     ],
   },
+{
+  id: "common_life_accident02",
+  tags: ["health", "death"],
+  weight: 5,
+  repeatable: true,
+  cooldown: 8,
+  conditions: {
+    ageMin: 30,
+    stats: { money: { max: -100 } }
+  },
+  text: "金がなく、もう何日も食事をとれていない。目の前には、よくわからないキノコが生えている。",
+  choices: [
+    {
+      text: "食べる",
+      check: { stat: "health", difficulty: 30 },
+      success: {
+        result: "謎のキノコを焼いて食べた。口の中でじゅわっと広がる旨みに、生き返った心地がした。",
+        effects: { health: 5 },
+      },
+      failure: {
+        result: "謎のキノコを食べた。何日も腹痛と吐き気が続き、やがて{名前}は息絶えた。",
+        effects: {  death: "食中毒"  },
+      },
+    },
+    {
+      text: "耐える",
+      result: "腹の鳴る音だけが、何もない部屋に響く。",
+      effects: { health: -5 },
+    }
+  ],
+},  
 
   // ---------- 戦争 ----------
   {

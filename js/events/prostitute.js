@@ -331,6 +331,181 @@ GAME.registerEvents([
       },
     ],
   },
+  // ---------- 店・客（日常）----------
+  {
+    id: "prostitute_005",
+    tags: ["young", "prime", "work", "slave", "prostitute"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 6,
+    maxTimes: 2,
+    conditions: {
+      jobs: ["slave", "miner", "prostitute"],
+      notFlags: ["fugitive"],
+    },
+    text: "同僚がだれかと密会しているのを目撃してしまった。思わず立ち聞きすると、脱出の計画を話し合っているらしい。",
+    choices: [
+      {
+        text: "密告する",
+        check: { chance: 50 },
+        success: {
+          result: "{名前}はそのことを雇い主に報告した。褒美は出たが、同僚たちの目は冷たかった。",
+          effects: { unlockMoney: true, money: 50, reputation: -10 },
+          log: { title: "脱走計画を密告する", text: "褒美と引き換えに、同僚の信頼を失った。" },
+        },
+        failure: {
+          result: "密告が同僚に知れた。持ち物が消えたり、仕事の連絡が回ってこなくなったりし始めた。",
+          effects: { money: -30, reputation: -10 },
+        },
+      },
+      {
+        // 友人がいないときだけ：打ち明けて友人になる
+        text: "同僚に打ち明ける",
+        conditions: { noNpcs: ["friend"] },
+        check: { chance: 50 },
+        success: {
+          result: "立ち聞きしたことを正直に話した。境遇を語り合ううち、相手は信頼できる{友人}になった。",
+          effects: { addNpc: { role: "friend", trust: 55, intimacy: 50 } },
+          log: { title: "{友人}と友人になる", text: "苦境のなかで、信頼できる者に出会えた。" },
+        },
+        failure: {
+          result: "同僚は青ざめ、口止め料を握らせてきた。「絶対に、口外しないでほしい」。",
+          effects: { unlockMoney: true, money: 20 },
+        },
+      },
+      {
+        // すでに友人がいるとき：友人枠を増やさず、相談だけ
+        text: "同僚に打ち明ける",
+        conditions: { npcs: ["friend"] },
+        check: { chance: 50 },
+        success: {
+          result: "立ち聞きしたことを話した。同僚は安堵し、{友人}にも似た吐息を漏らした。秘密を共有した夜だった。",
+          effects: { reputation: 2, health: 2 },
+        },
+        failure: {
+          result: "同僚は青ざめ、口止め料を握らせてきた。「絶対に、口外しないでほしい」。",
+          effects: { unlockMoney: true, money: 20 },
+        },
+      },
+      {
+        text: "黙っている",
+        result: "その後、いつの間にか同僚の姿は消えていた。脱出できたのだろうか……。",
+      },
+    ],
+  },
+  {
+    id: "prostitute_006",
+    tags: ["young", "prime", "work", "prostitute"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 3,
+    conditions: {
+      ageMin: 18,
+      jobs: ["prostitute"],
+      flags: ["prostitute"],
+    },
+    text: "しぐさが不自然で、でっぷり太った客が来た。ほかの嬢が、なんとなく怪しむ目でその客を見ている。",
+    choices: [
+      {
+        text: "自分が相手をする",
+        check: { chance: 50 },
+        success: {
+          result: "見た目の印象ほどではなく、普通の客だった。",
+          effects: { money: 5, ability: 1 },
+        },
+        failure: {
+          result: "いざ相手をすると生理的な嫌悪が勝った。時間がたつのを、ひたすら祈った。",
+          effects: { money: 5, ability: 1, health: -3 },
+        },
+      },
+      {
+        text: "様子を見る",
+        check: { chance: 50 },
+        success: {
+          result: "しばらくの沈黙のあと、店の主人がほかの嬢の名を呼んだ。その嬢はしぶしぶ階段を上がっていった。",
+        },
+        failure: {
+          result: "店の主人が{名前}の名を呼んだ。観念して、その客の相手をした。",
+          effects: { money: 5, ability: 1, health: -3 },
+        },
+      },
+    ],
+  },
+  {
+    id: "prostitute_007",
+    tags: ["young", "prime", "work", "prostitute"],
+    weight: 7,
+    repeatable: true,
+    cooldown: 4,
+    conditions: {
+      ageMin: 18,
+      jobs: ["prostitute"],
+      flags: ["prostitute"],
+    },
+    text: "高価な服の客が来た。厳しい目つきで、身のこなしに隙がない。なぜか、{名前}が以前相手をした客の話を、根掘り葉掘り聞いてくる。",
+    choices: [
+      {
+        text: "はぐらかす",
+        check: { chance: 50 },
+        success: {
+          result: "客はそれ以上聞かず、帰っていった。「他言無用だ」と、多めのチップを置いていった。",
+          effects: { money: 10, ability: 1 },
+        },
+        failure: {
+          result: "客は執拗だった。金払いはよいが、張り詰めたまま夜が明け、どっと疲れた。",
+          effects: { money: 10, ability: 1, health: -3 },
+        },
+      },
+      {
+        text: "知っている範囲で話す",
+        check: { chance: 70 },
+        success: {
+          result: "客はうなずき、「他言無用」と多めのチップを渡した。いったい、なんだったのだろう。",
+          effects: { money: 50 },
+          log: { title: "尋問じみた客", text: "証言と引き換えに、多額の金を受け取った。" },
+        },
+        failure: {
+          result: "客は礼を置いて去った。しばらくして憲兵が{名前}を連行した——情報を漏らした、という。疑いは晴れたが、保釈と取り調べは痛手だった。",
+          effects: { money: -30, health: -10, reputation: -10 },
+          log: { title: "スパイの疑いをかけられる", text: "知らないうちに、危険な話に巻き込まれた。" },
+        },
+      },
+    ],
+  },
+  {
+    id: "prostitute_008",
+    tags: ["young", "prime", "work", "prostitute"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 3,
+    conditions: {
+      ageMin: 18,
+      jobs: ["prostitute"],
+      flags: ["prostitute"],
+    },
+    text: "金持ちそうでおしゃれな客がやってきた。花代は多めだと言うが……？",
+    choices: [
+      {
+        text: "自分が相手をする",
+        check: { chance: 50 },
+        success: {
+          result: "何事もなく夜は明けた。いつもより多い報酬を受け取った。",
+          effects: { money: 10, ability: 1 },
+        },
+        failure: {
+          result: "客の趣味は、聞いていた花代では足りないほど辛かった。金は残ったが、心身の痛みは何日も引かなかった。",
+          effects: { money: 10, ability: 1, health: -5 },
+        },
+      },
+      {
+        text: "他の嬢に譲る",
+        result: "別の嬢が呼ばれていった。今夜の花代は、自分の手元には来ない。",
+      },
+    ],
+  },
+
+  // ---------- 人間関係 ----------
+
   {
     id: "prostitute_lover",
     tags: ["young", "prime", "work", "prostitute"],
