@@ -3,7 +3,7 @@ GAME.registerEvents([
   {
     id: "human_childhood_001",
     tags: ["childhood", "family", "education"],
-    conditions: { ageMin: 6, ageMax: 11, species: ["human"] },
+    conditions: { ageMin: 6, ageMax: 11, species: ["human"] ,notFlags: ["slave"] },
     weight: 10,
     repeatable: false,
     text: "家庭教師があなたの才能に気づいた。",
@@ -22,7 +22,7 @@ GAME.registerEvents([
   {
     id: "common_childhood_002",
     tags: ["childhood", "friend"],
-    conditions: { ageMin: 4, ageMax: 9, noNpcs: ["friend"] },
+    conditions: { ageMin: 4, ageMax: 9, noNpcs: ["friend"],notFlags: ["slave"]  },
     weight: 15,
     weightMods: [{ conditions: { flags: ["changeling"] }, multiply: 0.2 }],
     text: "広場の隅で、同じ年頃の子どもがひとりで石を積んで遊んでいた。",
@@ -98,7 +98,7 @@ GAME.registerEvents([
   {
     id: "common_childhood_005",
     tags: ["childhood", "adventure", "fairy"],
-    conditions: { ageMin: 5, ageMax: 10 },
+    conditions: { ageMin: 5, ageMax: 10,notFlags: ["slave"]  },
     weight: 8,
     text: "森の奥で道に迷ってしまった。木々の間から、日が傾いていくのが見える。",
     choices: [
@@ -119,7 +119,7 @@ GAME.registerEvents([
   {
     id: "common_childhood_006",
     tags: ["childhood", "family"],
-    conditions: { ageMin: 5, ageMax: 11 },
+    conditions: { ageMin: 5, ageMax: 11,notFlags: ["slave"]  },
     repeatable: true,
     cooldown: 3,
     text: "家の手伝いを言いつけられた。",

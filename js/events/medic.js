@@ -273,7 +273,7 @@ GAME.registerEvents([
           log: { title: "禁忌　人体を材料にした薬", text: "尊い犠牲で、流行を押しとどめた。" },
         },
         failure: {
-          result: "材料には死刑囚が充てられた。街は助かった。後味だけが、長く残った。",
+          result: "志願者の数が足りなかった。不足分には死刑囚が充てられた。街は助かった。後味だけが、長く残った。",
           effects: { reputation: 2, ability: 3, health: -3, addFlags: ["medic_sacrifice"] },
           log: { title: "禁忌　死刑囚の体で薬を作る", text: "命を数で測った夜を、忘れられずにいる。" },
         },

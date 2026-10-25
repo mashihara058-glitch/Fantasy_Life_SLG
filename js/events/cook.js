@@ -3,6 +3,87 @@
 //   cook_bread / cook_veg / cook_fish / cook_pie / cook_egg / cook_meat
 //   cook_appetizer / cook_soup / cook_dessert / cook_signature / cook_dragon
 //   cook_drink_elf / dwarf / beast / lizard / human
+// 生涯現役用（maxTimes なし・repeatable）: cook_common_01〜04
+// 種族客の好み料理: cook_dwarf_* / beastfolk / elf / lizardfolk / human（cookRaceClient）
+
+/**
+ * 各種族の客が、好みの料理を注文する。
+ * ※娼婦の種族指名と違い、プレイヤー種族は問わない（客側の趣味）。
+ * 同種族の料理人だけ weight が上がり、得意技の選択肢も出る。
+ * variants: { text, praise?, doubt? }
+ */
+function cookRaceClient({ id, species, raceLabel, praise, doubt, variants }) {
+  const tip = { money: 12, ability: 1, reputation: 2 };
+  const weight = Math.max(3, Math.round(6 / Math.sqrt(variants.length)));
+
+  return variants.map((v, i) => {
+    const ok = v.praise || praise;
+    const no = v.doubt || doubt;
+    return {
+      id: variants.length === 1 ? id : `${id}_${i + 1}`,
+      tags: ["young", "prime", "elder", "work", "cook"],
+      weight,
+      weightMods: [{ conditions: { species: [species] }, multiply: 1.5 }],
+      repeatable: true,
+      cooldown: 5,
+      logOnce: true,
+      conditions: { ageMin: 16, jobs: ["cook"], notFlags: ["slave"] },
+      text: v.text,
+      choices: [
+        {
+          text: "注文どおりに作る",
+          check: { stat: "ability", difficulty: 48 },
+          success: {
+            result: ok,
+            effects: tip,
+            log: {
+              title: `接客　${raceLabel}好み`,
+              text: `${raceLabel}の客の注文に応え、店の評判を少し伸ばした。`,
+            },
+          },
+          failure: {
+            result: no,
+            effects: { reputation: -2, money: -4 },
+          },
+        },
+        {
+          conditions: { species: [species] },
+          text: "出自の舌で、寸分違わず合わせる",
+          check: { stat: "ability", difficulty: 38 },
+          success: {
+            result: ok,
+            effects: { money: 14, ability: 2, reputation: 3 },
+            log: {
+              title: `接客　${raceLabel}の味（出自）`,
+              text: `自ら知る${raceLabel}の味覚で、注文を完璧に通した。`,
+            },
+          },
+          failure: {
+            result: no,
+            effects: { ability: -1, reputation: -1 },
+          },
+        },
+        {
+          text: "店の定番で代用する",
+          check: { chance: 45 },
+          success: {
+            result: "期待とは違うが、空腹は満たされたらしい。銀は普通に残る。",
+            effects: { money: 8 },
+          },
+          failure: {
+            result: no,
+            effects: { reputation: -1 },
+          },
+        },
+        {
+          text: "今は出せないと断る",
+          result: "客は肩を落として扉へ向かう。厨房には、売れ残りの匂いだけが残る。",
+        },
+      ],
+    };
+  });
+}
+
 GAME.registerEvents([
   // ---------- 既存：素材テーマ ----------
   {
@@ -1076,5 +1157,259 @@ GAME.registerEvents([
       },
     ],
   },
+  // ---------- 生涯現役：枯れない日常仕事 ----------
+  {
+    id: "cook_common_01",
+    tags: ["young", "prime", "elder", "work", "cook"],
+    weight: 7,
+    repeatable: true,
+    cooldown: 5,
+    logOnce: true,
+    conditions: { ageMin: 16, jobs: ["cook"], notFlags: ["slave"] },
+    text: "貧民街の角で、薄汚れた男が壁に凭れていた。「腹が空いた……」声だけが、細い。",
+    choices: [
+      {
+        text: "残った煮込みを恵む",
+        check: { chance: 55 },
+        success: {
+          result: "男は両手で器を抱え、「うまい……」と何度も呟いた。その日のうちに、通りの噂が店へ流れ込む。",
+          effects: { money: -5, reputation: 2 },
+          log: {
+            title: "貧民に残飯を分ける",
+            text: "空腹の男に煮込みを分け、路地の評判を少しだけ暖めた。",
+          },
+        },
+        failure: {
+          result: "翌日には「あの料理人は断れない」と噂が回り、店先にも路地にも、手を出す者が増えた。",
+          effects: { money: -12, reputation: -2 },
+          log: {
+            title: "施しがつけ込まれる",
+            text: "空腹への情けが、たかりの種になった。",
+          },
+        },
+      },
+      {
+        text: "目を逸らし、通りすぎる",
+        result: "足音だけが遠ざかる。厨房に戻ると、鍋の匂いがいつもより濃い。",
+        effects: { health: -1 },
+      },
+    ],
+  },
+  {
+    id: "cook_common_02",
+    tags: ["young", "prime", "elder", "work", "cook"],
+    weight: 6,
+    repeatable: true,
+    cooldown: 6,
+    logOnce: true,
+    conditions: { ageMin: 16, jobs: ["cook"], notFlags: ["slave"] },
+    text: "奴隷商が厨房に現れた。鎖つきの者たちへ出す給食だという。「まずくていい。安くて、腹にたまるものだけ頼む」。",
+    choices: [
+      {
+        text: "注文どおり、安く腹持ちだけを作る",
+        result: "薄い粥と固い黒パン。依頼者は満足げに袋を置き、約束の報酬だけが残った。",
+        effects: { money: 18, ability: -1 },
+        log: {
+          title: "奴隷給食を安く請け負う",
+          text: "味より原価を優先し、奴隷商の注文をこなした。",
+        },
+      },
+      {
+        text: "自腹を切り、こっそり具を足す",
+        result: "スープに豆と脂を忍ばせた。市場では「あの商会の奴隷は、最近血色がいい」と笑われた。自分の帳簿だけが、静かに赤字だ。",
+        effects: { money: -15, reputation: 3, ability: 1 },
+        log: {
+          title: "奴隷給食に手心を加える",
+          text: "原価を自分で補い、見えない皿の味をわずかに上げた。",
+        },
+      },
+      {
+        text: "そういう仕事は断る",
+        result: "商は肩をすくめて去った。別の厨房が、安く請け負うだろう。",
+        effects: { reputation: 1, money: -3 },
+      },
+    ],
+  },
+  {
+    id: "cook_common_03",
+    tags: ["young", "prime", "elder", "work", "cook"],
+    weight: 7,
+    repeatable: true,
+    cooldown: 5,
+    logOnce: true,
+    conditions: { ageMin: 16, jobs: ["cook"], notFlags: ["slave"] },
+    text: "兵舎から携行食の発注が来た。野外訓練用——運びやすく、腹を支え、あとで後悔しないものが要る。",
+    choices: [
+      {
+        text: "がっつり肉の弁当にする",
+        check: { chance: 65 },
+        success: {
+          result: "訓練後の兵士が、弁当の底まで平らげたという。次の行軍でも頼む、と使いが笑った。",
+          effects: { money: 14, reputation: 2, ability: 1 },
+          log: {
+            title: "兵舎へ肉弁当",
+            text: "野外訓練向けの肉弁当が、兵たちに受けた。",
+          },
+        },
+        failure: {
+          result: "報酬は入った。だが激しい動きの直後に重い肉は厳しく、腹を下す兵が出たという苦情が届く。",
+          effects: { money: 14, reputation: -2 },
+        },
+      },
+      {
+        text: "腹持ちのよい柔らかいパン食にする",
+        check: { chance: 65 },
+        success: {
+          result: "具を挟んだパンは手づかみで済み、休憩の短い隊にも好評だった。次は具の希望まで書き添えてきた。",
+          effects: { money: 12, reputation: 2, ability: 1 },
+          log: {
+            title: "兵舎へ携行パン",
+            text: "消化のよいパン食が、訓練の携行食になった。",
+          },
+        },
+        failure: {
+          result: "金は払われた。現場からは「量と脂が足りぬ」とだけ、短い紙が返ってきた。",
+          effects: { money: 12, reputation: -2 },
+        },
+      },
+    ],
+  },
+  {
+    id: "cook_common_04",
+    tags: ["young", "prime", "elder", "work", "cook"],
+    weight: 6,
+    repeatable: true,
+    cooldown: 6,
+    logOnce: true,
+    conditions: { ageMin: 16, jobs: ["cook"], notFlags: ["slave"] },
+    text: "継ぎはぎの法衣の神官が、扉の前で頭を下げた。孤児院の食が尽きかけている。余ったものでいい。助けてくれないか、と。",
+    choices: [
+      {
+        text: "余ったスープとパンを分ける",
+        result: "野菜の切れ端が浮く鍋と、余った生地を丸めたパンを渡した。神官は感謝して受け取った。",
+        effects: { money: -8, reputation: 3 },
+        log: {
+          title: "孤児院へ残食を贈る",
+          text: "厨房の余りを、孤児院の食卓へ回した。",
+        },
+      },
+      {
+        text: "年長の孤児を見習いとして雇う",
+        result: "皿洗いと下拵えを教え、日当を持たせて帰した。手が足りる日が増え、店の朝も少し早くなった。",
+        effects: { money: -6, ability: 2, reputation: 1 },
+        log: {
+          title: "孤児を厨房の見習いに",
+          text: "年長の孤児に働きを教え、賃金を渡した。",
+        },
+      },
+      {
+        text: "今は余裕がないと断る",
+        result: "神官は一度うなずき、礼だけ残して去った。釜の音が、いつもより大きく聞こえる。",
+        effects: { health: -1 },
+      },
+    ],
+  },
+
+  // ---------- 種族客の好み料理（variants を増やすだけでセリフ違いを追加できる）----------
+  ...cookRaceClient({
+    id: "cook_dwarf",
+    species: "dwarf",
+    raceLabel: "ドワーフ",
+    praise: "「これだ！　ワシの求めていた味だ」客は杯を掲げ、つまみの皿を空にする速度が上がった。",
+    doubt: "「酒精が足りん！　塩も薄い！」怒号が店内を一周する。隣の席が、そっと勘定を済ませる。",
+    variants: [
+      {
+        text: "カウンターで髭の男ががなり立てる。「酒だ、うんと強いのを！　つまみも忘れるなよ！」",
+      },
+      {
+        text: "酔った客が卓を叩く。「肉汁を吸った芋だ！　それに上等のビールを！」",
+        praise: "「これだよこれ」と何度も笑い、芋の皿が空になるたびに銀を追加していく。",
+      },
+      {
+        text: "鉱夫上がりらしい客が、靴音も荒く入ってくる。「塩の効いたベーコンだ。野菜は芋しか認めん。酒も持ってこい」",
+      },
+    ],
+  }),
+  ...cookRaceClient({
+    id: "cook_beastfolk",
+    species: "beastfolk",
+    raceLabel: "獣人",
+    praise: "「故郷を出て、こんな味には久々だ」客は皿の縁まで舌を這わせる勢いで匙を動かす。",
+    doubt: "鼻を鳴らした客が首を振る。「違う。どこが、とは言えんが——獣の腹は誤魔化せん」",
+    variants: [
+      {
+        text: "「メニューにないものでいい？　生に近いお肉が食べたいの」猫耳の客が、小首をかしげる。",
+      },
+      {
+        text: "毛皮の外套の客が、喉を鳴らすように言う。「狩ったばかりのジビエはないか」。",
+        praise: "「うまい。血を抜きすぎていない」客は肉にかぶりつき、短い満足しか残さない。",
+      },
+      {
+        text: "「素材の味の魚を。ほどよく冷まして出して」丸い瞳が、期待で光っている。",
+      },
+    ],
+  }),
+  ...cookRaceClient({
+    id: "cook_elf",
+    species: "elf",
+    raceLabel: "エルフ",
+    praise: "「森を思い出す。いい仕事だ」客は微笑み、薄い杯に唇をつけた。",
+    doubt: "「伝統の模倣にすぎない」短い批評が耳に刺さる。皿は、ほとんど戻ってきた。",
+    variants: [
+      {
+        text: "耳の長い客が静かに座る。「蒸した根菜を。ハーブは効かせて、余計な脂はつけないで」",
+      },
+      {
+        text: "詩人じみた客が手帳を閉じる。「木の実を。森の恵みがわかる、自然な香りの果実を」",
+        praise: "「懐かしい香りだ。今夜は筆がはかどる」チップの横に、短い詩が残る。",
+      },
+      {
+        text: "魔術師らしい客が声を張る。「キノコだ！　栽培ものではない、森で採れたやつを！」",
+        praise: "「この匂いでないと満足できない」客は深く息を吸い、再来を短く約束した。",
+      },
+    ],
+  }),
+  ...cookRaceClient({
+    id: "cook_lizardfolk",
+    species: "lizardfolk",
+    raceLabel: "竜人",
+    praise: "「火を噴く辛さだ。いい香辛料を使っている」客の尾が、機嫌よく揺れる。",
+    doubt: "「バランスがめちゃくちゃだ。ただ辛ければいいわけではない」鋭い目が、鍋の方を見る。",
+    variants: [
+      {
+        text: "鱗のある客が長い舌をちらつかせる。「辛いスープを。赤いやつだ」",
+      },
+      {
+        text: "旅の商人らしき客が地図を畳む。「よく乾いた魚を、軽く炙って。合う薬酒も」",
+        praise: "串を咀嚼した客が、一度だけ深くうなずいた。それ以上の言葉はない。",
+      },
+      {
+        text: "異国の衣装の客が耳打ちする。「カエルの脚を、スパイスで揚げたものは出せるか」",
+      },
+    ],
+  }),
+  ...cookRaceClient({
+    id: "cook_human",
+    species: "human",
+    raceLabel: "人間",
+    praise: "「うまい！　こういうのが一番だ」客は満面で、空いた皿をカウンターに戻す。",
+    doubt: "「悪くはないが、どこにでもある味だな」客は勘定だけ済ませ、早々に立つ。",
+    variants: [
+      {
+        text: "「腹が減った！　とにかく量のあるやつを！」若い冒険者が、椅子にどかりと座る。",
+      },
+      {
+        text: "「肉とパン、それとエール！」労働者らしい客が、入店と同時に注文する。",
+      },
+      {
+        text: "魔術学院の制服らしい客が扉を開ける。「勉強で頭がぼんやりする。甘いものがほしい」",
+      },
+     {
+        text: "みすぼらしい男が、じゃらじゃらと銅貨を散らして言った。「これで食えるだけ、なんでもいい！」",
+        praise: "「うまい、うまい。何日ぶりの食事だろう」男は涙を流しながらかぶりついた。",
+      },
+    ],
+  }),
 ]);
+
 

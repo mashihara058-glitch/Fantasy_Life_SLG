@@ -3,7 +3,7 @@ GAME.registerEvents([
   {
     id: "common_adolescence_001",
     tags: ["adolescence", "magic", "education"],
-    conditions: { ageMin: 12, ageMax: 15, flags: ["magic_spark"] },
+    conditions: { ageMin: 12, ageMax: 15, flags: ["magic_spark"] ,notFlags: ["slave"] },
     weight: 30,
     text: "王都の魔術学院から、才能ある子どもを探す使者が村にやって来た。",
     choices: [
@@ -29,7 +29,7 @@ GAME.registerEvents([
   {
     id: "common_adolescence_002",
     tags: ["adolescence", "work", "mentor"],
-    conditions: { ageMin: 12, ageMax: 15, noNpcs: ["mentor"], moneyUnlocked: false, notFlags: ["magic_student"] },
+    conditions: { ageMin: 12, ageMax: 15, noNpcs: ["mentor"], moneyUnlocked: false, notFlags: ["magic_student"],notFlags: ["slave"]  },
     text: "腕の良い職人が、住み込みの弟子を探していると聞いた。",
     choices: [
       {
@@ -64,7 +64,7 @@ GAME.registerEvents([
   {
     id: "common_adolescence_004",
     tags: ["adolescence", "love"],
-    conditions: { ageMin: 14, ageMax: 17, noNpcs: ["lover", "spouse"] },
+    conditions: { ageMin: 14, ageMax: 17, noNpcs: ["lover", "spouse"],notFlags: ["slave"]  },
     weightMods: [{ conditions: { flags: ["changeling"] }, multiply: 0.2 }],
     text: "収穫祭の夜。篝火の向こうで、ある人と目が合った。",
     choices: [
@@ -109,8 +109,8 @@ GAME.registerEvents([
   },
   {
     id: "common_adolescence_006",
-    tags: ["adolescence", "training"],
-    conditions: { ageMin: 12, ageMax: 17 },
+    tags: ["adolescence", "training",],
+    conditions: { ageMin: 12, ageMax: 17 ,notFlags: ["slave"] },
     repeatable: true,
     cooldown: 2,
     text: "将来、自分は何になるのだろう。{名前}はぼんやりと考えていた。",
