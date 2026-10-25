@@ -334,7 +334,7 @@ GAME.registerEvents([
     repeatable: true,
     cooldown: 4,
     conditions: { ageMin: 16, jobs: ["gambler"], notFlags: ["slave"] },
-    text: "立派なひげの紳士が、チェス盤を挟んで座った。勝てば小费をくれるという。ただし——本気で潰すより、長く楽しませた方が、懐は温かくなりそうだ。",
+    text: "立派なひげの紳士が、チェス盤を挟んで座った。勝てば賞金をくれるという。ただし——本気で潰すより、長く楽しませた方が、懐は温かくなりそうだ。",
     choices: [
       {
         text: "手加減せず勝負する",
@@ -352,7 +352,7 @@ GAME.registerEvents([
         text: "接戦に見せて接待する",
         check: { stat: "ability", difficulty: 60 },
         success: {
-          result: "危うい勝負を何度も演じた。紳士の目が熱を帯び、最後に厚い封筒が滑り込んできた。",
+          result: "危うい勝負を何度も演じた。紳士の目が熱を帯び、最後に重い革袋が滑り込んできた。",
           effects: { money: 70, ability: 3, reputation: 2 },
           log: { title: "チェスで紳士を接待する", text: "勝負より空気を売り、厚く礼を得た。" },
         },
@@ -482,7 +482,7 @@ GAME.registerEvents([
     choices: [
       {
         text: "黙ってチップを受け取る",
-        result: "{ライバル}が札束を卓へ滑らせた。「勘違いするな。お前を倒すのは、この俺だ」。背中だけ投げて、煙の向こうへ消えていく。",
+        result: "{ライバル}がチップを卓へ滑らせた。「勘違いするな。お前を倒すのは、この俺だ」。背中だけ投げて、煙の向こうへ消えていく。",
         effects: {
           money: 80,
           npc: { rival: { trust: 5, intimacy: 8 } },
@@ -505,7 +505,7 @@ GAME.registerEvents([
         text: "今すぐ卓で決着をつけろと挑む",
         check: { chance: 40 },
         success: {
-          result: "援助の札を、勝負の火種にした。夜明け前、{ライバル}の山がこちらへ倒れ込む。「……次は、本気で来る」。笑っているようにも、見えた。",
+          result: "援助のチップを、勝負の火種にした。夜明け前、{ライバル}の山がこちらへ倒れ込む。「……次は、本気で来る」。笑っているようにも、見えた。",
           effects: {
             money: 60,
             reputation: 4,
