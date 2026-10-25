@@ -749,5 +749,39 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+    id: "common_young_021",
+    tags: ["young", "prime", "elder", "rival"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 6,
+    maxTimes: 4,
+    conditions: { ageMin: 18, npcs: ["rival"], notFlags: ["slave"], notJobs: ["slave"] },
+    text: "街角で肩がぶつかった相手は、昔からの{ライバル}だった。お互い、少しだけ背が高くなっている。",
+    choices: [
+      {
+        text: "今の腕前を見せると挑む",
+        check: { chance: 50 },
+        success: {
+          result: "小さな勝負に勝った。{ライバル}は舌打ちし、「調子に乗るな。次は負けない」と笑った。",
+          effects: { reputation: 2, ability: 1, npc: { rival: { trust: -2, intimacy: 6 } } },
+        },
+        failure: {
+          result: "あっさり負けた。{ライバル}は勝ち誇りもせず、「錆びてるな。また来い」と背を向けた。",
+          effects: { ability: 1, npc: { rival: { intimacy: 5 } } },
+        },
+      },
+      {
+        text: "久しぶりだと素直に話す",
+        result: "挑むでもなく、逃げるでもなく、短い立ち話をした。「まだ終わってないぞ」——それが、{ライバル}の挨拶だった。",
+        effects: { health: 2, npc: { rival: { trust: 4, intimacy: 6 } } },
+      },
+      {
+        text: "目も合わせず去る",
+        result: "呼び止められた気がしたが、足は止めなかった。",
+        effects: { npc: { rival: { intimacy: -4 } } },
+      },
+    ],
+  },
 ]);
 
