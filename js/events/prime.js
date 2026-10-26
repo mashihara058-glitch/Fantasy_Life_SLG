@@ -42,13 +42,29 @@ GAME.registerEvents([
   {
     id: "common_prime_003",
     tags: ["prime", "work"],
-    conditions: { ageMin: 28, ageMax: 55, hasJob: true, notJobs: ["slave", "retired", "laborer", "gambler", "mistress", "miner", "prostitute"], notFlags: ["promoted"], stats: { ability: { min: 45 } } },
-    weight: 15,
+    weight: 10,
+    repeatable: true,
+    maxTimes: 3,
+    cooldown: 10,
+    logOnce: true,
+    conditions: {
+      ageMin: 28,
+      ageMax: 55,
+      hasJob: true,
+      notJobs: ["slave", "retired", "laborer", "gambler", "mistress", "miner", "prostitute"],
+      stats: { ability: { min: 45 } },
+    },
     text: "長年の働きぶりが認められ、責任ある立場を任されることになった。",
     choices: [
       {
         text: "謹んで引き受ける",
-        effects: { reputation: 10, incomeBonus: 40, health: -3, ability: -25, addFlags: ["promoted"] },
+        effects: {
+          reputation: 8,
+          incomeBonus: 25,
+          health: -3,
+          ability: -10,
+          addFlags: ["promoted"],
+        },
         log: { title: "{職業}として昇進する", text: "重責を担う立場となった。" },
       },
       {

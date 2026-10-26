@@ -148,7 +148,7 @@ GAME.registerEvents([
   {
     id: "common_young_003",
     tags: ["young", "love", "marriage"],
-    conditions: { ageMin: 18, ageMax: 40, npcs: ["lover"], noNpcs: ["spouse"], notJobs: ["mistress"], notFlags: ["mistress"] },
+    conditions: { ageMin: 18, npcs: ["lover"], noNpcs: ["spouse"], notJobs: ["mistress"], notFlags: ["mistress"] },
     weight: 15,
     weightMods: [{ conditions: { flags: ["changeling"], notFlags: ["changeling_accepted"] }, multiply: 0.3 }],
     text: "{恋人}との付き合いも長くなった。二人の将来について、考える時が来たようだ。",
@@ -178,7 +178,6 @@ GAME.registerEvents([
     tags: ["young", "marriage", "noble"],
     conditions: {
       ageMin: 18,
-      ageMax: 28,
       origin: ["noble"],
       noNpcs: ["spouse"],
       notJobs: ["slave", "miner", "prostitute", "mistress"],
@@ -209,15 +208,19 @@ GAME.registerEvents([
   {
     id: "common_young_006",
     tags: ["young", "prime", "work"],
-    conditions: { ageMin: 18, ageMax: 59, hasJob: true, notJobs: ["slave", "retired","gambler","mistress"] },
+    conditions: { ageMin: 18, hasJob: true, notJobs: ["slave", "retired", "gambler", "mistress"] },
     repeatable: true,
-    cooldown: 3,
+    cooldown: 8,
+    maxTimes: 4,
     text: "{職業}としての仕事にも、すっかり慣れてきた。",
     choices: [
       {
         text: "昇給を願い出る",
         check: { stat: "reputation", difficulty: 45 },
-        success: { result: "日頃の働きぶりが認められた。しかし、報酬に見合うだけの責任をも求められた。", effects: { incomeBonus: 10,ability:-15 } },
+        success: {
+          result: "日頃の働きぶりが認められた。しかし、報酬に見合うだけの責任も求められた。",
+          effects: { incomeBonus: 10, ability: -8 },
+        },
         failure: { result: "「生意気を言うな」と一蹴された。", effects: { reputation: -3 } },
       },
       { text: "腕を磨く", effects: { ability: 3 } },
@@ -227,7 +230,7 @@ GAME.registerEvents([
   {
     id: "common_young_008",
     tags: ["young", "work"],
-    conditions: { ageMin: 18, ageMax: 50, notJobs: ["slave", "retired","miner","prostitute","mistress"] },
+    conditions: { ageMin: 18, notJobs: ["slave", "retired","miner","prostitute","mistress"] },
     weight: 10,
     text: "ベッドの中でふと思う。今の仕事は自分に合っているだろうか？",
     choices: [
@@ -594,7 +597,7 @@ GAME.registerEvents([
         text: "開業資金のかわりに返済する",
         check: { stat: "reputation", difficulty: 45 },
         success: {
-          result: "シャッターの前で、勘定を清算した。夢の代金は、まるごと自分の懐から出ていった。",
+          result: "錠のかかった扉の前で、勘定を清算した。夢の代金は、まるごと自分の懐から出ていった。",
           effects: {
             money: -150,
             removeFlags: ["guarantor_for_friend", "guarantor_shop"],
