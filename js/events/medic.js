@@ -268,7 +268,7 @@ GAME.registerEvents([
         text: "志願者の犠牲で特効薬を作る",
         check: { chance: 65 },
         success: {
-          result: "何人かが自らを差し出した。多くの命が残り、提供した者は聖人として教会に葬られた。棚の乳鉢が、いつもより重い。",
+          result: "何人かが自らを差し出した。多くの命が残り、提供した者は聖人として神殿に葬られた。棚の乳鉢が、いつもより重い。",
           effects: { reputation: 6, ability: 4, addFlags: ["medic_sacrifice"] },
           log: { title: "禁忌　人体を材料にした薬", text: "尊い犠牲で、流行を押しとどめた。" },
         },

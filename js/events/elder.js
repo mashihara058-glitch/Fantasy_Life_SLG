@@ -49,14 +49,70 @@ GAME.registerEvents([
   {
     id: "common_elder_003",
     tags: ["elder", "family", "death"],
-    conditions: { aged: true, npcs: ["spouse"] },
-    weight: 6,
-    text: "{配偶者}が床に伏せ、日に日に弱っていく。",
+    conditions: { aged: true, npcs: ["spouse"], notFlags: ["slave"] },
+    weight: 7,
+    maxTimes: 1,
+    logOnce: true,
+    text: "{配偶者}が床に伏せ、日に日に弱っていく。長い季節を共にした手が、もう返事を返さない日が近い。",
     choices: [
       {
         text: "最期まで手を握り続ける",
-        effects: { npcState: { spouse: "dead" }, health: -5 },
-        log: { title: "伴侶の{配偶者}を看取る", text: "長年連れ添った{配偶者}が、静かに旅立った。" },
+        result: "呼吸が雪のように薄くなり、やがて止まった。部屋に残るのは、共に過ごした年月の匂いだけだ。",
+        effects: {
+          health: -5,
+          loseNpc: { role: "spouse", status: "dead", trait: false },
+          addTraits: ["worldweary"],
+          removeFlags: ["married"],
+        },
+        log: {
+          title: "伴侶の{配偶者}を看取る",
+          text: "長年連れ添った配偶者が、静かに旅立った。",
+          important: true,
+        },
+      },
+    ],
+  },
+  {
+    id: "common_elder_friend_death",
+    tags: ["elder", "friend", "death"],
+    conditions: {
+      aged: true,
+      npcs: ["friend"],
+      npcAgeMin: { friend: 60 },
+      notFlags: ["slave"],
+    },
+    weight: 5,
+    maxTimes: 1,
+    logOnce: true,
+    text: "老いの同じ側にいた{友人}から、短い手紙が届いた。「もう、長くはないと思う」。",
+    choices: [
+      {
+        text: "駆けつけて傍らにいる",
+        result: "枕元で、若い頃の失敗をひとつだけ笑い合った。次の言葉は、来なかった。",
+        effects: {
+          health: -4,
+          loseNpc: { role: "friend", status: "dead", trait: false },
+          addTraits: ["worldweary"],
+        },
+        log: {
+          title: "旧友の{友人}を看取る",
+          text: "長い人生を並走した友人が、先に世を去った。",
+          important: true,
+        },
+      },
+      {
+        text: "手紙に返事を書く",
+        result: "墨が乾く前に、訃報が追い越してきた。届かなかった手紙が、机の上で軽い。",
+        effects: {
+          health: -5,
+          loseNpc: { role: "friend", status: "dead", trait: false },
+          addTraits: ["worldweary"],
+        },
+        log: {
+          title: "旧友の{友人}の死を知る",
+          text: "返事の届く前に、友人を失った。",
+          important: true,
+        },
       },
     ],
   },
