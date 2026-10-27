@@ -132,37 +132,44 @@ GAME.registerEvents([
       },
     ],
   },
-{
-  id: "common_life_accident02",
-  tags: ["health", "death"],
-  weight: 5,
-  repeatable: true,
-  cooldown: 8,
-  conditions: {
-    ageMin: 30,
-    stats: { money: { max: -100 } }
-  },
-  text: "金がなく、もう何日も食事をとれていない。目の前には、よくわからないキノコが生えている。",
-  choices: [
-    {
-      text: "食べる",
-      check: { stat: "health", difficulty: 30 },
-      success: {
-        result: "謎のキノコを焼いて食べた。口の中でじゅわっと広がる旨みに、生き返った心地がした。",
-        effects: { health: 5 },
-      },
-      failure: {
-        result: "謎のキノコを食べた。何日も腹痛と吐き気が続き、やがて{名前}は息絶えた。",
-        effects: {  death: "食中毒"  },
-      },
+  {
+    id: "common_life_accident02",
+    tags: ["health", "death"],
+    weight: 5,
+    repeatable: true,
+    cooldown: 8,
+    conditions: {
+      ageMin: 30,
+      moneyUnlocked: true,
+      stats: { money: { max: -100 } },
+      notFlags: ["slave"],
     },
-    {
-      text: "耐える",
-      result: "腹の鳴る音だけが、何もない部屋に響く。",
-      effects: { health: -5 },
-    }
-  ],
-},  
+    text: "懐も腹も、もう空だ。何日もまともに食べていない。道端に、見たことのないキノコが湿って光っている。",
+    choices: [
+      {
+        text: "空腹に負け、そのキノコを口にする",
+        check: { stat: "health", difficulty: 35 },
+        success: {
+          result: "火を通すと、意外なほど旨みが広がった。一時しのぎでも、今夜は眠れる。",
+          effects: { health: 5 },
+        },
+        failure: {
+          result: "最初はただの腹の痛みだった。吐き気が日を跨ぎ、やがて手足が冷たくなり、部屋の明かりが遠のいた。",
+          effects: { death: "食中毒" },
+          log: {
+            title: "毒のキノコに倒れ、生涯を終える",
+            text: "極貧の空腹に耐えきれず、正体不明のキノコを口にして命を落とした。",
+            important: true,
+          },
+        },
+      },
+      {
+        text: "毒かもしれないと、手を伸ばさない",
+        result: "腹の音だけが、何もない部屋に響く。明日の自分に、もう一度だけ賭ける。",
+        effects: { health: -5 },
+      },
+    ],
+  },
 
   // ---------- 戦争 ----------
   {

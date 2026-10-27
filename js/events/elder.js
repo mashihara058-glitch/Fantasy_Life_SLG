@@ -1,6 +1,78 @@
 // 老年期・長寿期
 //   aged: true … 寿命の約80%以降（全種族）
 //   ageMin: 100 … 長寿種族の「まだ老い前だが年月は長い」層（人間にはほぼ出ない）
+// 高齢の恋人探し: common_elder_lover_*（同族は高確率・異族は低確率）
+
+/**
+ * 長寿帯の出会い。同族なら付きやすく、異族は断られやすい。
+ */
+function elderRaceLover({ id, species, raceLabel, text, sameOk, sameNo, otherOk, otherNo }) {
+  return {
+    id: `common_elder_lover_${id}`,
+    tags: ["elder", "love"],
+    weight: 5,
+    weightMods: [{ conditions: { species: [species] }, multiply: 2.2 }],
+    repeatable: true,
+    cooldown: 10,
+    logOnce: true,
+    conditions: {
+      ageMin: 100,
+      noNpcs: ["lover", "spouse"],
+      notJobs: ["mistress", "slave"],
+      notFlags: ["slave", "mistress"],
+    },
+    text,
+    choices: [
+      {
+        conditions: { species: [species] },
+        text: `同じ${raceLabel}だとわかり、距離を詰める`,
+        check: { chance: 72 },
+        success: {
+          result: sameOk,
+          effects: {
+            addNpc: { role: "lover", intimacy: 55, trust: 45 },
+            health: 4,
+          },
+          log: {
+            title: `{恋人}と恋人になる（${raceLabel}）`,
+            text: `晩年に、同族の${raceLabel}と交際が始まった。`,
+          },
+        },
+        failure: {
+          result: sameNo,
+          effects: { health: 1 },
+        },
+      },
+      {
+        conditions: { custom: (s) => s.species !== species },
+        text: "惹かれるまま、声をかける",
+        check: { chance: 28 },
+        success: {
+          result: otherOk,
+          effects: {
+            addNpc: { role: "lover", intimacy: 50, trust: 40 },
+            health: 3,
+            reputation: 1,
+          },
+          log: {
+            title: `{恋人}と恋人になる（異族）`,
+            text: `${raceLabel}の相手と、種族の壁を越えて交際が始まった。`,
+          },
+        },
+        failure: {
+          result: otherNo,
+          effects: { health: -1 },
+        },
+      },
+      {
+        text: "見守るだけにする",
+        result: "惹かれ方は本物でも、今夜の踏み込みはしない。長い人生は、焦らなくても続いていく。",
+        effects: { health: 1 },
+      },
+    ],
+  };
+}
+
 GAME.registerEvents([
   {
     id: "common_elder_001",
@@ -161,6 +233,122 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+    id: "common_elder_career_change",
+    tags: ["prime", "elder", "work", "career"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 12,
+    logOnce: true,
+    maxTimes: 3,
+    conditions: {
+      jobYearsMin: 40,
+      hasJob: true,
+      notJobs: ["slave", "retired"],
+      notFlags: ["slave"],
+    },
+    text: "今の仕事に就いて、もう長い。おおよその目標は達した気がする夜がある。今からでも、別の世界の入口を覗いてみるか。",
+    choices: [
+      {
+        conditions: { notJobs: ["farmer"] },
+        text: "土地を借り、農業を始めてみる",
+        result: "畝の匂いと、天気の話。派手さはないが、季節が仕事を教えてくれる。",
+        effects: { job: "farmer", health: 2 },
+        log: {
+          title: "農夫に転職する",
+          text: "長年の職を離れ、土に生きる道へ移った。",
+        },
+      },
+      {
+        conditions: { notJobs: ["adventurer"] },
+        text: "冒険者ギルドの門を叩く",
+        result: "若い者に交じり、錆びた刃を研ぎ直す。遅すぎる挑戦も、挑戦ではある。",
+        effects: { job: "adventurer", ability: 1, health: -2 },
+        log: {
+          title: "冒険者に転職する",
+          text: "長年の職を離れ、冒険者として名を登録した。",
+        },
+      },
+      {
+        conditions: { notJobs: ["gambler"] },
+        text: "一攫千金を夢見て賭場へ入る",
+        result: "最後の花を、賽の目に託す。鼓動だけが、若い頃より正直だ。",
+        effects: { job: "gambler", money: -10 },
+        log: {
+          title: "博打師に転職する",
+          text: "長年の職を離れ、博打の世界に身を投じた。",
+        },
+      },
+      {
+        conditions: { notJobs: ["cook"] },
+        text: "包丁を握り、厨房に立つ",
+        result: "自分の舌が信じる味を、他人の皿へ載せる。遅咲きの伝道も、悪くない。",
+        effects: { job: "cook", ability: 1 },
+        log: {
+          title: "料理人に転職する",
+          text: "長年の職を離れ、料理人として厨房に入った。",
+        },
+      },
+      {
+        text: "今のままでよい",
+        result: "扉は開けずに閉じた。慣れた仕事着の匂いが、今夜は少し優しい。",
+        effects: { health: 2 },
+      },
+    ],
+  },
+
+  // ---------- 高齢・長寿帯の恋人（種族の相性）----------
+  elderRaceLover({
+    id: "elf",
+    species: "elf",
+    raceLabel: "エルフ",
+    text: "夜会の端に、長い時をまとった美しさの人が立っている。耳の形も、間の取り方も、森の側の者だ。",
+    sameOk: "同じ暦を生きてきた者同士だとわかると、話が百年単位で噛み合う。名は{恋人}。遅すぎる春ではなかった。",
+    sameNo: "同族でも、心の扉は別だ。「悪いが、今は一人でいたい」。優雅な拒絶が、胸に残る。",
+    otherOk: "短い命の側の熱に、相手は驚いたあと微笑んだ。名は{恋人}。異族の恋は、噂より先に始まる。",
+    otherNo: "「悪いが、エルフにはエルフの時がある」。拒み方は丁寧で、だからこそ刺さる。",
+  }),
+  elderRaceLover({
+    id: "dwarf",
+    species: "dwarf",
+    raceLabel: "ドワーフ",
+    text: "鍛冶の煙る酒場で、髭も腕も確かな客が杯を置いた。岩のような沈黙の奥に、妙な魅力がある。",
+    sameOk: "鉱脈の話と、古い酒の話が続く。名は{恋人}。同じ山の匂いを知る者同士、距離は早かった。",
+    sameNo: "同族でも気は合わぬことがある。「仕事の話なら聞く。それ以上はいらん」。杯だけが残る。",
+    otherOk: "「長い耳や薄っぺらい腕は好みじゃないが……お前は別だ」。名は{恋人}。珍しい通行证をもらった気がする。",
+    otherNo: "「種族が違う。山の話が通じん」。短く、だが決定的だった。",
+  }),
+  elderRaceLover({
+    id: "beastfolk",
+    species: "beastfolk",
+    raceLabel: "獣人",
+    text: "市場の陰で、耳と尾の動きが先に感情を語る人がいる。視線が合った瞬間、野の匂いがした。",
+    sameOk: "狩りと旅と、空腹の冗談が通じる。名は{恋人}。群れの外でも、隣にいられる気がした。",
+    sameNo: "同族の礼儀で距離を取られた。「今夜は狩り仲間で十分だ」。尾だけが、少し迷っていた。",
+    otherOk: "「毛皮のない相手は珍しいが、嫌じゃない」。名は{恋人}。異質さが、かえって熱になった。",
+    otherNo: "鼻を鳴らし、首を横に振る。「匂いが、群れのものじゃない」。それ以上の説明はなかった。",
+  }),
+  elderRaceLover({
+    id: "lizardfolk",
+    species: "lizardfolk",
+    raceLabel: "竜人",
+    text: "灯の遠い席に、鱗の光る客がいる。低い声と冷たい指先。熱を知っている者の落ち着きだ。",
+    sameOk: "砂漠と寒季の話が、鱗の下で通じる。名は{恋人}。同じ冷えを分け合える相手だった。",
+    sameNo: "同族でも、巣は別だ。「関わりは商売までにしろ」。尾が、短く床を叩く。",
+    otherOk: "「温かい血の者とは稀だが……お前は例外にする」。名は{恋人}。冷たい掌が、意外なほど丁寧だった。",
+    otherNo: "「熱が違う。竜人の夜には、向かん」。拒絶は、体温の話のようでもあった。",
+  }),
+  elderRaceLover({
+    id: "human",
+    species: "human",
+    raceLabel: "人間",
+    text: "街の広場で、ごく普通の——だからこそ目を奪う人が、季節の話をしていた。短い命の鮮やかさがある。",
+    sameOk: "同じ速さを生きる者同士、無駄が少ない。名は{恋人}。残り少ない季節を、分け合う約束になった。",
+    sameNo: "人間同士でも、終わり方は選ぶ。「もう新しい火は焚かない」。穏やかで、痛い。",
+    otherOk: "長い命の側の目を、相手は恐れず見返した。名は{恋人}。「短くても濃い方がいい」——その言葉が残る。",
+    otherNo: "「寿命の話になると、怖くなる」。正直な断りに、反論の余地はなかった。",
+  }),
+
 
   // ---------- エルフとドワーフの時間感覚 ----------
   {
@@ -289,10 +477,10 @@ GAME.registerEvents([
     maxTimes: 1,
     logOnce: true,
     conditions: { ageMin: 100, notFlags: ["slave"] },
-    text: "若い職人の仕事場で、つい口が滑る。「最近の者は道具を大切にせん。昔は一本の槌を何十年も磨いたものだ」。先方が持ってきた槌を見て、言葉を失う。",
+    text: "若い職人の仕事場で、つい口が滑る。「最近の者は道具を大切にせん。昔は一本の槌を何十年も磨いたものだ」。{名前}が持ってきた槌を見て、若人たちは言葉を失う。",
     choices: [
       {
-        text: "自慢げに見せられた槌を眺める",
+        text: "自慢げに槌を見せる",
         result: "木柄の摩耗も頭の型も、今では博物館行きの古い規格だ。若者は「祖父の祖父の」と胸を張っている。自分が古いのではなく、槌が遺跡だった。",
         effects: { ability: 1, reputation: 1 },
         log: {
@@ -302,7 +490,7 @@ GAME.registerEvents([
       },
       {
         text: "それでも手入れの話だけはする",
-        result: "型は古くても、油の差し方は通じる。若者は真剣にメモを取り、「やっぱり長老は違う」と言った。槌の時代錯誤には触れないでおいた。",
+        result: "型は古くても、油の差し方は通じる。若者は真剣にメモを取り、「やっぱり長老は違う」と言った。槌の時代錯誤には触れないでくれた。",
         effects: { reputation: 2, ability: 1 },
         log: {
           title: "古槌の手入れを教える",
@@ -310,8 +498,8 @@ GAME.registerEvents([
         },
       },
       {
-        text: "自分の歳を笑ってごまかす",
-        result: "「……ワシより槌の方が先輩かもな」。工房が和み、茶が出た。説教の威厳だけが、静かに引退する。",
+        text: "笑ってごまかす",
+        result: "「……お前より槌の方が先輩かもな」。工房が和み、茶が出た。説教の威厳だけが、静かに引退する。",
         effects: { health: 2, reputation: 1 },
       },
     ],
@@ -421,4 +609,5 @@ GAME.registerEvents([
       },
     ],
   },
+
 ]);

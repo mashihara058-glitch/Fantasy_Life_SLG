@@ -786,5 +786,128 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+    id: "common_young_022",
+    tags: ["young", "prime", "love"],
+    weight: 6,
+    repeatable: true,
+    cooldown: 8,
+    logOnce: true,
+    conditions: {
+      // ageMax: 長寿が「三百歳のエルフ」失敗と噛み合わなくなるのを防ぐ。高齢帯は common_elder_lover_* へ
+      ageMin: 20,
+      ageMax: 150,
+      notJobs: ["mistress", "slave"],
+      noNpcs: ["lover", "spouse"],
+      notFlags: ["slave", "mistress"],
+    },
+    text: "ふらりと入った酒場で、目が合った。声をかけてみれば、話しぶりも立ち居も、妙に気になる。",
+    choices: [
+      {
+        text: "自分も一人だと伝え、もう少し話す",
+        check: { chance: 55 },
+        success: {
+          result: "名は{恋人}。独りだと知ると、相手の目が少しだけ柔らかくなった。杯が空くころには、また会う約束ができていた。",
+          effects: {
+            addNpc: { role: "lover", intimacy: 50, trust: 40 },
+            health: 4,
+          },
+          log: {
+            title: "{恋人}と恋人になる",
+            text: "酒場で出会い、交際が始まった。",
+          },
+        },
+        failure: {
+          result: "話は弾んだが、それ以上ではなかった。楽しい一夜として、胸に残る。",
+          effects: { health: 3 },
+        },
+      },
+      {
+        text: "年齢の話から距離を測る",
+        check: { chance: 55 },
+        success: {
+          result: "年は近い。どちらも抱えている影は薄い。名は{恋人}——その夜を境に、二人の距離は縮まった。",
+          effects: {
+            addNpc: { role: "lover", intimacy: 50, trust: 40 },
+            health: 4,
+          },
+          log: {
+            title: "{恋人}と恋人になる",
+            text: "酒場で年の近い相手と出会い、交際が始まった。",
+          },
+        },
+        failure: {
+          result: "相手は何と三百歳を超えるエルフだった。見かけに騙され、会話の世代が噛み合わない。酒だけが、公平にうまかった。",
+          effects: { health: 2, ability: 1 },
+        },
+      },
+      {
+        text: "身の上——独りかどうか聞く",
+        check: { chance: 55 },
+        success: {
+          result: "独身で、決まった相手もいないという。名は{恋人}。以後、酒場の灯りより先に、その顔が浮かぶようになった。",
+          effects: {
+            addNpc: { role: "lover", intimacy: 55, trust: 35 },
+            health: 4,
+          },
+          log: {
+            title: "{恋人}と恋人になる",
+            text: "酒場で独身の相手と出会い、交際が始まった。",
+          },
+        },
+        failure: {
+          result: "残念ながら、すでに家庭がある人だった。それでも、酒と世間話の分だけは残せた。",
+          effects: { health: 2 },
+        },
+      },
+      {
+        text: "今夜はここまでにして店を出る",
+        result: "惹かれた気持ちは本物でも、踏み込む時機ではない気がした。扉の外の風が、頭を冷ます。",
+        effects: { health: 1 },
+      },
+    ],
+  },
+  {
+    id: "common_young_023",
+    tags: ["young", "prime", "elder", "friend", "work"],
+    weight: 6,
+    repeatable: true,
+    cooldown: 8,
+    logOnce: true,
+    conditions: {
+      ageMin: 18,
+      hasJob: true,
+      noNpcs: ["friend"],
+      notFlags: ["slave"],
+      notJobs: ["slave"],
+    },
+    text: "職場に、妙に気が合う同僚がいる。仕事の話が、いつの間にか私語になっている。帰りに飯でも、と誘ってみるか。",
+    choices: [
+      {
+        text: "仕事帰りに食事へ誘う",
+        check: { chance: 55 },
+        success: {
+          result: "皿の向こうで趣味も愚痴も噛み合った。それから私用でも顔を合わせるようになり、いつの間にか{友人}と呼ぶ間柄になった。",
+          effects: {
+            addNpc: { role: "friend", trust: 50, intimacy: 45, tags: ["adult_friend"] },
+            health: 2,
+          },
+          log: {
+            title: "{友人}と友人になる",
+            text: "職場の同僚との食事をきっかけに、友人ができた。",
+          },
+        },
+        failure: {
+          result: "「今日は都合が悪い。また今度」——扉の向こうに残るのは、未消化の誘いだけだ。",
+          effects: { health: -1 },
+        },
+      },
+      {
+        text: "仕事と私を分けたままにする",
+        result: "同僚のままが、いちばん波風は立たない。今日の仕事は、それでも少し楽だった。",
+        effects: { ability: 1 },
+      },
+    ],
+  },
 ]);
 
