@@ -2,11 +2,15 @@
 //   aged: true … 寿命の約80%以降（全種族）
 //   ageMin: 100 … 長寿種族の「まだ老い前だが年月は長い」層（人間にはほぼ出ない）
 // 高齢の恋人探し: common_elder_lover_*（同族は高確率・異族は低確率）
+//   late_love … 晩年の恋が実った
+//   late_love_cross_species … 異族の恋人（年齢は相手種族の成年帯。以後は仕様として同じ時を歩く）
+//   shared_time_blessing … 妖精の泉の祈り（叙述上の祝福。配偶者の死は別途あり得る）
 
 /**
  * 長寿帯の出会い。同族なら付きやすく、異族は断られやすい。
+ * partnerAdultAge: 異族成功時のみ使う、相手種族の成年年齢 [min, max]
  */
-function elderRaceLover({ id, species, raceLabel, text, sameOk, sameNo, otherOk, otherNo }) {
+function elderRaceLover({ id, species, raceLabel, partnerAdultAge, text, sameOk, sameNo, otherOk, otherNo }) {
   return {
     id: `common_elder_lover_${id}`,
     tags: ["elder", "love"],
@@ -32,6 +36,7 @@ function elderRaceLover({ id, species, raceLabel, text, sameOk, sameNo, otherOk,
           effects: {
             addNpc: { role: "lover", intimacy: 55, trust: 45 },
             health: 4,
+            addFlags: ["late_love"],
           },
           log: {
             title: `{恋人}と恋人になる（${raceLabel}）`,
@@ -50,9 +55,15 @@ function elderRaceLover({ id, species, raceLabel, text, sameOk, sameNo, otherOk,
         success: {
           result: otherOk,
           effects: {
-            addNpc: { role: "lover", intimacy: 50, trust: 40 },
+            addNpc: {
+              role: "lover",
+              age: partnerAdultAge,
+              intimacy: 50,
+              trust: 40,
+            },
             health: 3,
             reputation: 1,
+            addFlags: ["late_love", "late_love_cross_species"],
           },
           log: {
             title: `{恋人}と恋人になる（異族）`,
@@ -234,6 +245,94 @@ GAME.registerEvents([
     ],
   },
   {
+  id: "common_elder_006",
+  tags: ["elder", "prime"],
+  weight: 8,
+  repeatable: true,
+  cooldown: 5,
+  conditions: {
+    ageMin: 60,
+    npcs: ["sibling"],
+  },
+  text: "{兄弟の続柄}の{兄弟}が、手土産を持って訪ねてきた。旅行に行ってきたらしい。",
+  choices: [
+    {
+      text: "旅の思い出を聞く",
+      result: "{兄弟}は旅先で見た面白いものや美しい景色の話をしてくれた。楽しい時間だった。",
+      effects: { health:2,npc: { sibling: { trust: 1, intimacy: 1 } } },
+    },
+    {
+      text: "土産だけ受け取る",
+      result: "忙しかったので、後日手紙で礼をしたためた。土産は美味かったと伝えた。",
+      effects: { health:1 },
+    },
+    {
+      text: "都合が悪いと断る",
+      result: "{兄弟}は残念そうに去っていった。",
+      effects: { npc: { sibling: { trust: -1, intimacy: -1 } } },
+    }
+  ],
+},
+{
+  id: "common_elder_007",
+  tags: ["elder", "prime"],
+  weight: 8,
+  repeatable: true,
+  cooldown: 5,
+  conditions: {
+    ageMin: 60,
+    flags: ["retired"]
+  },
+  text: "昔の仕事仲間が訪ねてきた。若い者に仕事を教える人手が足りないので、{名前}にも手伝ってほしいと頼まれた。",
+  choices: [
+    {
+      text: "引き受ける",
+      check: { stat: "ability", difficulty: 50 },
+      success: {
+        result: "熟練の技を若者に披露した。最初はよそよそしかった視線が、徐々に熱を帯びていった。",
+        effects: { money:10, reputation: 3 },
+      },
+      failure: {
+        result: "知らない年寄りがいきなり出てきて、言うことを聞く者はいなかった。報酬はもらったが、大した働きは出来なかった。",
+        effects: { money:10 },
+      },
+    },
+    {
+      text: "断る",
+    }
+  ],
+},
+{
+  id: "common_elder_008",
+  tags: ["elder", "prime"],
+  weight: 8,
+  repeatable: true,
+  cooldown: 5,
+  conditions: {
+    ageMin: 60,
+    npcs: ["pupil"],
+    flags: ["retired"]
+  },
+  text: "{弟子}が訪ねてきた。昔馴染みの客で、どうしても{名前}でないとだめだと言い張るものがいるらしい。",
+  choices: [
+    {
+      text: "引き受ける",
+      check: { stat: "ability", difficulty: 50 },
+      success: {
+        result: "仕事の後、後継は{弟子}だからと客に言い含めた。",
+        effects: { money:10, reputation: 3 },
+      },
+      failure: {
+        result: "すでに衰えた体では、昔のようにできなかった。",
+        effects: { money:10 },
+      },
+    },
+    {
+      text: "断る",
+    }
+  ],
+},
+  {
     id: "common_elder_career_change",
     tags: ["prime", "elder", "work", "career"],
     weight: 8,
@@ -298,10 +397,12 @@ GAME.registerEvents([
   },
 
   // ---------- 高齢・長寿帯の恋人（種族の相性）----------
+  // partnerAdultAge は異族成功時のみ（寿命レンジに対する「成年〜働き盛り」の目安）
   elderRaceLover({
     id: "elf",
     species: "elf",
     raceLabel: "エルフ",
+    partnerAdultAge: [80, 160],
     text: "夜会の端に、長い時をまとった美しさの人が立っている。耳の形も、間の取り方も、森の側の者だ。",
     sameOk: "同じ暦を生きてきた者同士だとわかると、話が百年単位で噛み合う。名は{恋人}。遅すぎる春ではなかった。",
     sameNo: "同族でも、心の扉は別だ。「悪いが、今は一人でいたい」。優雅な拒絶が、胸に残る。",
@@ -312,6 +413,7 @@ GAME.registerEvents([
     id: "dwarf",
     species: "dwarf",
     raceLabel: "ドワーフ",
+    partnerAdultAge: [40, 90],
     text: "鍛冶の煙る酒場で、髭も腕も確かな客が杯を置いた。岩のような沈黙の奥に、妙な魅力がある。",
     sameOk: "鉱脈の話と、古い酒の話が続く。名は{恋人}。同じ山の匂いを知る者同士、距離は早かった。",
     sameNo: "同族でも気は合わぬことがある。「仕事の話なら聞く。それ以上はいらん」。杯だけが残る。",
@@ -322,6 +424,7 @@ GAME.registerEvents([
     id: "beastfolk",
     species: "beastfolk",
     raceLabel: "獣人",
+    partnerAdultAge: [20, 38],
     text: "市場の陰で、耳と尾の動きが先に感情を語る人がいる。視線が合った瞬間、野の匂いがした。",
     sameOk: "狩りと旅と、空腹の冗談が通じる。名は{恋人}。群れの外でも、隣にいられる気がした。",
     sameNo: "同族の礼儀で距離を取られた。「今夜は狩り仲間で十分だ」。尾だけが、少し迷っていた。",
@@ -332,6 +435,7 @@ GAME.registerEvents([
     id: "lizardfolk",
     species: "lizardfolk",
     raceLabel: "竜人",
+    partnerAdultAge: [25, 55],
     text: "灯の遠い席に、鱗の光る客がいる。低い声と冷たい指先。熱を知っている者の落ち着きだ。",
     sameOk: "砂漠と寒季の話が、鱗の下で通じる。名は{恋人}。同じ冷えを分け合える相手だった。",
     sameNo: "同族でも、巣は別だ。「関わりは商売までにしろ」。尾が、短く床を叩く。",
@@ -342,12 +446,75 @@ GAME.registerEvents([
     id: "human",
     species: "human",
     raceLabel: "人間",
+    partnerAdultAge: [25, 48],
     text: "街の広場で、ごく普通の——だからこそ目を奪う人が、季節の話をしていた。短い命の鮮やかさがある。",
     sameOk: "同じ速さを生きる者同士、無駄が少ない。名は{恋人}。残り少ない季節を、分け合う約束になった。",
     sameNo: "人間同士でも、終わり方は選ぶ。「もう新しい火は焚かない」。穏やかで、痛い。",
     otherOk: "長い命の側の目を、相手は恐れず見返した。名は{恋人}。「短くても濃い方がいい」——その言葉が残る。",
     otherNo: "「寿命の話になると、怖くなる」。正直な断りに、反論の余地はなかった。",
   }),
+
+  // 異族の恋のあと——時を揃える祈り（叙述上の祝福。看取り・死イベントは別途起きうる）
+  {
+    id: "common_elder_shared_time",
+    tags: ["elder", "love", "magic"],
+    weight: 7,
+    maxTimes: 1,
+    logOnce: true,
+    conditions: {
+      flags: ["late_love_cross_species"],
+      npcs: ["lover"],
+      noNpcs: ["spouse"],
+      notFlags: ["slave", "shared_time_blessing"],
+      custom: (s) => {
+        const hist = Object.keys(s.eventHistory || {}).some((id) => id.startsWith("common_elder_lover_"));
+        if (!hist) return false;
+        // 交際から少し間を空ける
+        const ages = Object.entries(s.eventHistory)
+          .filter(([id]) => id.startsWith("common_elder_lover_"))
+          .flatMap(([, arr]) => arr || []);
+        if (!ages.length) return false;
+        return s.age - Math.max(...ages) >= 2;
+      },
+    },
+    text: "異族の恋人と並ぶ夜、ふと時の差が怖くなる。噂では、森奥の妖精の泉に満月の祈りを捧げる者があるという——同じ時を歩めるようになる、かもしれない、と。",
+    choices: [
+      {
+        text: "満月の夜、泉へ行き祈る",
+        result: "水面が銀に揺れ、短い光が二人の影を一度だけ重ねた。効いたのかどうかは、誰にも証明できない。ただ翌朝、{恋人}の笑顔が、妙に同じ季節の風を含んで見えた——気のせいかもしれない。",
+        effects: {
+          health: 2,
+          ability: 1,
+          addFlags: ["shared_time_blessing"],
+          npc: { lover: { intimacy: 8, trust: 5 } },
+        },
+        log: {
+          title: "妖精の泉に時を祈る",
+          text: "異族の恋人と同じ時を歩めるよう、満月の泉に祈った。叶ったかどうかは、わからない。",
+          important: true,
+        },
+      },
+      {
+        text: "{恋人}と一緒に祈る",
+        result: "二人分の願が、冷たい水に落ちる。帰路、{恋人}が「もし同じ速さで歳をとれるなら、それでいい」と笑った。同じ速さ——その言葉の重さだけが確かな気がした。",
+        effects: {
+          health: 3,
+          addFlags: ["shared_time_blessing"],
+          npc: { lover: { intimacy: 12, trust: 6 } },
+        },
+        log: {
+          title: "{恋人}と妖精の泉に祈る",
+          text: "恋人と並んで泉に祈り、同じ時を願った。",
+          important: true,
+        },
+      },
+      {
+        text: "噂は噂のままにする",
+        result: "魔法に頼らず、残された季節を歩くと決めた。怖いのは時差だけではない。失うこと自体だ。",
+        effects: { health: -1, npc: { lover: { intimacy: 3 } } },
+      },
+    ],
+  },
 
 
   // ---------- エルフとドワーフの時間感覚 ----------
@@ -609,5 +776,98 @@ GAME.registerEvents([
       },
     ],
   },
-
+  // ---------- 老後の小口収入（生活費を賄いきらない程度の穴埋め）----------
+  {
+    id: "common_elder_side_income_01",
+    tags: ["elder", "money"],
+    weight: 9,
+    repeatable: true,
+    cooldown: 6,
+    logOnce: true,
+    conditions: {
+      ageMin: 80,
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+      stats: { money: { max: -50 } },
+    },
+    text: "袋の底が見えている。何か売れるものはないかと古い荷物をあさると、まだ形の残った道具が出てきた。",
+    choices: [
+      {
+        text: "古物商に持ち込む",
+        check: { stat: "reputation", difficulty: 48 },
+        success: {
+          result: "長い年月が、かえって値を付けた。骨董として珍重され、思ったより銀が戻る。借金のすべてには届かないが、今夜の不安は少し薄い。",
+          effects: { money: 45, reputation: 1 },
+          log: {
+            title: "古道具を骨董として売る",
+            text: "逼迫した懐を、古い道具の売却でわずかに潤した。",
+          },
+        },
+        failure: {
+          result: "「古いが、需要は限られる」。二束三文に近いが、ゼロよりはましだ。",
+          effects: { money: 12 },
+        },
+      },
+      {
+        text: "まだ手放せないと、しまい直す",
+        result: "道具を布に包む。銀にはならないが、記憶の重りとしては正しい気がした。",
+        effects: { health: 1 },
+      },
+    ],
+  },
+  {
+    id: "common_elder_side_income_02",
+    tags: ["elder", "money", "work"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    logOnce: true,
+    conditions: {
+      ageMin: 70,
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+      notJobs: ["slave"],
+      stats: { money: { max: 20 } },
+    },
+    text: "市場の掲示に、半日で終わる手伝いの札がある。報酬は安い。腰は重い。それでも、今日の粥代にはなる。",
+    choices: [
+      {
+        text: "荷運びを引き受ける",
+        check: { stat: "health", difficulty: 40 },
+        success: {
+          result: "若い衆の間で箱を運ぶ。息は上がるが、日当は確かに掌に残った。",
+          effects: { money: 18, health: -3 },
+          log: {
+            title: "日雇いの荷運びをする",
+            text: "老後の足しに、半日の肉体労働をした。",
+          },
+        },
+        failure: {
+          result: "途中で腰が鳴り、早退する。心付けだけ置いて、主人は申し訳なさそうだった。",
+          effects: { money: 5, health: -5 },
+        },
+      },
+      {
+        text: "子供の読み書きを見る",
+        check: { stat: "ability", difficulty: 38 },
+        success: {
+          result: "文字の形を直しているうち、夕方になる。母親が、小さな銀とパンを置いていった。",
+          effects: { money: 14, reputation: 1 },
+          log: {
+            title: "子供に読み書きを教える",
+            text: "安価な家庭教師として、半日を過ごした。",
+          },
+        },
+        failure: {
+          result: "子供は座ってくれない。謝礼はお茶一杯で、背中だけが疲れた。",
+          effects: { health: -1 },
+        },
+      },
+      {
+        text: "今日は体を優先する",
+        result: "札は他人が剥がしていく。静かな部屋で、今日は支出を減らす側に回る。",
+        effects: { health: 2 },
+      },
+    ],
+  },
 ]);

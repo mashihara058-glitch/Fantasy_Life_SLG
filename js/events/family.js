@@ -15,6 +15,7 @@ GAME.registerEvents([
     repeatable: true,
     cooldown: 2,
     maxTimes: 3,
+    conditions:{notFlags: ["slave"] },
     text: "{母}のお腹が、日に日に大きくなっていく。そしてある朝、家に小さな産声が響いた。",
     choices: [
       {
@@ -34,7 +35,7 @@ GAME.registerEvents([
   {
     id: "common_family_sibling_001",
     tags: ["childhood", "family"],
-    conditions: { ageMin: 3, ageMax: 11, npcs: ["sibling"] },
+    conditions: { ageMin: 3, ageMax: 11, npcs: ["sibling"] ,notFlags: ["slave"] },
     repeatable: true,
     cooldown: 4,
     maxTimes: 2,
@@ -104,7 +105,7 @@ GAME.registerEvents([
   {
     id: "common_family_sibling_004",
     tags: ["childhood", "family"],
-    conditions: { ageMin: 3, ageMax: 11, npcs: ["sibling"] },
+    conditions: { ageMin: 3, ageMax: 11, npcs: ["sibling"] ,notFlags: ["slave"] },
     repeatable: true,
     cooldown: 4,
     maxTimes: 2,

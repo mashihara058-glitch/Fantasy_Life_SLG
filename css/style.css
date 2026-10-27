@@ -153,6 +153,44 @@ h3 {
   margin: 32px auto 0;
 }
 
+.title-notice {
+  max-width: 34rem;
+  margin: 36px auto 0;
+  padding: 14px 18px 16px;
+  text-align: left;
+  color: var(--ink);
+  background: rgba(244, 236, 216, 0.92);
+  border-radius: var(--radius);
+  border: 1px solid rgba(184, 145, 58, 0.35);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+.title-notice-heading {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  border-bottom: 1px solid var(--paper-dark);
+  padding-bottom: 4px;
+}
+
+.title-notice-list {
+  margin: 0;
+  padding-left: 1.2em;
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+
+.title-notice-list li + li {
+  margin-top: 0.45em;
+}
+
+.title-notice-list strong {
+  color: var(--ink);
+  font-weight: bold;
+}
+
 /* ---------- 主人公作成 ---------- */
 
 .create-card,
