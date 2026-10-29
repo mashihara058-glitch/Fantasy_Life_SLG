@@ -245,93 +245,293 @@ GAME.registerEvents([
     ],
   },
   {
-  id: "common_elder_006",
-  tags: ["elder", "prime"],
-  weight: 8,
-  repeatable: true,
-  cooldown: 5,
-  conditions: {
-    ageMin: 60,
-    npcs: ["sibling"],
+    id: "common_elder_006",
+    tags: ["prime", "elder", "family"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 6,
+    conditions: {
+      ageMin: 60,
+      npcs: ["sibling"],
+      notFlags: ["slave"],
+    },
+    text: "{兄弟の続柄}の{兄弟}が、手土産を持って訪ねてきた。旅行に行ってきたらしい。",
+    choices: [
+      {
+        text: "旅の思い出を聞く",
+        result: "{兄弟}は旅先の景色や珍しい品の話をしてくれた。長い時間でも、血縁の話は意外と短い。",
+        effects: { health: 2, npc: { sibling: { trust: 2, intimacy: 3 } } },
+      },
+      {
+        text: "土産だけ受け取り、礼は後で書く",
+        result: "忙しさを理由に短く見送った。後日の手紙に、「土産は旨かった」とだけ添える。",
+        effects: { health: 1, npc: { sibling: { intimacy: 1 } } },
+      },
+      {
+        text: "都合が悪いと断る",
+        result: "{兄弟}は残念そうに肩を落とし、手土産を抱えたまま去った。",
+        effects: { npc: { sibling: { trust: -2, intimacy: -2 } } },
+      },
+    ],
   },
-  text: "{兄弟の続柄}の{兄弟}が、手土産を持って訪ねてきた。旅行に行ってきたらしい。",
-  choices: [
-    {
-      text: "旅の思い出を聞く",
-      result: "{兄弟}は旅先で見た面白いものや美しい景色の話をしてくれた。楽しい時間だった。",
-      effects: { health:2,npc: { sibling: { trust: 1, intimacy: 1 } } },
+  {
+    id: "common_elder_007",
+    tags: ["elder", "work"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 6,
+    logOnce: true,
+    conditions: {
+      ageMin: 60,
+      // 引退は flags ではなく job: "retired"
+      jobs: ["retired"],
+      notFlags: ["slave"],
     },
-    {
-      text: "土産だけ受け取る",
-      result: "忙しかったので、後日手紙で礼をしたためた。土産は美味かったと伝えた。",
-      effects: { health:1 },
-    },
-    {
-      text: "都合が悪いと断る",
-      result: "{兄弟}は残念そうに去っていった。",
-      effects: { npc: { sibling: { trust: -1, intimacy: -1 } } },
-    }
-  ],
-},
-{
-  id: "common_elder_007",
-  tags: ["elder", "prime"],
-  weight: 8,
-  repeatable: true,
-  cooldown: 5,
-  conditions: {
-    ageMin: 60,
-    flags: ["retired"]
+    text: "昔の仕事仲間が訪ねてきた。若い者に技を教える人が足りないので、{名前}にも手伝ってほしい、と。",
+    choices: [
+      {
+        text: "引き受ける",
+        check: { stat: "ability", difficulty: 48 },
+        success: {
+          result: "熟練の手つきを見せると、よそよそしかった視線が熱を帯びていく。半日の講義で、銀が少し残る。",
+          effects: { money: 12, reputation: 3, health: -2 },
+          log: {
+            title: "隠居先で後進を教える",
+            text: "引退後、かつての職場に招かれ若者へ技を伝えた。",
+          },
+        },
+        failure: {
+          result: "知らない老人の話に、若者は乗ってこない。礼金だけ置いて、役割は終わった。",
+          effects: { money: 8, health: -1 },
+        },
+      },
+      {
+        text: "今は静かに暮らしたいと断る",
+        result: "仲間は頷いて帰った。道具の音から遠ざかった生活が、まだ続く。",
+        effects: { health: 2 },
+      },
+    ],
   },
-  text: "昔の仕事仲間が訪ねてきた。若い者に仕事を教える人手が足りないので、{名前}にも手伝ってほしいと頼まれた。",
-  choices: [
-    {
-      text: "引き受ける",
-      check: { stat: "ability", difficulty: 50 },
-      success: {
-        result: "熟練の技を若者に披露した。最初はよそよそしかった視線が、徐々に熱を帯びていった。",
-        effects: { money:10, reputation: 3 },
-      },
-      failure: {
-        result: "知らない年寄りがいきなり出てきて、言うことを聞く者はいなかった。報酬はもらったが、大した働きは出来なかった。",
-        effects: { money:10 },
-      },
+  {
+    id: "common_elder_008",
+    tags: ["elder", "work", "family"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 6,
+    logOnce: true,
+    conditions: {
+      ageMin: 60,
+      jobs: ["retired"],
+      npcs: ["pupil"],
+      notFlags: ["slave"],
     },
-    {
-      text: "断る",
-    }
-  ],
-},
-{
-  id: "common_elder_008",
-  tags: ["elder", "prime"],
-  weight: 8,
-  repeatable: true,
-  cooldown: 5,
-  conditions: {
-    ageMin: 60,
-    npcs: ["pupil"],
-    flags: ["retired"]
+    text: "{弟子}が訪ねてきた。昔なじみの客が、「どうしても{名前}でないとだめだ」と言い張っているらしい。",
+    choices: [
+      {
+        text: "引き受ける",
+        check: { stat: "ability", difficulty: 50 },
+        success: {
+          result: "仕事のあと、後継は{弟子}だと客に言い含めた。腕は渡せても、信頼は一日では渡らない。",
+          effects: {
+            money: 12,
+            reputation: 2,
+            health: -2,
+            npc: { pupil: { trust: 5, intimacy: 4 } },
+          },
+          log: {
+            title: "弟子の客を手伝う",
+            text: "引退後、弟子に頼まれて昔の客の仕事を請けた。",
+          },
+        },
+        failure: {
+          result: "衰えた体では、昔の精度は出ない。客の目が、静かに失望へ落ちる。",
+          effects: { money: 8, health: -3, npc: { pupil: { trust: -1 } } },
+        },
+      },
+      {
+        text: "{弟子}に任せよと突き返す",
+        result: "{弟子}は唇を噛み、やがて「わかりました」と頭を下げた。成長の機会か、見捨てか——今夜は判別できない。",
+        effects: { npc: { pupil: { trust: 2, intimacy: -1 } }, health: 1 },
+      },
+    ],
   },
-  text: "{弟子}が訪ねてきた。昔馴染みの客で、どうしても{名前}でないとだめだと言い張るものがいるらしい。",
-  choices: [
-    {
-      text: "引き受ける",
-      check: { stat: "ability", difficulty: 50 },
-      success: {
-        result: "仕事の後、後継は{弟子}だからと客に言い含めた。",
-        effects: { money:10, reputation: 3 },
-      },
-      failure: {
-        result: "すでに衰えた体では、昔のようにできなかった。",
-        effects: { money:10 },
-      },
+
+  // ---------- 行きつけの食堂（壮年で出会い → 代替わり → 再現依頼 → 休業）----------
+  // フラグ favorite_eatery … 行きつけ登録。廃業や見限りで外す
+  {
+    id: "common_elder_011",
+    tags: ["young", "prime", "food"],
+    weight: 7,
+    maxTimes: 1,
+    logOnce: true,
+    conditions: {
+      ageMin: 30,
+      ageMax: 45,
+      notFlags: ["slave", "favorite_eatery"],
     },
-    {
-      text: "断る",
-    }
-  ],
-},
+    text: "食事を探して街をうろつくうち、見慣れない料理店の暖簾が目に入った。何となく、足が向く。",
+    choices: [
+      {
+        text: "ダンプリングのシチューを頼む",
+        check: { chance: 55 },
+        success: {
+          result: "スープを吸った小麦団子が絶品だ。野菜の歯ごたえとの対比に、また来ようと思う。",
+          effects: { health: 3, addFlags: ["favorite_eatery"] },
+          log: {
+            title: "行きつけの食堂を見つける",
+            text: "ダンプリングのシチューが気に入り、通い始める店ができた。",
+          },
+        },
+        failure: {
+          result: "仕込みから時間が経ったらしく、団子はふやけていた。味は悪くない。別の時間に、また来てみよう。",
+          effects: { health: 1 },
+        },
+      },
+      {
+        text: "川魚のソテーを頼む",
+        check: { chance: 55 },
+        success: {
+          result: "脂ののった魚を香草で焼いた一皿に、残った汁までパンで拭う。腹も、足も、満足した。",
+          effects: { health: 3, addFlags: ["favorite_eatery"] },
+          log: {
+            title: "行きつけの食堂を見つける",
+            text: "川魚のソテーが気に入り、通い始める店ができた。",
+          },
+        },
+        failure: {
+          result: "不漁らしく魚は痩せていた。付け合わせだけが素晴らしい。またの機会を残す。",
+          effects: { health: 1 },
+        },
+      },
+      {
+        text: "今日はやめておく",
+        result: "暖簾は記憶の端に残る。今日の腹は、別の店で満たす。",
+      },
+    ],
+  },
+  {
+    id: "common_elder_009",
+    tags: ["prime", "elder", "food"],
+    weight: 7,
+    repeatable: true,
+    cooldown: 8,
+    logOnce: true,
+    conditions: {
+      ageMin: 50,
+      flags: ["favorite_eatery"],
+      notFlags: ["slave"],
+    },
+    text: "行きつけの店に入ると、店主が代わっていた。厨房では、先代の息子が包丁を振っている。",
+    choices: [
+      {
+        text: "いつものメニューを頼む",
+        check: { chance: 55 },
+        success: {
+          result: "味の骨は同じで、香りだけが少し若い。これはこれで、悪くない世代交代だ。",
+          effects: { health: 2 },
+        },
+        failure: {
+          result: "「いつもの、ですか？」と聞き返される。品名を言い直す。旨いが、少し寂しい。",
+          effects: { health: 1 },
+        },
+      },
+      {
+        text: "新しいメニューを頼む",
+        check: { chance: 55 },
+        success: {
+          result: "今の店主の得意料理だ。先代とは違うが、新鮮で意外と腹に残る。",
+          effects: { health: 2 },
+        },
+        failure: {
+          result: "品名から想像した味と違った。旨いのに、先代の皿が恋しい。",
+          effects: { health: 1 },
+        },
+      },
+    ],
+  },
+  {
+    id: "common_elder_010",
+    tags: ["elder", "food"],
+    weight: 7,
+    repeatable: true,
+    cooldown: 10,
+    logOnce: true,
+    maxTimes: 2,
+    conditions: {
+      ageMin: 80,
+      flags: ["favorite_eatery"],
+      notFlags: ["slave"],
+    },
+    text: "行きつけの店で、店主が話しかけてきた。先々代の看板を再現したい。当時から通う自分に、味の記憶はないか、と。",
+    choices: [
+      {
+        text: "思い出しながら答える",
+        check: { chance: 50 },
+        success: {
+          result: "具と香りの輪郭を、言葉にして渡す。店主は礼に一品をサービスしてくれた。",
+          effects: { health: 3, reputation: 1 },
+          log: {
+            title: "行きつけの味を伝える",
+            text: "長年通った食堂で、昔の看板メニューの記憶を店主に話した。",
+          },
+        },
+        failure: {
+          result: "舌は覚えているのに、言葉にならない。試作品は「うまいが、これじゃない」としか言えなかった。",
+          effects: { health: 1 },
+        },
+      },
+      {
+        text: "記憶は自分の内にしまっておく",
+        result: "答えないまま食事を終え、静かに帰った。味は、共有しなくても残る。",
+        effects: { health: 1 },
+      },
+    ],
+  },
+  {
+    id: "common_elder_012",
+    tags: ["elder", "food"],
+    weight: 6,
+    maxTimes: 1,
+    logOnce: true,
+    conditions: {
+      ageMin: 85,
+      flags: ["favorite_eatery"],
+      notFlags: ["slave"],
+    },
+    text: "行きつけの店へ行くと、戸が閉まっていた。休業の札だけが、風に小さく揺れる。",
+    choices: [
+      {
+        text: "日を改めて、また来てみる",
+        check: { chance: 50 },
+        success: {
+          result: "次に訪れると店は開いていた。休んだ理由を聞くと、その日、店主に子供が生まれたのだという。",
+          effects: { health: 3 },
+          log: {
+            title: "行きつけの店の休業明け",
+            text: "行きつけの食堂が、店主の出産で一時休業していた。",
+          },
+        },
+        failure: {
+          result: "次に来たとき、店は空だった。廃業らしく、売り物件の看板が下がっている。暖簾の記憶だけが残る。",
+          effects: { health: -1, removeFlags: ["favorite_eatery"] },
+          log: {
+            title: "行きつけの店が廃業する",
+            text: "長年通った食堂が、いつの間にか廃業していた。",
+            important: true,
+          },
+        },
+      },
+      {
+        text: "別の店を探しはじめる",
+        result: "新しい暖簾の下で飯を食う。悪くはない。それでも、舌のどこかが旧い店を探している。",
+        effects: { health: 1, removeFlags: ["favorite_eatery"] },
+        log: {
+          title: "行きつけを離れる",
+          text: "休業中の行きつけを見限り、別の店へ通い始めた。",
+        },
+      },
+    ],
+  },
   {
     id: "common_elder_career_change",
     tags: ["prime", "elder", "work", "career"],
