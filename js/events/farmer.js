@@ -457,6 +457,200 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+    id: "farmer_08",
+    tags: ["young", "prime", "work", "farmer"],
+    weight: 9,
+    repeatable: true,
+    cooldown: 6,
+    conditions: {
+      ageMin: 16,
+      jobs: ["farmer"],
+      moneyUnlocked: true,
+      notFlags: ["slave", "farmer_revolt_done"],
+    },
+    text: "毎年小麦ばかりだと土地がやせていく。休ませる以外に、もっとうまく回す方法はないものか。",
+    choices: [
+      {
+        text: "肥料をすき込む",
+        check: { chance: 70 },
+        success: {
+          result: "金を出して肥料を買い、畑に撒いた。出費は痛かったが、その年はいつも以上の実りがあった。",
+          effects: { money: 8, ability: 1, reputation: 1 },
+        },
+        failure: {
+          result: "肥料を買って撒いたが、期待したほどの効果はなかった。だが土の感触は、少し分かった。",
+          effects: { money: -5, ability: 1 },
+        },
+      },
+      {
+        text: "別の作物を育てる",
+        check: { stat: "ability", difficulty: 50 },
+        success: {
+          result: "聞きかじりの知恵で、オーツ麦やカブを植えてみた。土地を無駄なく使え、収入も上がった。",
+          effects: { money: 15, ability: 2, reputation: 2 },
+        },
+        failure: {
+          result: "何を作るかの判断を誤った。土地を消耗させてしまった。だが失敗も、次の糧になる。",
+          effects: { money: -10, ability: 1 },
+        },
+      },
+      {
+        text: "休耕地に鶏を放す",
+        check: { stat: "reputation", difficulty: 55 },
+        success: {
+          result: "村の了解を得て鶏を放した。土地を肥やすだけでなく、卵や肉の副産物も得られた。",
+          effects: { money: 18, ability: 1, reputation: 2 },
+        },
+        failure: {
+          result: "鶏を放したが、狐に襲われてしまった。休耕地は静まり返っている。",
+          effects: { money: -10 },
+        },
+      },
+    ],
+  },
+  {
+    id: "farmer_09",
+    tags: ["young", "prime", "work", "farmer"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      ageMin: 16,
+      jobs: ["farmer"],
+      notFlags: ["slave", "farmer_revolt_done"],
+    },
+    text: "収穫したもので冬を越すには、保存食に加工する必要がある。何を作ろう。",
+    choices: [
+      {
+        text: "果物を甘く煮込む",
+        result: "ベリーをハチミツで煮込んでコンポートを作った。瓶を開けるたび、夏の匂いがする。",
+        effects: { health: 3 },
+      },
+      {
+        text: "乾燥させる",
+        result: "野菜やキノコ、ハーブを干して日持ちをよくした。紐に並ぶ影が、納屋をにぎやかにする。",
+        effects: { health: 2 },
+      },
+      {
+        text: "脂で煮込む",
+        result: "魚や肉を脂でじっくり煮た。壺の蓋を開けるのが、冬の小さな楽しみになる。",
+        effects: { health: 2 },
+      },
+    ],
+  },
+  {
+    id: "farmer_10",
+    tags: ["young", "prime", "work", "farmer"],
+    weight: 8,
+    maxTimes: 1,
+    conditions: {
+      ageMin: 18,
+      jobs: ["farmer"],
+      moneyUnlocked: true,
+      notFlags: ["slave", "farmer_revolt_done"],
+    },
+    text: "数年かけて選別した種から、頭の大きなキャベツが育つようになった。この種を、どう扱う。",
+    choices: [
+      {
+        text: "近隣の農家に分ける",
+        check: { stat: "reputation", difficulty: 50 },
+        success: {
+          result: "何軒かで協力して増産した。村の鍋に、キャベツの甘い匂いが広がる。",
+          effects: { money: 10, ability: 1, reputation: 4 },
+          log: { title: "大玉キャベツの種を村で分かち合う", text: "改良種を分け、村の食卓を豊かにした。" },
+        },
+        failure: {
+          result: "皆が作りすぎて、市場でキャベツが値崩れした。腹は膨れるが、財布は軽い。",
+          effects: { money: -5, ability: 1, reputation: 1 },
+        },
+      },
+      {
+        text: "自分の畑だけで作る",
+        check: { chance: 70 },
+        success: {
+          result: "「あそこのキャベツは格別だ」と評判が立つ。買い手が、畦まで来るようになった。",
+          effects: { money: 18, ability: 1, reputation: 3 },
+          log: { title: "大玉キャベツで名を上げる", text: "改良種を独占し、買い手がつくようになった。" },
+        },
+        failure: {
+          result: "「あそこばかりずるい」と陰口が立った。種は守れたが、酒席の空気が少し重い。",
+          effects: { reputation: -3, money: 8 },
+        },
+      },
+    ],
+  },
+  {
+    id: "farmer_11",
+    tags: ["young", "prime", "work", "farmer"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 8,
+    conditions: {
+      ageMin: 16,
+      jobs: ["farmer"],
+      notFlags: ["slave", "farmer_revolt_done"],
+    },
+    text: "つぎはぎの神官が膝をついた。孤児院の子供たちが飢えているので、分けてほしいという。",
+    choices: [
+      {
+        text: "作物を分ける",
+        result: "自家用から野菜を分けた。神官は何度も礼を言い、袋を抱えて去っていった。",
+        effects: { reputation: 3, health: -1 },
+      },
+      {
+        text: "実習として畑仕事を教える",
+        result: "短期間、何人かを預かり畝を教えて種を持たせた。帰り際の小さな背中が、畦に残る。",
+        effects: { reputation: 4, ability: 1 },
+        log: { title: "孤児院の子に農を教える", text: "畑仕事と種を分け、孤児院の自給を手伝った。" },
+      },
+      {
+        text: "今は余裕がないと断る",
+        result: "神官は黙って頭を下げ、次の村へ歩いていった。",
+        effects: { reputation: -1 },
+      },
+    ],
+  },
+  {
+    id: "farmer_12",
+    tags: ["young", "prime", "work", "farmer"],
+    weight: 9,
+    repeatable: true,
+    cooldown: 6,
+    conditions: {
+      ageMin: 16,
+      jobs: ["farmer"],
+      moneyUnlocked: true,
+      notFlags: ["slave", "farmer_revolt_done"],
+    },
+    text: "畑に害獣の足跡がついている。対策が必要だ。",
+    choices: [
+      {
+        text: "柵を立てる",
+        check: { chance: 70 },
+        success: {
+          result: "囲いをつけた。作業は骨が折れたが、畝を守る効果はあった。",
+          effects: { money: 5, health: -2 },
+        },
+        failure: {
+          result: "柵は立ったが、隙間から通り抜けられてしまった。材料費だけが残る。",
+          effects: { money: -5, health: -2 },
+        },
+      },
+      {
+        text: "番犬を飼う",
+        check: { chance: 70 },
+        success: {
+          result: "犬小屋を建て、子犬を迎えた。見張りだけでなく、その愛らしさにも救われる。",
+          effects: { health: 4, money: 5 },
+        },
+        failure: {
+          result: "子犬は害獣退治では期待外れだった。それでも、かけがえのない存在になった。",
+          effects: { health: 3 },
+        },
+      },
+    ],
+  },
 
   // ---------- 一揆ルート：増税 → 扇動 → 決起 ----------
   {
@@ -530,7 +724,7 @@ GAME.registerEvents([
         log: { title: "扇動する男の話を聞く", text: "貢納への怒りを、見知らぬ男に焚きつけられた。" },
       },
       {
-        text: "酒は出すが、起義の話は受け流す",
+        text: "酒は出すが、一揆の話は受け流す",
         result: "男は笑って引き下がった。胸の怒りは残るが、鎌を武器にする覚悟までは、まだない。",
         effects: { reputation: 1, addFlags: ["farmer_revolt_refused"] },
       },
@@ -675,6 +869,36 @@ GAME.registerEvents([
             text: "説得は失敗し、嫌疑ごと売り飛ばされた。",
           },
         },
+      },
+    ],
+  },
+  {
+    id: "farmer_escape",
+    tags: ["young", "prime", "death", "farmer"],
+    weight: 5,
+    repeatable: true,
+    cooldown: 4,
+    maxTimes: 3,
+    conditions: {
+      flags: ["farmer_revolt_fled", "fugitive"],
+      notFlags: ["slave"],
+      notJobs: ["slave"],
+    },
+    text: "周囲の目が冷たい。この土地で、もとの暮らしに戻るのはもう無理だ。",
+    choices: [
+      {
+        text: "隣国へ逃亡する",
+        result: "この国に自分の居場所はないと考え、わずかな荷物を持って行方をくらませた。",
+        effects: { death: "失踪" },
+        log: {
+          title: "隣国へ逃亡し、行方知れずとなる",
+          text: "その後、{名前}の行方を知る者はいない。",
+        },
+      },
+      {
+        text: "もうしばらくこの国に潜む",
+        result: "今は雌伏の時だと自分に言い聞かせ、もう少し耐えることにした。",
+        effects: { health: -1 },
       },
     ],
   },

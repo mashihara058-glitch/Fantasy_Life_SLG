@@ -112,5 +112,20 @@
     setTimeout(() => ($("btn-copy").textContent = "年表をコピー"), 2000);
   });
 
+  $("btn-share-x").addEventListener("click", async () => {
+    const text = E.shareAsText(state);
+    const btn = $("btn-share-x");
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.textContent = "投稿文をコピーしました";
+    } catch (e) {
+      window.prompt("以下をコピーしてXに貼り付けてください", text);
+    }
+    const intent = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
+    window.open(intent, "_blank", "noopener,noreferrer");
+    setTimeout(() => (btn.textContent = "Xに投稿"), 2000);
+  });
+
+
   refreshTitle();
 })();

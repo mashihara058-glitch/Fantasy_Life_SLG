@@ -758,6 +758,17 @@ GAME.Engine = (function () {
     return lines.join("\n");
   }
 
+  const SHARE_URL = "https://mashihara058-glitch.github.io/Fantasy_Life_SLG/";
+
+  // X投稿向けの短い紹介文（年表全文より字数に収まりやすい）
+  function shareAsText(state) {
+    const cause = state.causeOfDeath || "不明";
+    return (
+      `${fullName(state)}は${mainJobName(state)}として${state.age}歳まで生きた。` +
+      `死因【${cause}】-ファンタジー人生シミュレーション ${SHARE_URL}`
+    );
+  }
+
   // ---------- セーブ・ロード ----------
 
   function save(state) {
@@ -926,6 +937,7 @@ GAME.Engine = (function () {
     lifeTitle,
     mainJobName,
     timelineAsText,
+    shareAsText,
     save,
     load,
     hasSave,
