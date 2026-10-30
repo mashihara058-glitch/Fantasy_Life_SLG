@@ -909,5 +909,110 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+    id: "common_young_024",
+    tags: ["young", "prime", "elder", "lover"],
+    weight: 5,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      ageMin: 15,
+      npcs: ["lover"],
+      notFlags: ["slave"],
+      notJobs: ["slave"],
+    },
+    text: "今日は蚤の市が立つ日だ。{名前}は恋人の{恋人}とともに、出店を見て歩いた。",
+    choices: [
+      {
+        conditions: { moneyUnlocked: true },
+        text: "贈り物を買う",
+        result: "互いの瞳の色に近い守り紐を買い、交換し合った。紐の先が、袖口でかすかに揺れる。",
+        effects: { money: -3, npc: { lover: { intimacy: 6 } } },
+        log: { title: "蚤の市でデートする", text: "恋人とおそろいの守り紐を交換した。" },
+      },
+      {
+        conditions: { moneyUnlocked: false },
+        text: "ささやかな贈り物を選ぶ",
+        result: "安い紐でも、色を揃えて交換した。値段より、選んだという事実の方が重い。",
+        effects: { npc: { lover: { intimacy: 5 } } },
+        log: { title: "蚤の市でデートする", text: "恋人とおそろいの守り紐を交換した。" },
+      },
+      {
+        text: "屋台で食べ歩く",
+        result: "肉串や菓子を分け合い、足の向くままに歩いた。市の喧騒が、二人の間だけ少し遠くなる。",
+        effects: { health: 1, npc: { lover: { intimacy: 5 } } },
+        log: { title: "蚤の市でデートする", text: "恋人と屋台を食べ歩いた。" },
+      },
+    ],
+  },
+  {
+    id: "common_young_025",
+    tags: ["young", "prime", "elder", "lover"],
+    weight: 5,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      ageMin: 15,
+      npcs: ["lover"],
+      notFlags: ["slave"],
+      notJobs: ["slave"],
+    },
+    text: "恋人の{恋人}に、新しくできた菓子店へ行ってみないかと誘われた。",
+    choices: [
+      {
+        text: "誘いに乗る",
+        check: { chance: 70 },
+        success: {
+          result: "目当ての菓子は{名前}好みの味だった。{恋人}もおいしいと言った。好きなものが重なると、胸の奥がやわらかくなる。",
+          effects: { health: 2, npc: { lover: { intimacy: 5 } } },
+          log: { title: "菓子店でデートする", text: "恋人と菓子店で、穏やかな時を過ごした。" },
+        },
+        failure: {
+          result: "目当ての菓子は売り切れだった。代わりに茶だけ飲み、「また来よう」と約束する。次の日取りが、すでに楽しみだ。",
+          effects: { npc: { lover: { intimacy: 3 } } },
+        },
+      },
+      {
+        text: "今日は都合が悪いと断る",
+        result: "{恋人}は少しだけ唇を尖らせたが、「じゃあ、また今度」と笑ってくれた。",
+        effects: { npc: { lover: { intimacy: -1 } } },
+      },
+    ],
+  },
+  {
+    id: "common_young_026",
+    tags: ["young", "prime", "elder", "rival"],
+    weight: 5,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      ageMin: 15,
+      npcs: ["rival"],
+      notFlags: ["slave"],
+      notJobs: ["slave"],
+    },
+    text: "貸本屋で、本棚から本を取ろうとしたとき、手がかち合った。相手は{ライバル}だった。",
+    choices: [
+      {
+        text: "チェスで勝負して決める",
+        check: { stat: "ability", difficulty: 50 },
+        success: {
+          result: "{名前}の騎士が{ライバル}の王を追い詰めた。本は{名前}が借りることになった。{ライバル}は「ネタバレは聞かせるなよ」と悔しがった。",
+          effects: { ability: 1, npc: { rival: { intimacy: 3, trust: -1 } } },
+          log: { title: "{ライバル}とチェスで勝負する", text: "貸本屋で鉢合わせし、盤上で借りる本を決めた。" },
+        },
+        failure: {
+          result: "{名前}の王は倒された。悔しかったが、いい勝負だった。本は{ライバル}のものだ。",
+          effects: { ability: 1, npc: { rival: { intimacy: 3 } } },
+          log: { title: "{ライバル}とチェスで勝負する", text: "貸本屋で盤を挟み、惜しくも敗れた。" },
+        },
+      },
+      {
+        text: "本をゆずる",
+        result: "{ライバル}は「貸しだと思うなよ」と鼻を鳴らし、それでも一礼してから去っていった。",
+        effects: { npc: { rival: { intimacy: 2, trust: 2 } } },
+      },
+    ],
+  },
 ]);
 
