@@ -164,18 +164,32 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 50 },
         success: {
           result: "港町で{友人}を見つけ出し、金の半分を取り返した。だが、友情は戻らなかった。",
-          effects: { moneyRate: -0.15, npcState: { friend: "left" } },
+          effects: {
+            moneyRate: -0.15,
+            npcState: { friend: "left" },
+            addFlags: ["betrayed_by_friend"],
+          },
           log: { title: "友に裏切られる", text: "{友人}に金を持ち逃げされた。" },
         },
         failure: {
           result: "{友人}の行方は、杳として知れなかった。",
-          effects: { moneyRate: -0.3, npcState: { friend: "left" }, addTraits: ["distrustful"] },
+          effects: {
+            moneyRate: -0.3,
+            npcState: { friend: "left" },
+            addTraits: ["distrustful"],
+            addFlags: ["betrayed_by_friend"],
+          },
           log: { title: "友に裏切られ、人を信じられなくなる", text: "{友人}に財産を持ち逃げされ、心を閉ざした。" },
         },
       },
       {
         text: "忘れることにする",
-        effects: { moneyRate: -0.3, npcState: { friend: "left" }, addTraits: ["distrustful"] },
+        effects: {
+          moneyRate: -0.3,
+          npcState: { friend: "left" },
+          addTraits: ["distrustful"],
+          addFlags: ["betrayed_by_friend"],
+        },
         log: { title: "友に裏切られ、人を信じられなくなる", text: "{友人}に財産を持ち逃げされ、心を閉ざした。" },
       },
     ],

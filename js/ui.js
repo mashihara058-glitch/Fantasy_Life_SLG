@@ -140,11 +140,15 @@ GAME.UI = (function () {
       const badge = r.check
         ? `<span class="badge ${r.check.ok ? "ok" : "ng"}">${r.check.ok ? "成功" : "失敗"}</span>`
         : "";
+      const ach = (r.achievements || [])
+        .map((a) => `<li class="ach-unlock">実績「${esc(a.title)}」を解除</li>`)
+        .join("");
       body = `
         <div class="result">
           <p class="chosen">▶ ${esc(r.choiceText || "")} ${badge}</p>
           ${r.resultText ? `<p class="result-text">${multiline(r.resultText)}</p>` : ""}
           ${r.changes.length ? `<ul class="changes">${r.changes.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
+          ${ach ? `<ul class="changes ach-changes">${ach}</ul>` : ""}
         </div>
         <div class="choices">
           ${state.phase === "dead"
@@ -171,6 +175,52 @@ GAME.UI = (function () {
     renderStatus(state);
     renderEvent(state, handlers);
     if (handlers.debug) renderDebug(state, handlers);
+    if (state.lastResult && state.lastResult.achievements && state.lastResult.achievements.length) {
+      showAchievementToasts(state.lastResult.achievements);
+      state.lastResult.achievements = [];
+    }
+  }
+
+  // ---------- 実績 ----------
+
+  function renderAchievementsTitle() {
+    const listEl = $("achievements-list");
+    const progEl = $("achievements-progress");
+    if (!listEl || !GAME.Achievements) return;
+    const list = GAME.Achievements.listForUi();
+    const prog = GAME.Achievements.progress();
+    if (progEl) progEl.textContent = `${prog.unlocked} / ${prog.total}`;
+    listEl.innerHTML = list
+      .map((a) => {
+        if (a.unlocked) {
+          return `<li class="achievement unlocked">
+            <div class="ach-title">${esc(a.title)}</div>
+            <div class="ach-condition">条件：${esc(a.condition)}</div>
+            <div class="ach-flavor">${esc(a.flavor)}</div>
+          </li>`;
+        }
+        return `<li class="achievement locked">
+            <div class="ach-title">？？？</div>
+            <div class="ach-condition">条件：？？？</div>
+            <div class="ach-flavor">${esc(a.flavor)}</div>
+          </li>`;
+      })
+      .join("");
+  }
+
+  function showAchievementToasts(items) {
+    const host = $("achievement-toasts");
+    if (!host || !items || !items.length) return;
+    items.forEach((a) => {
+      const el = document.createElement("div");
+      el.className = "achievement-toast";
+      el.innerHTML = `<div class="toast-label">実績解除</div><div class="toast-title">${esc(a.title)}</div>`;
+      host.appendChild(el);
+      setTimeout(() => {
+        el.classList.add("out");
+        setTimeout(() => el.remove(), 400);
+      }, 3200);
+    });
   }
 
   // ---------- 年表 ----------
@@ -258,5 +308,13 @@ GAME.UI = (function () {
     );
   }
 
-  return { showScreen, renderCreate, renderGame, renderTimelineModal, renderEnding };
+  return {
+    showScreen,
+    renderCreate,
+    renderGame,
+    renderTimelineModal,
+    renderEnding,
+    renderAchievementsTitle,
+    showAchievementToasts,
+  };
 })();

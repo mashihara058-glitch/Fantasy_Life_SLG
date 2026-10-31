@@ -304,7 +304,7 @@ GAME.registerEvents([
     id: "common_life_slave_escape",
     tags: ["slave"],
     conditions: { flags: ["slave"] },
-    weight: 15,
+    weight: 5,
     repeatable: true,
     cooldown: 3,
     text: "主人の目を盗み、逃げ出す機会が訪れた。",

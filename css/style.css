@@ -222,6 +222,115 @@ h3 {
   margin-top: 0.35em;
 }
 
+.achievements-progress {
+  font-size: 0.85em;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+
+.achievements-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.achievement {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(184, 145, 58, 0.25);
+}
+
+.achievement:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.achievement:first-child {
+  padding-top: 2px;
+}
+
+.ach-title {
+  font-size: 0.95rem;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+}
+
+.achievement.locked .ach-title {
+  color: var(--ink-soft);
+}
+
+.ach-condition {
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.achievement.unlocked .ach-condition {
+  color: var(--accent);
+}
+
+.ach-flavor {
+  margin-top: 4px;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.ach-changes .ach-unlock {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.achievement-toasts {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  max-width: min(22rem, calc(100vw - 32px));
+}
+
+.achievement-toast {
+  background: rgba(244, 236, 216, 0.96);
+  border: 1px solid rgba(184, 145, 58, 0.55);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  padding: 10px 14px;
+  color: var(--ink);
+  animation: ach-in 0.35s ease-out;
+}
+
+.achievement-toast.out {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.toast-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.toast-title {
+  margin-top: 2px;
+  font-size: 0.95rem;
+}
+
+@keyframes ach-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ---------- 主人公作成 ---------- */
 
 .create-card,

@@ -34,14 +34,20 @@
     },
     onAuto(years) {
       const target = state.age + years;
+      const unlocked = [];
       while (state.alive && state.age < target) {
         if (state.phase === "event") {
           const choices = E.visibleChoices(state);
-          E.choose(state, U.pick(choices).index);
+          const result = E.choose(state, U.pick(choices).index);
+          if (result && result.achievements && result.achievements.length) {
+            unlocked.push(...result.achievements);
+          }
         } else if (state.phase === "result") {
           E.nextYear(state);
         }
       }
+      if (unlocked.length) UI.showAchievementToasts(unlocked);
+      if (state.lastResult) state.lastResult.achievements = [];
       render();
     },
   };
@@ -52,6 +58,7 @@
 
   function refreshTitle() {
     $("btn-continue").hidden = !E.hasSave();
+    UI.renderAchievementsTitle();
     UI.showScreen("screen-title");
   }
 

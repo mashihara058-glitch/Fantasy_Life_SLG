@@ -16,6 +16,10 @@
         <button id="btn-new" class="btn primary">新しい人生を始める</button>
         <button id="btn-continue" class="btn">続きから</button>
       </div>
+      <aside class="title-panel title-achievements" aria-label="実績">
+        <h2 class="title-panel-heading">実績 <span id="achievements-progress" class="achievements-progress"></span></h2>
+        <ul id="achievements-list" class="achievements-list"></ul>
+      </aside>
       <aside class="title-panel title-appeal" aria-label="作品について">
         <h2 class="title-panel-heading">このゲームについて</h2>
         <p>
@@ -99,6 +103,9 @@
     </div>
   </div>
 
+  <!-- 実績解除トースト -->
+  <div id="achievement-toasts" class="achievement-toasts" aria-live="polite"></div>
+
   <!-- 基盤 -->
   <script src="js/core/util.js"></script>
 
@@ -109,6 +116,7 @@
   <script src="js/data/jobs.js"></script>
   <script src="js/data/names.js"></script>
   <script src="js/data/family.js"></script>
+  <script src="js/data/achievements.js"></script>
 
   <!-- イベントデータ（新しいファイルを作ったらここに追加） -->
   <script src="js/events/system.js"></script>
@@ -135,6 +143,7 @@
   <script src="js/events/career.js"></script>
 
   <!-- ゲーム本体 -->
+  <script src="js/core/achievements.js"></script>
   <script src="js/core/engine.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/main.js"></script>

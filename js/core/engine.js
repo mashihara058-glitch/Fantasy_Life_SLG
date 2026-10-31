@@ -654,11 +654,17 @@ GAME.Engine = (function () {
     }
     state.timeline.push(entry);
 
+    const achievements =
+      GAME.Achievements && typeof GAME.Achievements.evaluate === "function"
+        ? GAME.Achievements.evaluate(state)
+        : [];
+
     state.lastResult = {
       choiceText,
       resultText: renderText(state, outcome.result || ""),
       changes,
       check,
+      achievements,
     };
     state.phase = state.alive ? "result" : "dead";
     if (!state.alive) closeLife(state);
