@@ -800,7 +800,7 @@ GAME.registerEvents([
             job: null,
             reputation: -12,
             health: -5,
-            addFlags: ["fugitive", "farmer_revolt_done", "farmer_revolt_fled"],
+            addFlags: ["fugitive", "farmer_revolt_done", "farmer_revolt_fled", "farmer_revolt_survivor"],
             removeFlags: ["farmer_agitated"],
           },
           log: {
@@ -821,6 +821,38 @@ GAME.registerEvents([
           log: {
             title: "一揆に加わり、奴隷として売られる",
             text: "群衆に紛れた末、捕まり鉄輪をはめられた。",
+          },
+        },
+      },
+      {
+        text: "一揆に加わるが、騎兵を見て畑へ逃げ戻る",
+        check: { chance: 55 },
+        success: {
+          result: "松明の列には混ざった。丘の向こうに騎馬の影を見た瞬間、畝のあいだへ滑り込む。翌朝、縄を免れた代わりに、「あの夜の顔」だけが村に残った。",
+          effects: {
+            reputation: -8,
+            health: -4,
+            addFlags: ["farmer_revolt_done", "farmer_revolt_survivor"],
+            removeFlags: ["farmer_agitated"],
+          },
+          log: {
+            title: "一揆に加わり、畑へ逃げ延びる",
+            text: "決起には乗ったが、鎮圧の前に畦へ戻った。",
+          },
+        },
+        failure: {
+          result: "逃げ遅れた。畦まであと数歩のところで捕らえられ、叛乱の片割れとして値がつく。",
+          effects: {
+            job: "slave",
+            addFlags: ["slave", "farmer_revolt_done", "farmer_revolt_enslaved"],
+            housing: "none",
+            setStats: { money: 0 },
+            reputation: -18,
+            health: -8,
+          },
+          log: {
+            title: "一揆から逃げ切れず、奴隷として売られる",
+            text: "畑へ戻る途中で捕まり、鉄輪をはめられた。",
           },
         },
       },
@@ -899,6 +931,182 @@ GAME.registerEvents([
         text: "もうしばらくこの国に潜む",
         result: "今は雌伏の時だと自分に言い聞かせ、もう少し耐えることにした。",
         effects: { health: -1 },
+      },
+    ],
+  },
+  // ---------- 大地の林檎（一揆生還者向け。pomme de terre＝じゃがいもネタ）----------
+  {
+    id: "farmer_014",
+    tags: ["young", "prime", "elder", "work", "farmer"],
+    weight: 10,
+    maxTimes: 1,
+    conditions: {
+      jobs: ["farmer"],
+      flags: ["farmer_revolt_survivor"],
+      notFlags: ["slave", "dwarf_apple"],
+    },
+    text: "近所にドワーフの一家が引っ越してきた。彼らは見慣れない作物を育てており、それを「林檎」と呼んでいる。根菜のようで、とても林檎には見えない。",
+    choices: [
+      {
+        text: "その作物は何かと聞いてみる",
+        check: { stat: "reputation", difficulty: 48 },
+        success: {
+          result: "ドワーフは「植えてみろ。やせた土地でもよく育つぞ」と種芋を分けてくれた。薄茶色のごつごつしたそれは、うまそうには見えないが——。",
+          effects: { ability: 2, addFlags: ["dwarf_apple"] },
+          log: {
+            title: "ドワーフから「大地の林檎」の種芋をもらう",
+            text: "見慣れない「林檎」を、畝の隅に植えてみることにした。",
+          },
+        },
+        failure: {
+          result: "「これはワシらの故郷の作物だ」。育て方と食い方を教わったが、いまいちピンとこない。また、聞いてみよう。",
+          effects: { ability: 1 },
+        },
+      },
+      {
+        text: "気にしない",
+        result: "隣人といえども他人だ。距離感を尊重し、詮索しないでおこう。",
+        effects: { addFlags: ["dwarf_apple_ignored"] },
+      },
+    ],
+  },
+  {
+    id: "farmer_015",
+    tags: ["young", "prime", "elder", "work", "farmer"],
+    weight: 10,
+    repeatable: true,
+    cooldown: 3,
+    maxTimes: 4,
+    conditions: {
+      jobs: ["farmer"],
+      flags: ["farmer_revolt_survivor", "dwarf_apple"],
+      notFlags: ["slave", "dwarf_apple2"],
+    },
+    text: "ドワーフにもらった作物を植えてみたが、うまくいかない。今年はどうしよう。",
+    choices: [
+      {
+        text: "ドワーフに育て方を習う",
+        check: { stat: "reputation", difficulty: 48 },
+        success: {
+          result: "余分な芽を摘むこと、土を寄せること——丁寧に教えてくれた。もう一度、挑戦してみよう。",
+          effects: { ability: 2, addFlags: ["dwarf_apple2"] },
+        },
+        failure: {
+          result: "ドワーフは酒に酔っていて話にならない。後日出直そうと思っていたら、忘れてしまった。",
+          effects: { health: 1 },
+        },
+      },
+      {
+        text: "自己流でやってみる",
+        check: { stat: "ability", difficulty: 55 },
+        success: {
+          result: "水、草、虫——基本の世話を欠かさなかった。いくらかは、うまく育ちはじめた。",
+          effects: { ability: 2, addFlags: ["dwarf_apple2"] },
+        },
+        failure: {
+          result: "その作物を植えていたこと自体を、うっかり忘れてしまった。",
+        },
+      },
+      {
+        text: "あきらめる",
+        result: "小麦のほうが肌に合う。ごつごつした「林檎」のことは、棚の奥へしまった。",
+        effects: { removeFlags: ["dwarf_apple"], addFlags: ["dwarf_apple_ignored"] },
+      },
+    ],
+  },
+  {
+    id: "farmer_016",
+    tags: ["young", "prime", "elder", "work", "farmer"],
+    weight: 11,
+    maxTimes: 1,
+    conditions: {
+      jobs: ["farmer"],
+      flags: ["farmer_revolt_survivor", "dwarf_apple", "dwarf_apple2"],
+      notFlags: ["slave", "dwarf_apple3", "dwarf_apple_chaos"],
+    },
+    text: "ドワーフにもらった作物の葉が、黄色く枯れてきた。こうなると土の中ではうまい芋ができている、という。いよいよ掘り返す時だ。",
+    choices: [
+      {
+        text: "芋を掘る",
+        check: { stat: "ability", difficulty: 40 },
+        success: {
+          result: "土の中では、薄茶色の塊がごろごろと実っていた。手が泥だらけになる。悪くない匂いだ。",
+          effects: { ability: 2, health: 2, addFlags: ["dwarf_apple3"] },
+          log: {
+            title: "大地の林檎を収穫する",
+            text: "土の中に実る「林檎」を、初めて掘り上げた。",
+          },
+        },
+        failure: {
+          result: "貧弱な芋がいくつかあるだけだった。食う分はないが、種にはできそうだ。また来年だ。",
+          effects: { ability: 1 },
+        },
+      },
+      {
+        // 息子さんの好物枠。低確率の謎成功——詳細は語らないのが流儀
+        text: "そのまま忘れる",
+        check: { chance: 10 },
+        success: {
+          result: "なんだかとんでもないことになった。言葉では表現できないが、すごいことだ。",
+          effects: { addFlags: ["dwarf_apple_chaos"] },
+          log: { title: "大変だ！", text: "なんかすごいことが起きた。" },
+        },
+        failure: {
+          result: "{名前}は特に何も思い出さなかった。今日はいい天気だ。",
+        },
+      },
+    ],
+  },
+  {
+    id: "farmer_017",
+    tags: ["young", "prime", "elder", "work", "farmer"],
+    weight: 9,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["farmer"],
+      flags: ["farmer_revolt_survivor", "dwarf_apple3"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "今年は気温が低く、小麦が育たなかった。しかし、そんな中でも「林檎」だけはよく育った。",
+    choices: [
+      {
+        text: "芋を分ける",
+        check: { stat: "reputation", difficulty: 35 },
+        success: {
+          result: "腹を空かせた近所に芋を配った。礼を言われ、冷害の備えとして自分たちも「林檎」を育てる、という声が上がる。",
+          effects: { ability: 1, health: 2, reputation: 5 },
+          log: {
+            title: "大地の林檎を近所に広める",
+            text: "不作の年に芋を分け、村の食卓を支えた。",
+          },
+        },
+        failure: {
+          result: "一時は腹が満ちた。だが食べ慣れないものは、すぐに日常へは定着しなかった。",
+          effects: { health: 1, reputation: 1 },
+        },
+      },
+      {
+        text: "芋を売る",
+        check: { chance: 45 },
+        success: {
+          result: "なじみの商人に売った。「食料が足りんでな、助かる」——相場より厚く銀が戻ってきた。",
+          effects: { money: 22, reputation: 3 },
+          log: {
+            title: "大地の林檎を流通させる",
+            text: "不作の年に芋を売り、街の食を支えた。",
+          },
+        },
+        failure: {
+          result: "持ち込んだが、たいして値はつかなかった。それでも、零よりはましだ。",
+          effects: { money: 6 },
+        },
+      },
+      {
+        text: "自家消費する",
+        result: "大地の林檎は、煮ても焼いてもうまい。鍋の湯気が、小屋いっぱいに満ちる。",
+        effects: { health: 3 },
       },
     ],
   },

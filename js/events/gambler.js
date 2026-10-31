@@ -587,7 +587,7 @@ GAME.registerEvents([
           },
         },
         failure: {
-          result: "袖を掴まれた。「俺を誰だと思ってる」。貸しは倍になり、顔は赌场中に売られた。",
+          result: "袖を掴まれた。「俺を誰だと思ってる」。貸しは倍になり、顔は賭場中に売られた。",
           effects: {
             money: -40,
             reputation: -8,
@@ -680,6 +680,73 @@ GAME.registerEvents([
             text: "無謀な突撃のまま、猛獣の餌食となった。",
           },
         },
+      },
+    ],
+  },
+
+  // ---------- ロシアンルーレット ----------
+  {
+    id: "gambler_015",
+    tags: ["young", "prime", "elder", "work", "gambler", "death"],
+    weight: 3,
+    repeatable: true,
+    cooldown: 10,
+    maxTimes: 5,
+    conditions: {
+      ageMin: 18,
+      jobs: ["gambler"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+      notJobs: ["slave"],
+    },
+    text: "新しく出回った銃、という武器がある。とある男が、それを使ったスリリングな勝負を持ちかけてきた。頭に銃口を突きつけ、交互に引き金を引く。生き残った方が、賭け金を取る——そういう遊びだ。",
+    choices: [
+      {
+        // 六連の空一発目 ≈ 5/6
+        text: "引き金を一回引く",
+        check: { chance: 83 },
+        success: {
+          result: "{名前}は銃口を頭に突きつけ、引き金を引いた。カチッ。乾いた音だけが落ちる。安堵して、銃を相手に渡した。",
+          effects: { money: 50, reputation: 2, ability: 2 },
+          log: {
+            title: "ロシアンルーレットで一回分を生き残る",
+            text: "命を卓に乗せ、乾いた音だけを持ち帰った。",
+          },
+        },
+        failure: {
+          result: "引き金を引いた瞬間、轟音が部屋を打った。{名前}がそれを聞いたかどうかは、わからない。",
+          effects: { death: "ロシアンルーレット" },
+          log: {
+            title: "ロシアンルーレットで果てる",
+            text: "命を懸けた遊びに、敗れた。",
+          },
+        },
+      },
+      {
+        // (5/6)*(4/5)*(3/4) = 1/2
+        text: "引き金を三回引く",
+        check: { chance: 50 },
+        success: {
+          result: "躊躇わず、指を三度動かした。カチ、カチ、カチッ——乾いた音が三度。{名前}は、まだ生きている。",
+          effects: { money: 150, reputation: 8, ability: 4 },
+          log: {
+            title: "ロシアンルーレットで三連を生き残る",
+            text: "三度の乾いた音のあと、賭け金と悪評が残った。",
+          },
+        },
+        failure: {
+          result: "指が三度重なったとき、轟音とともに意識が途切れた。",
+          effects: { death: "ロシアンルーレット" },
+          log: {
+            title: "ロシアンルーレットで果てる",
+            text: "三度目の遊びに、敗れた。",
+          },
+        },
+      },
+      {
+        text: "挑戦しない",
+        result: "男は肩をすくめ、銃を懐へしまった。「賢いな。退屈だが」",
+        effects: { reputation: -1 },
       },
     ],
   },
