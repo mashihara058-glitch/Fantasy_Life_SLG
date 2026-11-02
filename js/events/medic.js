@@ -331,9 +331,9 @@ GAME.registerEvents([
     tags: ["prime", "elder", "work", "medic", "career"],
     weight: 14,
     conditions: {
-      ageMin: 30,
+      ageMin: 25,
       jobs: ["medic"],
-      jobYearsMin: 10,
+      jobYearsMin: 8,
       stats: { ability: { min: 40 } },
       notFlags: ["slave", "medic_resuscitation", "medic_panacea", "medic_mundane"],
     },
@@ -373,7 +373,7 @@ GAME.registerEvents([
   {
     id: "medic_resuscitation_01",
     tags: ["prime", "elder", "work", "medic", "adventure"],
-    weight: 12,
+    weight: 14,
     repeatable: true,
     cooldown: 3,
     logOnce: true,
@@ -444,7 +444,7 @@ GAME.registerEvents([
   {
     id: "medic_resuscitation_02",
     tags: ["prime", "elder", "work", "medic", "adventure"],
-    weight: 12,
+    weight: 14,
     repeatable: true,
     cooldown: 3,
     logOnce: true,
@@ -514,7 +514,7 @@ GAME.registerEvents([
   {
     id: "medic_resuscitation_03",
     tags: ["prime", "elder", "work", "medic", "adventure"],
-    weight: 12,
+    weight: 14,
     repeatable: true,
     cooldown: 3,
     logOnce: true,
@@ -587,7 +587,7 @@ GAME.registerEvents([
   {
     id: "medic_resuscitation_craft",
     tags: ["prime", "elder", "work", "medic", "career"],
-    weight: 16,
+    weight: 20,
     repeatable: true,
     cooldown: 2,
     conditions: {
@@ -709,7 +709,7 @@ GAME.registerEvents([
   {
     id: "medic_panacea_01",
     tags: ["prime", "elder", "work", "medic", "adventure"],
-    weight: 12,
+    weight: 14,
     repeatable: true,
     cooldown: 3,
     logOnce: true,
@@ -763,7 +763,7 @@ GAME.registerEvents([
   {
     id: "medic_panacea_02",
     tags: ["prime", "elder", "work", "medic", "adventure"],
-    weight: 12,
+    weight: 14,
     repeatable: true,
     cooldown: 3,
     logOnce: true,
@@ -835,7 +835,7 @@ GAME.registerEvents([
   {
     id: "medic_panacea_03",
     tags: ["prime", "elder", "work", "medic", "adventure"],
-    weight: 12,
+    weight: 14,
     repeatable: true,
     cooldown: 3,
     logOnce: true,
@@ -890,7 +890,7 @@ GAME.registerEvents([
   {
     id: "medic_panacea_craft",
     tags: ["prime", "elder", "work", "medic", "career"],
-    weight: 16,
+    weight: 20,
     repeatable: true,
     cooldown: 2,
     conditions: {

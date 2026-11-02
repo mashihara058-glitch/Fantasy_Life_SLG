@@ -4,18 +4,19 @@ GAME.registerEvents([
   {
     id: "common_family_newsibling",
     tags: ["childhood", "adolescence", "family"],
+    // conditions を二重に書くと後勝ちで両親条件が消えるので、必ず1つにまとめる
     conditions: {
       ageMin: 1,
       ageMax: 14,
       npcs: ["father", "mother"],
       npcAgeMax: { mother: 42 },
-      custom: (s) => s.npcs.filter((n) => n.role === "sibling").length < 6,
+      notFlags: ["slave"],
+      custom: (s) => s.npcs.filter((n) => n.role === "sibling" && n.status === "active").length < 6,
     },
-    weight: 5,
+    weight: 3,
     repeatable: true,
     cooldown: 2,
     maxTimes: 3,
-    conditions:{notFlags: ["slave"] },
     text: "{母}のお腹が、日に日に大きくなっていく。そしてある朝、家に小さな産声が響いた。",
     choices: [
       {
