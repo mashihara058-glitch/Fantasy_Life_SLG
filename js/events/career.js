@@ -2,40 +2,301 @@
 // conditions.jobYearsMin で「今の職に何年就いているか」を条件にしている
 // effects.keepIncomeBonus: true で、これまでの昇給分を昇格後も引き継ぐ
 GAME.registerEvents([
-  // ---------- 職人 → 名工 ----------
+  // ---------- 職人 → 名工（専門別）----------
+  // 木工→建築 / 縫製→ドレス / 皮革・鋳造→武具 / 組立→魔道具
+  // 名工フラグ: craft_master_building / dress / arms / arcane
   {
-    id: "common_career_master_craftsman",
-    tags: ["young", "prime", "work", "career"],
-    conditions: { jobs: ["craftsman"], jobYearsMin: 10, stats: { ability: { min: 55 } } },
+    id: "common_career_master_building",
+    tags: ["young", "prime", "work", "career", "craftsman"],
     weight: 15,
     repeatable: true,
     cooldown: 5,
-    text: "職人として腕を磨き続けて十余年。ギルドから、名工の称号を懸けた審査を受けないかと声がかかった。",
+    conditions: {
+      jobs: ["craftsman"],
+      jobYearsMin: 10,
+      flags: ["craft_wood"],
+      stats: { ability: { min: 55 } },
+      notFlags: ["slave", "craft_master_building"],
+    },
+    text: "木工の腕を磨いて十余年。ギルドから、建築の名工審査——梁と屋根を見据えた傑作を懸けないか、と声がかかった。",
     choices: [
       {
-        text: "生涯の傑作を作り上げて審査に臨む",
+        text: "屋敷の骨組みを模した模型で臨む",
         check: { stat: "ability", difficulty: 60 },
         success: {
-          result: "審査員たちは、しばし言葉を失った。",
-          effects: { job: "master_craftsman", keepIncomeBonus: true, reputation: 10,ability:-30 },
-          log: { title: "名工の称号を得る", text: "ギルドの審査を通り、名工として認められた。" },
+          result: "審査員が部材の継手に指を這わせ、長く黙った。「建築の名工として、認めよう」",
+          effects: {
+            job: "master_craftsman",
+            keepIncomeBonus: true,
+            reputation: 10,
+            ability: -30,
+            addFlags: ["craft_master_building"],
+          },
+          log: { title: "建築の名工となる", text: "木工の道から、建築の名工へ昇った。" },
         },
         failure: {
-          result: "「悪くはない。だが、名工の仕事ではない」",
+          result: "「家は人を乗せる。まだ、軽い」——不合格の札が下りた。",
           effects: { reputation: -3, ability: 2 },
         },
       },
       {
         conditions: { npcs: ["mentor"] },
-        text: "{師匠}に推薦状を頼む",
+        text: "{師匠}に建築分野の推薦状を頼む",
         check: { stat: "ability", difficulty: 50 },
         success: {
-          result: "{師匠}は黙って筆を取った。その推薦状が、審査員たちを頷かせた。",
-          effects: { job: "master_craftsman", keepIncomeBonus: true, reputation: 8, ability:-30 ,npc: { mentor: { trust: 10 } } },
-          log: { title: "名工の称号を得る", text: "{師匠}の推薦を受け、名工として認められた。" },
+          result: "{師匠}の一筆が、審査の扉を開けた。称号は「建築」の名工だ。",
+          effects: {
+            job: "master_craftsman",
+            keepIncomeBonus: true,
+            reputation: 8,
+            ability: -30,
+            addFlags: ["craft_master_building"],
+            npc: { mentor: { trust: 10 } },
+          },
+          log: { title: "建築の名工となる", text: "{師匠}の推薦で、建築の名工に認められた。" },
         },
         failure: {
-          result: "「お前にはまだ早い」と、{師匠}は首を横に振った。",
+          result: "「屋根の重みを、まだ知らん」と、{師匠}は首を横に振った。",
+          effects: { npc: { mentor: { trust: -5 } } },
+        },
+      },
+      {
+        text: "まだ自分は未熟だと辞退する",
+      },
+    ],
+  },
+  {
+    id: "common_career_master_dress",
+    tags: ["young", "prime", "work", "career", "craftsman"],
+    weight: 15,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["craftsman"],
+      jobYearsMin: 10,
+      flags: ["craft_sewing"],
+      stats: { ability: { min: 55 } },
+      notFlags: ["slave", "craft_master_dress"],
+    },
+    text: "縫製の腕を磨いて十余年。ギルドから、ドレスの名工審査——一着で季節を動かす仕事だ、と声がかかった。",
+    choices: [
+      {
+        text: "礼服の一着を仕上げて臨む",
+        check: { stat: "ability", difficulty: 60 },
+        success: {
+          result: "布が光を受けて呼吸する。審査員の一人が、思わず袖に触れた。「ドレスの名工だ」",
+          effects: {
+            job: "master_craftsman",
+            keepIncomeBonus: true,
+            reputation: 10,
+            ability: -30,
+            addFlags: ["craft_master_dress"],
+          },
+          log: { title: "ドレスの名工となる", text: "縫製の道から、ドレスの名工へ昇った。" },
+        },
+        failure: {
+          result: "「美しい。だが、忘れられる」——不合格だった。",
+          effects: { reputation: -3, ability: 2 },
+        },
+      },
+      {
+        conditions: { npcs: ["mentor"] },
+        text: "{師匠}に服飾分野の推薦状を頼む",
+        check: { stat: "ability", difficulty: 50 },
+        success: {
+          result: "{師匠}の筆が、針目より雄弁だった。称号は「ドレス」の名工だ。",
+          effects: {
+            job: "master_craftsman",
+            keepIncomeBonus: true,
+            reputation: 8,
+            ability: -30,
+            addFlags: ["craft_master_dress"],
+            npc: { mentor: { trust: 10 } },
+          },
+          log: { title: "ドレスの名工となる", text: "{師匠}の推薦で、ドレスの名工に認められた。" },
+        },
+        failure: {
+          result: "「客の肩を、まだ見ていない」と、{師匠}は首を横に振った。",
+          effects: { npc: { mentor: { trust: -5 } } },
+        },
+      },
+      {
+        text: "まだ自分は未熟だと辞退する",
+      },
+    ],
+  },
+  {
+    id: "common_career_master_arms_leather",
+    tags: ["young", "prime", "work", "career", "craftsman"],
+    weight: 15,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["craftsman"],
+      jobYearsMin: 10,
+      flags: ["craft_leather"],
+      stats: { ability: { min: 55 } },
+      notFlags: ["slave", "craft_master_arms"],
+    },
+    text: "皮革の腕を磨いて十余年。ギルドから、武具の名工審査——革で命を守る仕事の頂点だ、と声がかかった。",
+    choices: [
+      {
+        text: "一領の皮鎧を傑作として臨む",
+        check: { stat: "ability", difficulty: 60 },
+        success: {
+          result: "打撃試験のあとも、縫い目は沈まなかった。「武具の名工」——その名が札に記される。",
+          effects: {
+            job: "master_craftsman",
+            keepIncomeBonus: true,
+            reputation: 10,
+            ability: -30,
+            addFlags: ["craft_master_arms"],
+          },
+          log: { title: "武具の名工となる", text: "皮革の道から、武具の名工へ昇った。" },
+        },
+        failure: {
+          result: "「戦場の泥を知らん革だ」——不合格の声が落ちた。",
+          effects: { reputation: -3, ability: 2 },
+        },
+      },
+      {
+        conditions: { npcs: ["mentor"] },
+        text: "{師匠}に武具分野の推薦状を頼む",
+        check: { stat: "ability", difficulty: 50 },
+        success: {
+          result: "{師匠}は革紐で封をした。「武具の名で、恥をかくな」",
+          effects: {
+            job: "master_craftsman",
+            keepIncomeBonus: true,
+            reputation: 8,
+            ability: -30,
+            addFlags: ["craft_master_arms"],
+            npc: { mentor: { trust: 10 } },
+          },
+          log: { title: "武具の名工となる", text: "{師匠}の推薦で、武具の名工に認められた。" },
+        },
+        failure: {
+          result: "「まだ、血の匂いを嫌っている」と、{師匠}は首を横に振った。",
+          effects: { npc: { mentor: { trust: -5 } } },
+        },
+      },
+      {
+        text: "まだ自分は未熟だと辞退する",
+      },
+    ],
+  },
+  {
+    id: "common_career_master_arms_casting",
+    tags: ["young", "prime", "work", "career", "craftsman"],
+    weight: 15,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["craftsman"],
+      jobYearsMin: 10,
+      flags: ["craft_casting"],
+      stats: { ability: { min: 55 } },
+      notFlags: ["slave", "craft_master_arms"],
+    },
+    text: "鋳造の腕を磨いて十余年。ギルドから、武具の名工審査——刃と筒の芯を問う審査だ、と声がかかった。",
+    choices: [
+      {
+        text: "剣、あるいは銃の心臓部を鋳って臨む",
+        check: { stat: "ability", difficulty: 60 },
+        success: {
+          result: "冷やした金属が、審査場で短い音を立てた。「武具の名工——炉の側から来た者か」",
+          effects: {
+            job: "master_craftsman",
+            keepIncomeBonus: true,
+            reputation: 10,
+            ability: -30,
+            addFlags: ["craft_master_arms"],
+          },
+          log: { title: "武具の名工となる", text: "鋳造の道から、武具の名工へ昇った。" },
+        },
+        failure: {
+          result: "「綺麗な鋳物だ。武具ではない」——不合格だった。",
+          effects: { reputation: -3, ability: 2 },
+        },
+      },
+      {
+        conditions: { npcs: ["mentor"] },
+        text: "{師匠}に武具分野の推薦状を頼む",
+        check: { stat: "ability", difficulty: 50 },
+        success: {
+          result: "{師匠}の推薦状に、煤の匂いが残っていた。称号は武具の名工だ。",
+          effects: {
+            job: "master_craftsman",
+            keepIncomeBonus: true,
+            reputation: 8,
+            ability: -30,
+            addFlags: ["craft_master_arms"],
+            npc: { mentor: { trust: 10 } },
+          },
+          log: { title: "武具の名工となる", text: "{師匠}の推薦で、武具の名工に認められた。" },
+        },
+        failure: {
+          result: "「火の癖を、まだ恐れておる」と、{師匠}は首を横に振った。",
+          effects: { npc: { mentor: { trust: -5 } } },
+        },
+      },
+      {
+        text: "まだ自分は未熟だと辞退する",
+      },
+    ],
+  },
+  {
+    id: "common_career_master_arcane",
+    tags: ["young", "prime", "work", "career", "craftsman"],
+    weight: 15,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["craftsman"],
+      jobYearsMin: 10,
+      flags: ["craft_assembly"],
+      stats: { ability: { min: 55 } },
+      notFlags: ["slave", "craft_master_arcane"],
+    },
+    text: "組立の腕を磨いて十余年。ギルドから、魔道具の名工審査——噛み合わせ一つで世界が狂う仕事だ、と声がかかった。",
+    choices: [
+      {
+        text: "精密な魔道具を組んで臨む",
+        check: { stat: "ability", difficulty: 62 },
+        success: {
+          result: "最後の留め具で、装置が小さく息をした。審査員が後退る。「魔道具の名工——近づけ」",
+          effects: {
+            job: "master_craftsman",
+            keepIncomeBonus: true,
+            reputation: 10,
+            ability: -30,
+            addFlags: ["craft_master_arcane"],
+          },
+          log: { title: "魔道具の名工となる", text: "組立の道から、魔道具の名工へ昇った。" },
+        },
+        failure: {
+          result: "「動く。だが、意志がない」——不合格の評だった。",
+          effects: { reputation: -3, ability: 2 },
+        },
+      },
+      {
+        conditions: { npcs: ["mentor"] },
+        text: "{師匠}に魔道具分野の推薦状を頼む",
+        check: { stat: "ability", difficulty: 52 },
+        success: {
+          result: "{師匠}は図面の余白に、短い式だけを書いた。それが通った。魔道具の名工だ。",
+          effects: {
+            job: "master_craftsman",
+            keepIncomeBonus: true,
+            reputation: 8,
+            ability: -30,
+            addFlags: ["craft_master_arcane"],
+            npc: { mentor: { trust: 10 } },
+          },
+          log: { title: "魔道具の名工となる", text: "{師匠}の推薦で、魔道具の名工に認められた。" },
+        },
+        failure: {
+          result: "「まだ、部品を人だと思っている」と、{師匠}は首を横に振った。",
           effects: { npc: { mentor: { trust: -5 } } },
         },
       },
