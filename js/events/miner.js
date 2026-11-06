@@ -276,4 +276,86 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+    id: "miner_008",
+    tags: ["young", "prime", "elder", "work", "miner"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["miner"],
+      moneyUnlocked: true,
+    },
+    text: "掘りつくされた坑道に、キノコが生えている。元薬師の鉱夫が目を細めた。「それ、治癒薬の材料になるやつだ」",
+    choices: [
+      {
+        text: "収穫して雇い主に渡す",
+        result: "雇い主は「よく見つけた」と言い、わずかな臨時収入をくれた。キノコは、上の棚へ消えた。",
+        effects: { money: 10, reputation: 1 },
+      },
+      {
+        text: "世話をして数を増やす",
+        check: { stat: "ability", difficulty: 42 },
+        success: {
+          result: "坑道の隅を、鉱夫同士の内緒の畑にした。調合経験のある者がポーションに加工し、怪我の手当てが少し楽になる。",
+          effects: { money: 8, health: 3, ability: 1 },
+          log: {
+            title: "坑道で薬用キノコを育てる",
+            text: "雇い主の目を盗んで、治癒用のキノコを共有した。",
+          },
+        },
+        failure: {
+          result: "雇い主に見つかり、キノコごと取り上げられた。「鉱山のものは、鉱山のものだ」",
+          effects: { reputation: -2 },
+        },
+      },
+      {
+        text: "見なかったことにする",
+        result: "暗がりに戻る。キノコは、誰かの靴に潰されるまでそこで待つ。",
+      },
+    ],
+  },
+  {
+    id: "miner_009",
+    tags: ["young", "prime", "elder", "work", "miner"],
+    weight: 5,
+    maxTimes: 1,
+    conditions: {
+      jobs: ["miner"],
+      moneyUnlocked: true,
+    },
+    text: "採掘の最中、地下水が噴き出した。手を浸けると、芯から温かい。湯治場になりそうな温度だ。",
+    choices: [
+      {
+        text: "雇い主に報告する",
+        result: "雇い主は「よくやった」と銀をくれた。この一帯は湯治場になるらしい——{名前}たち坑夫は、別の山へ移された。",
+        effects: { money: 12, reputation: 2 },
+        log: {
+          title: "温泉を掘り当てる",
+          text: "湯を見つけたが、浸かる権利は上の者のものだった。",
+        },
+      },
+      {
+        text: "雇い主には黙っておく",
+        check: { stat: "ability", difficulty: 45 },
+        success: {
+          result: "鉱夫だけの秘密の休憩所にした。交代で浸かり、腰の痛みが少し遠のく。",
+          effects: { health: 4 },
+          log: {
+            title: "秘密の温泉を隠す",
+            text: "雇い主に知らせず、坑夫たちの湯治場にした。",
+          },
+        },
+        failure: {
+          result: "さぼり湯がばれ、湯は塞がれ、見張りが増えた。「鉱山のものは、鉱山のものだ」",
+          effects: { reputation: -3, health: -1 },
+        },
+      },
+      {
+        text: "危険だと避け、別の坑へ移る",
+        result: "水の音を背に、乾いた坑道へ戻った。濡れ仕事は、今日はしない。",
+        effects: { health: 1 },
+      },
+    ],
+  },
 ]);

@@ -173,6 +173,61 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+    id: "medic_010",
+    tags: ["young", "prime", "elder", "work", "medic"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 6,
+    maxTimes: 3,
+    logOnce: true,
+    conditions: {
+      ageMin: 18,
+      jobs: ["medic"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "騎士団からの依頼だ。治癒薬と魔力薬を、可能な限り大量に——大至急で納品してほしい、という。急ぎようが、いつもの補充とは違う。",
+    choices: [
+      {
+        text: "残業して要求に応える",
+        check: { stat: "ability", difficulty: 48 },
+        success: {
+          result: "休日をつぶして棚を空にした。銀は厚い。騎士の使いの目が、国境の方角を見ている気がした。",
+          effects: { money: 28, ability: 2, health: -3, addFlags: ["medic_war_orders"] },
+          log: {
+            title: "騎士団へ薬を大量納品する",
+            text: "大至急の依頼に応え、工房が薬作り一色になった。",
+          },
+        },
+        failure: {
+          result: "無理がたたんで手が鈍り、思ったほどは作れなかった。それでも急ぎの荷は出ていく。",
+          effects: { money: 12, ability: 1, health: -4, addFlags: ["medic_war_orders"] },
+        },
+      },
+      {
+        text: "同業者と分担して数をそろえる",
+        check: { stat: "reputation", difficulty: 48 },
+        success: {
+          result: "声を掛け合い、手分けした。街の薬棚が、いっせいに減っていく。",
+          effects: { money: 16, reputation: 3, addFlags: ["medic_war_orders"] },
+          log: {
+            title: "同業者と騎士団の薬注文を分担する",
+            text: "大至急の大量依頼を、薬師同士で分け合った。",
+          },
+        },
+        failure: {
+          result: "声をかけたが、手の空いている同業者は少なかった。結局、自分の棚が先に空になる。",
+          effects: { money: 8, reputation: -1, health: -2, addFlags: ["medic_war_orders"] },
+        },
+      },
+      {
+        text: "無理のない範囲だけ納品する",
+        result: "堅実に働き、相応の報酬だけを受け取った。使いの顔は、満足していない。",
+        effects: { money: 8, reputation: 1 },
+      },
+    ],
+  },
 
   // ---------- 灰色の依頼 ----------
   {

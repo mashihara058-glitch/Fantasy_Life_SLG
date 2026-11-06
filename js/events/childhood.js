@@ -42,7 +42,7 @@ GAME.registerEvents([
   {
     id: "common_childhood_003",
     tags: ["childhood", "family", "health"],
-    conditions: { ageMin: 1, ageMax: 6 },
+    conditions: { ageMin: 1, ageMax: 6 ,notFlags: ["slave"]  },
     text: "{名前}はひどい熱を出して寝込んでしまった。",
     choices: [
       {
@@ -74,7 +74,7 @@ GAME.registerEvents([
   {
     id: "common_childhood_004",
     tags: ["childhood", "magic"],
-    conditions: { ageMin: 7, ageMax: 11 },
+    conditions: { ageMin: 7, ageMax: 11,notFlags: ["slave"]  },
     weight: 8,
     text: "夜、ベッドの中で指先を見つめていると、小さな光がぽうっと灯った。",
     choices: [
@@ -131,7 +131,7 @@ GAME.registerEvents([
   {
     id: "common_childhood_007",
     tags: ["childhood", "friend"],
-    conditions: { ageMin: 6, ageMax: 11, npcs: ["friend"] },
+    conditions: { ageMin: 6, ageMax: 11, npcs: ["friend"] ,notFlags: ["slave"]},
     text: "つまらないことで、{友人}と大喧嘩をしてしまった。",
     choices: [
       {
@@ -149,7 +149,7 @@ GAME.registerEvents([
   {
     id: "common_childhood_008",
     tags: ["childhood","adolescence"],
-    weight: 5,
+    weight: 4,
     // エルフは種族。flags ではなく species で倍率をかける
     weightMods: [{ conditions: { species: ["elf"] }, multiply: 1.5 }],
     conditions: { ageMin: 5,ageMax: 16, notFlags: ["slave"] },

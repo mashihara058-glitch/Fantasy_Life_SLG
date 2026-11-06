@@ -46,7 +46,7 @@ GAME.registerEvents([
   {
     id: "common_adolescence_003",
     tags: ["adolescence", "rival"],
-    conditions: { ageMin: 12, ageMax: 17, noNpcs: ["rival"] },
+    conditions: { ageMin: 12, ageMax: 17, noNpcs: ["rival"], notFlags: ["slave"] },
     text: "同じ年頃の若者が、何かにつけてあなたに張り合ってくる。",
     choices: [
       {
@@ -89,7 +89,7 @@ GAME.registerEvents([
   {
     id: "common_adolescence_005",
     tags: ["adolescence", "friend"],
-    conditions: { ageMin: 13, ageMax: 17, npcs: ["friend"] },
+    conditions: { ageMin: 13, ageMax: 17, npcs: ["friend"] ,notFlags: ["slave"] },
     weight: 12,
     text: "{友人}が青ざめた顔で打ち明けてきた。たちの悪い連中に借りを作ってしまったらしい。",
     choices: [
@@ -331,7 +331,7 @@ GAME.registerEvents([
     weight: 8,
     repeatable: true,
     cooldown: 4,
-    conditions: { ageMin: 13, ageMax: 17, npcs: ["mentor"], jobs: ["apprentice"] },
+    conditions: { ageMin: 13, ageMax: 17, npcs: ["mentor"], jobs: ["apprentice"], notFlags: ["slave"] },
     text: "{師匠}の仕事を真似して、失敗してしまった。材料が無駄になる。",
     choices: [
       {

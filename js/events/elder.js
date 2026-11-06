@@ -539,7 +539,6 @@ GAME.registerEvents([
     repeatable: true,
     cooldown: 12,
     logOnce: true,
-    maxTimes: 3,
     conditions: {
       jobYearsMin: 40,
       hasJob: true,
@@ -832,6 +831,93 @@ GAME.registerEvents([
         text: "関わらずに席を立つ",
         result: "背後で、また「昨日」「百年」がぶつかる。長い命同士の喧嘩は、短い命の者には計測不能だ。",
         effects: { health: 1 },
+      },
+    ],
+  },
+  {
+    id: "common_elder_elf_dwarf_04",
+    tags: ["elder", "species", "comedy"],
+    weight: 6,
+    repeatable: true,
+    cooldown: 8,
+    conditions: {
+      ageMin: 100,
+      species: ["elf", "dwarf"],
+      notFlags: ["slave"],
+    },
+    text: "屋台を見ていたら、声をかけられた。どうやら、ナンパらしい。長い命の者でも、見た目の年齢は相手を欺く。",
+    choices: [
+      {
+        text: "少しだけ付き合う",
+        check: { chance: 55 },
+        success: {
+          result: "話に乗っていると、菓子と飲み物をおごってもらえた。相手は自分の実年齢を、まだ知らない。",
+          effects: { health: 2 },
+        },
+        failure: {
+          result: "世間話が年齢の話に滑った。数字を聞いた相手は、顔を青くしてそそくさと逃げた。",
+          effects: { reputation: -1, health: 1 },
+          log: {
+            title: "実年齢を知られナンパに逃げられる",
+            text: "若い顔とのギャップに、相手が耐えられなかった。",
+          },
+        },
+      },
+      {
+        text: "軽くあしらう",
+        result: "「悪いが、孫の世話がある」——嘘か真か。相手は苦笑して去った。",
+        effects: { reputation: 1 },
+      },
+    ],
+  },
+  {
+    id: "common_elder_elf_dwarf_05",
+    tags: ["elder", "species"],
+    weight: 6,
+    repeatable: true,
+    cooldown: 8,
+    conditions: {
+      ageMin: 80,
+      species: ["elf", "dwarf"],
+      notFlags: ["slave"],
+    },
+    text: "酒場で、エルフとドワーフの古い対立が話題になっている。価値観の食い違いが、杯の数だけ積み上がる夜だ。",
+    choices: [
+      {
+        text: "同族を持ち上げ、相手側を批判する",
+        check: { chance: 50 },
+        success: {
+          result: "「そうだそうだ」と同族から賛同が上がる。反対側の席が、ざわつく。",
+          effects: { reputation: 2 },
+        },
+        failure: {
+          result: "「今どき、そういうのは古いよ」と、若手の同族に呆れられた。",
+          effects: { reputation: -2 },
+        },
+      },
+      {
+        text: "どちらにも言い分があると中立を装う",
+        check: { chance: 50 },
+        success: {
+          result: "「お互いを尊重すべきだ」と、両側から短い拍手が起きた。",
+          effects: { reputation: 2, ability: 1 },
+        },
+        failure: {
+          result: "「八方美人だ」「日和見だ」——どちらからも批判された。",
+          effects: { reputation: -2 },
+        },
+      },
+      {
+        text: "争いには加わらない",
+        check: { chance: 55 },
+        success: {
+          result: "存在感を消し、杯だけを傾げてやり過ごした。",
+          effects: { health: 1 },
+        },
+        failure: {
+          result: "「何か言ったらどうなんだ」と急に水を向けられ、言葉に詰まった。",
+          effects: { reputation: -1, health: -1 },
+        },
       },
     ],
   },
