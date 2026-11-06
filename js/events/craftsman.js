@@ -274,11 +274,11 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 50 },
         success: {
           result: "引き出しが滑らかに開く。客は満足げに銀を置いた。",
-          effects: { money: 28, happiness: 1, reputation: 1 },
+          effects: { money: 28, reputation: 1 },
         },
         failure: {
           result: "扉の収まりが悪く、値を叩かれた。",
-          effects: { money: 10, happiness: 1 },
+          effects: { money: 10, ability: 1 },
         },
       },
       {
@@ -382,7 +382,7 @@ GAME.registerEvents([
         check: { chance: 45 },
         success: {
           result: "予算は膨らんだが、家は持ち直した。長く通う仕事になった。",
-          effects: { money: 40, happiness: 2, reputation: 2 },
+          effects: { money: 40, reputation: 2 },
         },
         failure: {
           result: "予算が合わず、話は流れた。図面だけが机に残る。",
@@ -416,7 +416,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "しなる木を削り、弦を張る。夜明けには束が山になった。使いの目が、国境の方角を見ている。",
-          effects: { money: 28, happiness: 2, health: -3, addFlags: ["craft_war_orders"] },
+          effects: { money: 28, ability: 1, health: -3, addFlags: ["craft_war_orders"] },
           log: {
             title: "騎士団へ弓を大量納品する",
             text: "急ぎの弓矢注文に応え、工房が戦支度の匂いを帯びた。",
@@ -424,7 +424,7 @@ GAME.registerEvents([
         },
         failure: {
           result: "急ぎの手直しがかさみ、思ったほど数を揃えられなかった。それでも荷は出ていく。",
-          effects: { money: 12, happiness: 1, health: -4, addFlags: ["craft_war_orders"] },
+          effects: { money: 12, ability: 1, health: -4, addFlags: ["craft_war_orders"] },
         },
       },
       {
@@ -468,7 +468,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "革を張り、鋲を打ち、やすりを当てる。空が白むころ、箱がいっぱいになった。",
-          effects: { money: 28, happiness: 2, health: -3, addFlags: ["craft_war_orders"] },
+          effects: { money: 28, ability: 1, health: -3, addFlags: ["craft_war_orders"] },
           log: {
             title: "騎士団へ簡易盾を大量納品する",
             text: "板と革の盾を急ぎ整え、兵の生還を祈る注文に応えた。",
@@ -476,7 +476,7 @@ GAME.registerEvents([
         },
         failure: {
           result: "鋲の打ち損じが続き、数は足りない。それでも「間に合わせ」は出ていく。",
-          effects: { money: 12, happiness: 1, health: -4, addFlags: ["craft_war_orders"] },
+          effects: { money: 12, ability: 1, health: -4, addFlags: ["craft_war_orders"] },
         },
       },
       {
@@ -552,11 +552,11 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 55 },
         success: {
           result: "細い模様が布に浮かぶ。手間の分だけ、値がつく。",
-          effects: { money: 30, happiness: 2 },
+          effects: { money: 30, ability: 1 },
         },
         failure: {
           result: "糸が絡まり、半日がほどけた。",
-          effects: { money: 5, happiness: 1 },
+          effects: { money: 5, ability: 1 },
         },
       },
       {
@@ -582,7 +582,7 @@ GAME.registerEvents([
       {
         text: "引き受ける",
         result: "地味だが、工房の血流だ。指先が熱を持つ。",
-        effects: { money: 10, happiness: 1, health: -1 },
+        effects: { money: 10, ability: 1, health: -1 },
       },
       {
         text: "今は手いっぱいだと断る",
@@ -621,7 +621,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "材料費を抑え、形で勝負した。斬新な一着は、夜会で噂になったらしい。",
-          effects: { reputation: 3, money: 10, happiness: 1 },
+          effects: { money: 10, reputation: 3 },
         },
         failure: {
           result: "格好だけ整えたが、審美眼には見抜かれたらしい。噂は、あまりよくない。",
@@ -656,7 +656,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "夜を徹して裁ち、縫う。針の音が、遠征の足音に聞こえる。",
-          effects: { money: 28, happiness: 2, health: -3, addFlags: ["craft_war_orders"] },
+          effects: { money: 28, ability: 1, health: -3, addFlags: ["craft_war_orders"] },
           log: {
             title: "騎士団へ外套と背嚢を大量納品する",
             text: "出征間近の急ぎ注文に、縫製の工房が応えた。",
@@ -664,7 +664,7 @@ GAME.registerEvents([
         },
         failure: {
           result: "手直しがかさみ、数は足りない。それでも「近い」荷は出ていく。",
-          effects: { money: 12, happiness: 1, health: -4, addFlags: ["craft_war_orders"] },
+          effects: { money: 12, ability: 1, health: -4, addFlags: ["craft_war_orders"] },
         },
       },
       {
@@ -708,7 +708,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 52 },
         success: {
           result: "重ねた革が、打撃を受け止める厚みになる。衛兵向けの値だ。",
-          effects: { money: 34, happiness: 1, reputation: 1 },
+          effects: { money: 34, reputation: 1 },
         },
         failure: {
           result: "縫いが浅く、補強に追われた。",
@@ -799,7 +799,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "夜を徹して革を裁ち、縫う。油の匂いが、戦の支度の匂いと重なる。",
-          effects: { money: 28, happiness: 2, health: -3, addFlags: ["craft_war_orders"] },
+          effects: { money: 28, ability: 1, health: -3, addFlags: ["craft_war_orders"] },
           log: {
             title: "騎士団へ革防具を大量納品する",
             text: "急ぎの胸当てと丸盾の注文に応えた。",
@@ -807,7 +807,7 @@ GAME.registerEvents([
         },
         failure: {
           result: "手直しがかさみ、数は足りない。それでも「間に合わせ」の荷は出ていく。",
-          effects: { money: 12, happiness: 1, health: -4, addFlags: ["craft_war_orders"] },
+          effects: { money: 12, ability: 1, health: -4, addFlags: ["craft_war_orders"] },
         },
       },
       {
@@ -852,7 +852,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 52 },
         success: {
           result: "刃の芯が、冷えて鳴る。武具商人が目を細めた。",
-          effects: { money: 30, happiness: 1, reputation: 1 },
+          effects: { money: 30, reputation: 1 },
         },
         failure: {
           result: "巣ができ、欠けた品になった。溶け直しだ。",
@@ -917,7 +917,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 58 },
         success: {
           result: "円筒に穴が並ぶ、奇妙な部品が冷えた。発注主は「組立側へ回せ」とだけ言った。",
-          effects: { money: 40, happiness: 2, addFlags: ["craft_revolver_parts"] },
+          effects: { money: 40, ability: 1, addFlags: ["craft_revolver_parts"] },
           log: {
             title: "銃の鋳造部品を手がける",
             text: "見慣れない回転部品の型を、炉で起こした。",
@@ -956,7 +956,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "汗を流し、炉をくべる。冷え固まった刃の山が、夜明けの光を受ける。",
-          effects: { money: 28, happiness: 2, health: -3, addFlags: ["craft_war_orders"] },
+          effects: { money: 28, ability: 1, health: -3, addFlags: ["craft_war_orders"] },
           log: {
             title: "騎士団へ剣を大量納品する",
             text: "急ぎの量産注文に、鋳造の工房が応えた。",
@@ -964,7 +964,7 @@ GAME.registerEvents([
         },
         failure: {
           result: "巣や歪みの手直しがかさみ、数は足りない。それでも荷は出ていく。",
-          effects: { money: 12, happiness: 1, health: -4, addFlags: ["craft_war_orders"] },
+          effects: { money: 12, ability: 1, health: -4, addFlags: ["craft_war_orders"] },
         },
       },
       {
@@ -1008,11 +1008,11 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 55 },
         success: {
           result: "最後の留め具を締めると、小さな光が走った。依頼主は黙って銀を置いた。",
-          effects: { money: 36, happiness: 2, reputation: 1 },
+          effects: { money: 36, reputation: 1 },
         },
         failure: {
           result: "接触が悪く、動かない箱だけが残った。",
-          effects: { money: 10, happiness: 1 },
+          effects: { money: 10, ability: 1 },
         },
       },
       {
@@ -1118,7 +1118,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "留め具を締め、芯を合わせる。夜明けには箱が並び、使いの目が国境の方角を見る。",
-          effects: { money: 28, happiness: 2, health: -3, addFlags: ["craft_war_orders"] },
+          effects: { money: 28, ability: 1, health: -3, addFlags: ["craft_war_orders"] },
           log: {
             title: "騎士団へ合図灯と夜行筒を大量納品する",
             text: "急ぎの組立注文に応え、工房が戦支度の匂いを帯びた。",
@@ -1126,7 +1126,7 @@ GAME.registerEvents([
         },
         failure: {
           result: "噛み合わせの手直しが続き、数は足りない。それでも「間に合わせ」は出ていく。",
-          effects: { money: 12, happiness: 1, health: -4, addFlags: ["craft_war_orders"] },
+          effects: { money: 12, ability: 1, health: -4, addFlags: ["craft_war_orders"] },
         },
       },
       {
@@ -1207,7 +1207,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 55 },
         success: {
           result: "棚の裏が、音もなく開く。依頼主は満足げに頷き、「他言無用」とだけ言って銀を置いた。",
-          effects: { money: 45, happiness: 1, health: -2, reputation: 1 },
+          effects: { money: 45, reputation: 1, health: -2 },
           log: {
             title: "隠し扉付きの本棚を仕上げる",
             text: "名を伏せた客のため、通路へ続く仕掛けを仕込んだ。",
@@ -1258,7 +1258,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 60 },
         success: {
           result: "館は建った。仕掛けは影のまま眠る。依頼主は厚く礼をし、「君の名は、表の石には刻まない」と笑った。銀は重い。胸の奥も、重い。",
-          effects: { money: 120, reputation: 3, happiness: 1, health: -4, addFlags: ["craft_secret_manor"] },
+          effects: { money: 120, reputation: 3, health: -4, addFlags: ["craft_secret_manor"] },
           log: {
             title: "秘密の仕掛けを含む貴族の館を建てる",
             text: "表に出せない通路ごと、館を仕上げた。名は石に残らない。",
@@ -1275,7 +1275,7 @@ GAME.registerEvents([
         check: { chance: 50 },
         success: {
           result: "「表だけなら」と通した。報酬は半減したが、夜は眠れる。別の手が、影の通路を継いだらしい。",
-          effects: { money: 55, reputation: 2, happiness: 2 },
+          effects: { money: 55, reputation: 2 },
         },
         failure: {
           result: "半請けは侮辱だと受け取られた。案件そのものが消えた。",
@@ -1285,7 +1285,7 @@ GAME.registerEvents([
       {
         text: "関わるまいと断る",
         result: "破格の銀を見送った。数年後、その館の灯だけが、丘の上で不自然に多いと噂になった。",
-        effects: { reputation: 1, happiness: -1 },
+        effects: { reputation: 1 },
       },
     ],
   },
@@ -1308,7 +1308,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 58 },
         success: {
           result: "裾が床を滑る音が、工房の試着室に響く。後日、噂だけが先に帰ってきた。",
-          effects: { money: 75, reputation: 6, happiness: 1 },
+          effects: { money: 75, reputation: 6 },
           log: { title: "名工として夜会のドレスを仕立てる", text: "ドレスの名で、社交界の一着を担った。" },
         },
         failure: {
@@ -1342,7 +1342,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 60 },
         success: {
           result: "革と金属が、同じ呼吸で組み上がる。使いが短く礼をした。「これなら、前線でも」",
-          effects: { money: 90, reputation: 5, happiness: 2 },
+          effects: { money: 90, reputation: 5 },
           log: { title: "名工として騎士の武具を仕上げる", text: "武具の名で、隊長用の一式を納品した。" },
         },
         failure: {
@@ -1356,7 +1356,7 @@ GAME.registerEvents([
         check: { chance: 55 },
         success: {
           result: "名工の手が加わると、ただの奇抜が「装備」に見える。発注主の目が細くなった。",
-          effects: { money: 60, reputation: 3, happiness: 1 },
+          effects: { money: 60, reputation: 3 },
         },
         failure: {
           result: "軍の規格に合わず、返品された。時代が、まだ追いついていない。",
@@ -1383,7 +1383,7 @@ GAME.registerEvents([
       {
         text: "騎士団長の盾にする",
         result: "軽く、硬い緑の盾ができた。出征の列に、その輝きが混ざる。聖女側からの音は、しばらく途絶えた。",
-        effects: { reputation: 6, money: 35, happiness: 2, addFlags: ["craft_dragon_shield"] },
+        effects: { money: 35, reputation: 6, addFlags: ["craft_dragon_shield"] },
         log: {
           title: "ドラゴンの革で騎士の盾を作る",
           text: "一枚きりの革を、命を守る盾へ回した。",
@@ -1392,7 +1392,7 @@ GAME.registerEvents([
       {
         text: "聖女の装身具と犬の服にする",
         result: "バッグも靴も、犬の小袖まで美しい。宮廷では賛辞と「悪趣味」が同時に飛ぶ。騎士団の使いの顔だけが、短かった。",
-        effects: { money: 70, reputation: 2, happiness: 1, addFlags: ["craft_dragon_vanity"] },
+        effects: { money: 70, reputation: 2, addFlags: ["craft_dragon_vanity"] },
         log: {
           title: "ドラゴンの革で聖女の装身具を作る",
           text: "一枚きりの革を、華やかな注文へ回した。",
@@ -1401,7 +1401,7 @@ GAME.registerEvents([
       {
         text: "どちらも断り、革をギルドへ返す",
         result: "「一枚で二つの命は救えない」——そう言って返した。銀は得ない。夜は、少し静かだ。",
-        effects: { reputation: 3, happiness: 1 },
+        effects: { reputation: 3 },
       },
     ],
   },
@@ -1424,7 +1424,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 62 },
         success: {
           result: "最後の噛み合わせで、装置が静かに灯った。報酬は厚い。指先の感覚も、厚い。",
-          effects: { money: 100, happiness: 3, reputation: 4 },
+          effects: { money: 100, ability: 1, reputation: 4 },
           log: { title: "名工として魔道具を完成させる", text: "魔道具の名で、危険な一品を仕上げた。" },
         },
         failure: {
@@ -1466,7 +1466,7 @@ GAME.registerEvents([
       {
         text: "カーバンクルの額石を嵌め、精緻向きにする",
         result: "柘榴色の核が、術式のほつれを吸う。緻密な魔法ほど、破綻しにくい杖になった。",
-        effects: { reputation: 5, money: 55, happiness: 2, addFlags: ["craft_staff_fine"] },
+        effects: { money: 55, reputation: 5, addFlags: ["craft_staff_fine"] },
         log: {
           title: "精緻の杖を仕上げる",
           text: "エルダートレントにカーバンクルの額石を合わせた。",
@@ -1507,7 +1507,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 58 },
         success: {
           result: "長い筒と、肩に当てる床を足した。初速が乗り、五十歩先の的が静かにくぼむ。騎馬には重いが、陣地では獣になる。",
-          effects: { ability: 3, reputation: 3, happiness: 2, health: -3, addFlags: ["craft_revolver_long"] },
+          effects: { ability: 3, reputation: 3, health: -3, addFlags: ["craft_revolver_long"] },
           log: {
             title: "回転式銃の射程を伸ばす",
             text: "銃身と床を足し、遠射向きの改良型を作った。",
@@ -1523,7 +1523,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 60 },
         success: {
           result: "粉塵と弾を一つの小筒（薬莢）に封じ、薬室へ落とすだけの形にした。再装填が息を整える間に終わる。軍の目利きが、黙って銀を置いた。",
-          effects: { ability: 4, reputation: 4, money: 40, happiness: 2, health: -3, addFlags: ["craft_revolver_cartridge"] },
+          effects: { money: 40, ability: 4, reputation: 4, health: -3, addFlags: ["craft_revolver_cartridge"] },
           log: {
             title: "回転式銃の薬莢装填を実用化する",
             text: "粉塵と弾を一体の小筒にし、装填を大幅に速めた。",
@@ -1539,7 +1539,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 55 },
         success: {
           result: "隣の薬室へ火が走る隙間を潰し、火門を深くした。威力は少し落ちる。代わりに、使い手の指が残りやすい。",
-          effects: { ability: 2, reputation: 5, happiness: 3, health: -2, addFlags: ["craft_revolver_safe"] },
+          effects: { ability: 3, reputation: 5, health: -2, addFlags: ["craft_revolver_safe"] },
           log: {
             title: "回転式銃の暴発対策を施す",
             text: "連鎖発火を抑える隙間と火門の設計に改めた。",
