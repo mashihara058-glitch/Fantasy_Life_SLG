@@ -20,7 +20,8 @@ GAME.registerEvents([
   {
     id: "craftsman_aptitude",
     tags: ["adolescence", "young", "prime", "work", "craftsman"],
-    weight: 14,
+    // 専門の入り口。サッと決めて専門別の日常受注を遊ばせるため、重め・易しめ
+    weight: 20,
     // 成功で専門フラグが付くまで繰り返せる（失敗で打ち切りにしない）
     repeatable: true,
     cooldown: 2,
@@ -40,7 +41,7 @@ GAME.registerEvents([
     choices: [
       {
         text: "木を削る（木工）",
-        check: { stat: "ability", difficulty: 48 },
+        check: { stat: "ability", difficulty: 40 },
         success: {
           result: "鉋の感触が手に馴染む。親方が短く言った。「木工に適性があるようだ」",
           effects: { ability: 2, addFlags: ["craft_wood"] },
@@ -53,7 +54,7 @@ GAME.registerEvents([
       },
       {
         text: "布と針を取る（縫製）",
-        check: { stat: "ability", difficulty: 48 },
+        check: { stat: "ability", difficulty: 40 },
         success: {
           result: "針がリズムを刻む。親方が頷いた。「縫製に適性があるようだ」",
           effects: { ability: 2, addFlags: ["craft_sewing"] },
@@ -66,7 +67,7 @@ GAME.registerEvents([
       },
       {
         text: "皮を扱う（皮革）",
-        check: { stat: "ability", difficulty: 48 },
+        check: { stat: "ability", difficulty: 40 },
         success: {
           result: "油の匂いと、刃の角度。親方が言った。「皮革に適性があるようだ」",
           effects: { ability: 2, addFlags: ["craft_leather"] },
@@ -79,7 +80,7 @@ GAME.registerEvents([
       },
       {
         text: "火と型に向かう（鋳造）",
-        check: { stat: "ability", difficulty: 50 },
+        check: { stat: "ability", difficulty: 40 },
         success: {
           result: "溶けた金属の流れが、目に入る。親方が短く笑った。「鋳造に適性があるようだ」",
           effects: { ability: 2, addFlags: ["craft_casting"] },
@@ -92,7 +93,7 @@ GAME.registerEvents([
       },
       {
         text: "部品を組み合わせる（組立）",
-        check: { stat: "ability", difficulty: 50 },
+        check: { stat: "ability", difficulty: 40 },
         success: {
           result: "小さな歯車が噛み合う感触。親方が目を細めた。「組立に適性があるようだ」",
           effects: { ability: 2, addFlags: ["craft_assembly"] },
@@ -251,38 +252,57 @@ GAME.registerEvents([
     ],
   },
 
-
   // ============================================================
   // 木工 craft_wood
   // ============================================================
   {
-    id: "craftsman_wood_order",
+    id: "craftsman_wood_cabinet",
     tags: ["young", "prime", "elder", "work", "craftsman", "craft_wood"],
-    weight: 10,
+    weight: 8,
     repeatable: true,
-    cooldown: 4,
+    cooldown: 5,
     conditions: {
       jobs: ["apprentice", "craftsman", "master_craftsman"],
       flags: ["craft_wood"],
       moneyUnlocked: true,
       notFlags: ["slave"],
     },
-    text: "客が図面を広げた。木製品の注文だ。どれを優先する。",
+    text: "客が図面を広げた。タンスの注文だ。引き出しの数も、寸法も細かい。",
     choices: [
       {
-        text: "タンスを仕立てる",
+        text: "引き受ける",
         check: { stat: "ability", difficulty: 50 },
         success: {
           result: "引き出しが滑らかに開く。客は満足げに銀を置いた。",
-          effects: { money: 28, ability: 1, reputation: 1 },
+          effects: { money: 28, happiness: 1, reputation: 1 },
         },
         failure: {
           result: "扉の収まりが悪く、値を叩かれた。",
-          effects: { money: 10, ability: 1 },
+          effects: { money: 10, happiness: 1 },
         },
       },
       {
-        text: "椅子を作る",
+        text: "今は手いっぱいだと断る",
+        result: "客は図面を巻いて去った。次の注文票が、机に残る。",
+      },
+    ],
+  },
+  {
+    id: "craftsman_wood_chair",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_wood"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_wood"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "椅子の注文だ。座面のカーブと脚の安定——小さな品ほど、評判に直結する。",
+    choices: [
+      {
+        text: "引き受ける",
         check: { stat: "ability", difficulty: 45 },
         success: {
           result: "座面のカーブが体に合う。小さな工房でも、評判は椅子から広まることがある。",
@@ -294,7 +314,27 @@ GAME.registerEvents([
         },
       },
       {
-        text: "ベッド枠を組む",
+        text: "今は手いっぱいだと断る",
+        result: "客は短く礼をして去った。工房には鉋の音だけが残る。",
+      },
+    ],
+  },
+  {
+    id: "craftsman_wood_bed",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_wood"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_wood"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "ベッド枠の注文だ。大材を組み、運び出しまで含む重労働の依頼である。",
+    choices: [
+      {
+        text: "引き受ける",
         check: { stat: "health", difficulty: 48 },
         success: {
           result: "大材を組み上げた。運び出しも重労働だったが、代金は厚い。",
@@ -304,6 +344,10 @@ GAME.registerEvents([
           result: "接合が甘く、補強に追われた。利益は薄い。",
           effects: { money: 12, health: -4 },
         },
+      },
+      {
+        text: "今は手いっぱいだと断る",
+        result: "客は別の工房を当たると言って去った。肩が、少しだけ軽い。",
       },
     ],
   },
@@ -338,12 +382,16 @@ GAME.registerEvents([
         check: { chance: 45 },
         success: {
           result: "予算は膨らんだが、家は持ち直した。長く通う仕事になった。",
-          effects: { money: 40, ability: 2, reputation: 2 },
+          effects: { money: 40, happiness: 2, reputation: 2 },
         },
         failure: {
           result: "予算が合わず、話は流れた。図面だけが机に残る。",
           effects: { ability: 1 },
         },
+      },
+      {
+        text: "今は手が回らないと断る",
+        result: "家主は残念そうに礼をして去った。雨音が、遠ざかる。",
       },
     ],
   },
@@ -368,7 +416,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "しなる木を削り、弦を張る。夜明けには束が山になった。使いの目が、国境の方角を見ている。",
-          effects: { money: 28, ability: 2, health: -3, addFlags: ["craft_war_orders"] },
+          effects: { money: 28, happiness: 2, health: -3, addFlags: ["craft_war_orders"] },
           log: {
             title: "騎士団へ弓を大量納品する",
             text: "急ぎの弓矢注文に応え、工房が戦支度の匂いを帯びた。",
@@ -376,7 +424,7 @@ GAME.registerEvents([
         },
         failure: {
           result: "急ぎの手直しがかさみ、思ったほど数を揃えられなかった。それでも荷は出ていく。",
-          effects: { money: 12, ability: 1, health: -4, addFlags: ["craft_war_orders"] },
+          effects: { money: 12, happiness: 1, health: -4, addFlags: ["craft_war_orders"] },
         },
       },
       {
@@ -420,7 +468,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "革を張り、鋲を打ち、やすりを当てる。空が白むころ、箱がいっぱいになった。",
-          effects: { money: 28, ability: 2, health: -3, addFlags: ["craft_war_orders"] },
+          effects: { money: 28, happiness: 2, health: -3, addFlags: ["craft_war_orders"] },
           log: {
             title: "騎士団へ簡易盾を大量納品する",
             text: "板と革の盾を急ぎ整え、兵の生還を祈る注文に応えた。",
@@ -454,21 +502,21 @@ GAME.registerEvents([
   // 縫製 craft_sewing
   // ============================================================
   {
-    id: "craftsman_sewing_order",
+    id: "craftsman_sewing_clothes",
     tags: ["young", "prime", "elder", "work", "craftsman", "craft_sewing"],
-    weight: 10,
+    weight: 8,
     repeatable: true,
-    cooldown: 4,
+    cooldown: 5,
     conditions: {
       jobs: ["apprentice", "craftsman", "master_craftsman"],
       flags: ["craft_sewing"],
       moneyUnlocked: true,
       notFlags: ["slave"],
     },
-    text: "布と糸の注文が並ぶ。今日はどの仕事に手を付ける。",
+    text: "衣服の仕立て依頼だ。寸法票と、生地の束が机に置かれた。",
     choices: [
       {
-        text: "衣服を仕立てる",
+        text: "引き受ける",
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "寸法どおりの一着が、人の形を得た。客の肩が少し上がる。",
@@ -480,21 +528,65 @@ GAME.registerEvents([
         },
       },
       {
-        text: "機を織る／レースを編む",
+        text: "今は手いっぱいだと断る",
+        result: "客は生地を抱えて去った。針箱の蓋だけが、小さく鳴る。",
+      },
+    ],
+  },
+  {
+    id: "craftsman_sewing_lace",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_sewing"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_sewing"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "機織りとレース編みの注文だ。細い模様ほど、手間が銀になる。",
+    choices: [
+      {
+        text: "引き受ける",
         check: { stat: "ability", difficulty: 55 },
         success: {
           result: "細い模様が布に浮かぶ。手間の分だけ、値がつく。",
-          effects: { money: 30, ability: 2 },
+          effects: { money: 30, happiness: 2 },
         },
         failure: {
           result: "糸が絡まり、半日がほどけた。",
-          effects: { money: 5, ability: 1 },
+          effects: { money: 5, happiness: 1 },
         },
       },
       {
-        text: "紡糸の下仕事に徹する",
+        text: "今は手いっぱいだと断る",
+        result: "依頼主は残念そうに礼をして去った。",
+      },
+    ],
+  },
+  {
+    id: "craftsman_sewing_spinning",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_sewing"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_sewing"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "紡糸の下仕事の依頼だ。地味だが、工房の血流になる仕事である。",
+    choices: [
+      {
+        text: "引き受ける",
         result: "地味だが、工房の血流だ。指先が熱を持つ。",
-        effects: { money: 10, ability: 1, health: -1 },
+        effects: { money: 10, happiness: 1, health: -1 },
+      },
+      {
+        text: "今は手いっぱいだと断る",
+        result: "糸玉を別の手に回してもらった。今夜は、指が休む。",
       },
     ],
   },
@@ -529,7 +621,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "材料費を抑え、形で勝負した。斬新な一着は、夜会で噂になったらしい。",
-          effects: { reputation: 3, money: 10, ability: 1 },
+          effects: { reputation: 3, money: 10, happiness: 1 },
         },
         failure: {
           result: "格好だけ整えたが、審美眼には見抜かれたらしい。噂は、あまりよくない。",
@@ -564,7 +656,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "夜を徹して裁ち、縫う。針の音が、遠征の足音に聞こえる。",
-          effects: { money: 28, ability: 2, health: -3, addFlags: ["craft_war_orders"] },
+          effects: { money: 28, happiness: 2, health: -3, addFlags: ["craft_war_orders"] },
           log: {
             title: "騎士団へ外套と背嚢を大量納品する",
             text: "出征間近の急ぎ注文に、縫製の工房が応えた。",
@@ -572,7 +664,7 @@ GAME.registerEvents([
         },
         failure: {
           result: "手直しがかさみ、数は足りない。それでも「近い」荷は出ていく。",
-          effects: { money: 12, ability: 1, health: -4, addFlags: ["craft_war_orders"] },
+          effects: { money: 12, happiness: 1, health: -4, addFlags: ["craft_war_orders"] },
         },
       },
       {
@@ -598,25 +690,25 @@ GAME.registerEvents([
   // 皮革 craft_leather
   // ============================================================
   {
-    id: "craftsman_leather_order",
+    id: "craftsman_leather_armor",
     tags: ["young", "prime", "elder", "work", "craftsman", "craft_leather"],
-    weight: 10,
+    weight: 8,
     repeatable: true,
-    cooldown: 4,
+    cooldown: 5,
     conditions: {
       jobs: ["apprentice", "craftsman", "master_craftsman"],
       flags: ["craft_leather"],
       moneyUnlocked: true,
       notFlags: ["slave"],
     },
-    text: "革の匂いが強い日だ。受注票に、いくつもの品名が並ぶ。",
+    text: "皮鎧と盾の注文だ。衛兵向け——打撃を受け止める厚みが要る。",
     choices: [
       {
-        text: "皮鎧や盾を仕立てる",
+        text: "引き受ける",
         check: { stat: "ability", difficulty: 52 },
         success: {
           result: "重ねた革が、打撃を受け止める厚みになる。衛兵向けの値だ。",
-          effects: { money: 34, ability: 1, reputation: 1 },
+          effects: { money: 34, happiness: 1, reputation: 1 },
         },
         failure: {
           result: "縫いが浅く、補強に追われた。",
@@ -624,7 +716,27 @@ GAME.registerEvents([
         },
       },
       {
-        text: "鞍や靴、かばんを作る",
+        text: "今は手いっぱいだと断る",
+        result: "使いは別の工房を当たると言って去った。油の匂いだけが残る。",
+      },
+    ],
+  },
+  {
+    id: "craftsman_leather_goods",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_leather"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_leather"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "鞍や靴、かばんの注文だ。日常の革製品は、口コミで次の客を連れてくる。",
+    choices: [
+      {
+        text: "引き受ける",
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "日常の革製品は、口コミで次の客を連れてくる。",
@@ -636,9 +748,33 @@ GAME.registerEvents([
         },
       },
       {
-        text: "皮なめしの工程を丁寧にやる",
-        result: "臭い仕事だが、良い革はここからしか生まれない。",
+        text: "今は手いっぱいだと断る",
+        result: "客は型紙を畳んで去った。",
+      },
+    ],
+  },
+  {
+    id: "craftsman_leather_tanning",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_leather"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_leather"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "皮なめしの工程を頼まれた。臭い仕事だが、良い革はここからしか生まれない。",
+    choices: [
+      {
+        text: "引き受ける",
+        result: "臭い仕事だが、良い革はここからしか生まれない。腕の感覚が、少し厚くなる。",
         effects: { ability: 2, health: -2, money: 8 },
+      },
+      {
+        text: "今は手いっぱいだと断る",
+        result: "なめし場の仕事は、別の手に回った。今夜は、鼻が楽だ。",
       },
     ],
   },
@@ -663,7 +799,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "夜を徹して革を裁ち、縫う。油の匂いが、戦の支度の匂いと重なる。",
-          effects: { money: 28, ability: 2, health: -3, addFlags: ["craft_war_orders"] },
+          effects: { money: 28, happiness: 2, health: -3, addFlags: ["craft_war_orders"] },
           log: {
             title: "騎士団へ革防具を大量納品する",
             text: "急ぎの胸当てと丸盾の注文に応えた。",
@@ -671,7 +807,7 @@ GAME.registerEvents([
         },
         failure: {
           result: "手直しがかさみ、数は足りない。それでも「間に合わせ」の荷は出ていく。",
-          effects: { money: 12, ability: 1, health: -4, addFlags: ["craft_war_orders"] },
+          effects: { money: 12, happiness: 1, health: -4, addFlags: ["craft_war_orders"] },
         },
       },
       {
@@ -698,25 +834,25 @@ GAME.registerEvents([
   // 鋳造 craft_casting（リボルバー部品の芽）
   // ============================================================
   {
-    id: "craftsman_casting_order",
+    id: "craftsman_casting_weapons",
     tags: ["young", "prime", "elder", "work", "craftsman", "craft_casting"],
-    weight: 10,
+    weight: 8,
     repeatable: true,
-    cooldown: 4,
+    cooldown: 5,
     conditions: {
       jobs: ["apprentice", "craftsman", "master_craftsman"],
       flags: ["craft_casting"],
       moneyUnlocked: true,
       notFlags: ["slave"],
     },
-    text: "炉の熱が工房を満たす。今日の湯は、何の型へ流す。",
+    text: "剣や槍の穂先を鋳ってほしい、という注文だ。武具商人の目が、炉の方を見ている。",
     choices: [
       {
-        text: "剣や槍の頭を鋳る",
+        text: "引き受ける",
         check: { stat: "ability", difficulty: 52 },
         success: {
           result: "刃の芯が、冷えて鳴る。武具商人が目を細めた。",
-          effects: { money: 30, ability: 1, reputation: 1 },
+          effects: { money: 30, happiness: 1, reputation: 1 },
         },
         failure: {
           result: "巣ができ、欠けた品になった。溶け直しだ。",
@@ -724,7 +860,27 @@ GAME.registerEvents([
         },
       },
       {
-        text: "鍋や釘など日用品を量産する",
+        text: "今は手いっぱいだと断る",
+        result: "商人は舌打ちして去った。炉には、別の型が待っている。",
+      },
+    ],
+  },
+  {
+    id: "craftsman_casting_goods",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_casting"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_casting"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "鍋や釘など、日用品の量産注文だ。地味だが、安定した銀になる。",
+    choices: [
+      {
+        text: "引き受ける",
         check: { chance: 65 },
         success: {
           result: "地味な品が、安定した銀になる。村の台所が、少し潤う。",
@@ -736,12 +892,32 @@ GAME.registerEvents([
         },
       },
       {
-        // 後続：組立職人とつなげてリボルバー完成へ、など
-        text: "見慣れない銃の部品の型を試す",
+        text: "今は手いっぱいだと断る",
+        result: "発注は隣の炉へ回った。湯の音が、少し静かになる。",
+      },
+    ],
+  },
+  {
+    // 後続：組立側 craftsman_assembly_revolver へ
+    id: "craftsman_casting_revolver",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_casting"],
+    weight: 7,
+    repeatable: true,
+    cooldown: 6,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_casting"],
+      moneyUnlocked: true,
+      notFlags: ["slave", "craft_revolver_parts", "craft_revolver_done"],
+    },
+    text: "見慣れない図面を持った男が来た。銃の部品の型を試してほしい——円筒に穴が並ぶ、妙な形だ。「組立側へ回せ」とだけ言う。",
+    choices: [
+      {
+        text: "引き受ける",
         check: { stat: "ability", difficulty: 58 },
         success: {
           result: "円筒に穴が並ぶ、奇妙な部品が冷えた。発注主は「組立側へ回せ」とだけ言った。",
-          effects: { money: 40, ability: 2, addFlags: ["craft_revolver_parts"] },
+          effects: { money: 40, happiness: 2, addFlags: ["craft_revolver_parts"] },
           log: {
             title: "銃の鋳造部品を手がける",
             text: "見慣れない回転部品の型を、炉で起こした。",
@@ -751,6 +927,11 @@ GAME.registerEvents([
           result: "精度が出ず、試作品は屑になった。図面だけが机に残る。",
           effects: { ability: 1, health: -1 },
         },
+      },
+      {
+        text: "怪しすぎると断る",
+        result: "男は図面を懐に戻し、短く礼をして去った。炉の熱だけが残る。",
+        effects: { reputation: 1 },
       },
     ],
   },
@@ -775,7 +956,7 @@ GAME.registerEvents([
         check: { stat: "ability", difficulty: 48 },
         success: {
           result: "汗を流し、炉をくべる。冷え固まった刃の山が、夜明けの光を受ける。",
-          effects: { money: 28, ability: 2, health: -3, addFlags: ["craft_war_orders"] },
+          effects: { money: 28, happiness: 2, health: -3, addFlags: ["craft_war_orders"] },
           log: {
             title: "騎士団へ剣を大量納品する",
             text: "急ぎの量産注文に、鋳造の工房が応えた。",
@@ -783,7 +964,7 @@ GAME.registerEvents([
         },
         failure: {
           result: "巣や歪みの手直しがかさみ、数は足りない。それでも荷は出ていく。",
-          effects: { money: 12, ability: 1, health: -4, addFlags: ["craft_war_orders"] },
+          effects: { money: 12, happiness: 1, health: -4, addFlags: ["craft_war_orders"] },
         },
       },
       {
@@ -809,33 +990,53 @@ GAME.registerEvents([
   // 組立 craft_assembly（リボルバー完成・魔道具）
   // ============================================================
   {
-    id: "craftsman_assembly_order",
+    id: "craftsman_assembly_arcane",
     tags: ["young", "prime", "elder", "work", "craftsman", "craft_assembly"],
-    weight: 10,
+    weight: 8,
     repeatable: true,
-    cooldown: 4,
+    cooldown: 5,
     conditions: {
       jobs: ["apprentice", "craftsman", "master_craftsman"],
       flags: ["craft_assembly"],
       moneyUnlocked: true,
       notFlags: ["slave"],
     },
-    text: "部品箱が机に並ぶ。噛み合わせの精度が、品の命だ。",
+    text: "魔道具めいた装置の組立依頼だ。失敗すれば動かない箱が残る——噛み合わせが命だ。",
     choices: [
       {
-        text: "魔道具めいた装置を組み立てる",
+        text: "引き受ける",
         check: { stat: "ability", difficulty: 55 },
         success: {
           result: "最後の留め具を締めると、小さな光が走った。依頼主は黙って銀を置いた。",
-          effects: { money: 36, ability: 2, reputation: 1 },
+          effects: { money: 36, happiness: 2, reputation: 1 },
         },
         failure: {
           result: "接触が悪く、動かない箱だけが残った。",
-          effects: { money: 10, ability: 1 },
+          effects: { money: 10, happiness: 1 },
         },
       },
       {
-        text: "日常の道具を組み立てて納品する",
+        text: "今は手いっぱいだと断る",
+        result: "使者は封印箱を抱えて去った。机には、いつものねじだけが残る。",
+      },
+    ],
+  },
+  {
+    id: "craftsman_assembly_tools",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_assembly"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_assembly"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "日常の道具——歯車付きの柄や留め金の組立注文だ。地味だが、確実な仕事になる。",
+    choices: [
+      {
+        text: "引き受ける",
         check: { chance: 70 },
         success: {
           result: "歯車と柄が噛み合う。地味だが、確実な仕事だ。",
@@ -847,8 +1048,27 @@ GAME.registerEvents([
         },
       },
       {
-        conditions: { flags: ["craft_revolver_parts"] },
-        text: "鋳造部品を組み、回転式の銃を仕上げる",
+        text: "今は手いっぱいだと断る",
+        result: "注文票は隣の机へ回った。",
+      },
+    ],
+  },
+  {
+    id: "craftsman_assembly_revolver",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_assembly"],
+    weight: 10,
+    repeatable: true,
+    cooldown: 4,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_assembly", "craft_revolver_parts"],
+      moneyUnlocked: true,
+      notFlags: ["slave", "craft_revolver_done"],
+    },
+    text: "鋳造部品が箱に入って届いた。円筒を組み、回転式の銃へ仕上げてほしい——依頼主は「噂にはするな」とだけ言った。",
+    choices: [
+      {
+        text: "引き受ける",
         check: { stat: "ability", difficulty: 60 },
         success: {
           result: "円筒が回り、乾いた金属音がした。完成品を渡すと、男は帽子を深く被った。「噂にはするな」",
@@ -869,8 +1089,14 @@ GAME.registerEvents([
           effects: { health: -2, ability: 1 },
         },
       },
+      {
+        text: "組み上げを拒む",
+        result: "箱を封印したまま返した。男の目が一瞬だけ細くなる。部品は、いつか別の手を探すだろう。",
+        effects: { reputation: 1 },
+      },
     ],
   },
+
   {
     id: "craftsman_assembly_01",
     tags: ["young", "prime", "elder", "work", "craftsman", "craft_assembly"],
