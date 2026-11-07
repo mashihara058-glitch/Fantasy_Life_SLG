@@ -251,7 +251,65 @@ GAME.registerEvents([
       },
     ],
   },
-
+  {
+    id: "craftsman_02",
+    tags: ["young", "prime", "elder", "work", "craftsman"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 4,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      notFlags: ["slave"],
+    },
+    text: "今日も仕事が始まる。槌を取る前に、何をしておく。",
+    choices: [
+      {
+        text: "仕事場を掃き、道具をそろえる",
+        result: "床の削り屑を払い、道具を定位置へ戻した。{名前}のいる工房は働きやすい、と噂になった。",
+        effects: { reputation: 1, ability: 1 },
+      },
+      {
+        text: "帳面で受発注と優先を確認する",
+        result: "計画と経理に目を通した。順番を付けただけで、客を待たせずに済む日がある。",
+        effects: { ability: 1, reputation: 1 },
+      },
+      {
+        text: "体操をして体をほぐす",
+        result: "関節を回し、肩の熱を取ってから作業に入った。軽い動きだけで、手が違う。",
+        effects: { health: 2, ability: 1 },
+      },
+    ],
+  },
+  {
+    id: "craftsman_03",
+    tags: ["young", "prime", "elder", "work", "craftsman"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 6,
+    conditions: {
+      jobYearsMin: 5,
+      jobs: ["craftsman", "master_craftsman"],
+      notFlags: ["slave"],
+    },
+    text: "工房に新人が入った。{名前}も、もう先輩だ。",
+    choices: [
+      {
+        text: "相談しやすい空気を心がける",
+        result: "困ったときに声をかけやすいよう、短く声をかけ、背中で示さない距離を保った。",
+        effects: { reputation: 2, ability: 1 },
+      },
+      {
+        text: "基礎をやって見せて教える",
+        result: "当たり前の一手を、丁寧に見せた。教える側の確認にもなる。",
+        effects: { ability: 2, reputation: 1 },
+      },
+      {
+        text: "自分の仕事を優先する",
+        result: "納期が先だと伝えた。新人は別の先輩の影につく。",
+        effects: { ability: 1 },
+      },
+    ],
+  },
   // ============================================================
   // 木工 craft_wood
   // ============================================================
@@ -498,6 +556,50 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+    id: "craftsman_wood_04",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_wood"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_wood"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "三歳の子どもの誕生日に、ちょうどいい木のおもちゃがほしい、という注文だ。",
+    choices: [
+      {
+        text: "木馬を作る",
+        check: { stat: "ability", difficulty: 42 },
+        success: {
+          result: "ゆらゆら揺れる小さな木馬ができた。親は銀を置き、子はすぐにまたがりたがった。",
+          effects: { money: 14, ability: 2, reputation: 1 },
+        },
+        failure: {
+          result: "形はできたが、やすりが足りない。とげの残る品は渡せないと、作り直す羽目になった。",
+          effects: { money: 5, reputation: -1, health: -1 },
+        },
+      },
+      {
+        text: "積み木を作る",
+        check: { stat: "ability", difficulty: 38 },
+        success: {
+          result: "形を変え面をなめらかにした。単純だが、並べ方で遊びが膨らむ品だ。",
+          effects: { money: 10, ability: 1, reputation: 1 },
+        },
+        failure: {
+          result: "仕上げが雑で、ただの端材に見えた。手直しに、思った以上の時間がかかった。",
+          effects: { money: 4, reputation: -1 },
+        },
+      },
+      {
+        text: "今は手いっぱいだと断る",
+        result: "客は別の工房を当たると言って去った。",
+      },
+    ],
+  },
   // ============================================================
   // 縫製 craft_sewing
   // ============================================================
@@ -686,6 +788,51 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+    // 旧稿は sewing_02 と ID が衝突していた（戦争予兆の外套注文を上書き）
+    id: "craftsman_sewing_03",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_sewing"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_sewing"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "庶民の女性向けに、ちょっとした小物を店先で売ろうという話になった。",
+    choices: [
+      {
+        text: "髪飾りのリボンを作る",
+        check: { stat: "ability", difficulty: 40 },
+        success: {
+          result: "色と形を変えたリボンが並ぶ。若い客の手が、次々に伸びる。",
+          effects: { money: 12, ability: 1, reputation: 1 },
+        },
+        failure: {
+          result: "流行とずれた色目で、あまり売れなかった。",
+          effects: { money: 4, reputation: -1 },
+        },
+      },
+      {
+        text: "腰下げのポーチを作る",
+        check: { stat: "ability", difficulty: 42 },
+        success: {
+          result: "実用と見た目の両方が好評だった。帯の印象まで変わる、と喜ばれた。",
+          effects: { money: 14, ability: 1, reputation: 1 },
+        },
+        failure: {
+          result: "入りを稼ごうと大きくしすぎた。重くて帯がたるむ、と返品が続いた。",
+          effects: { money: 3, reputation: -1 },
+        },
+      },
+      {
+        text: "今はやめておく",
+        result: "小物売りは見送りにした。針は、いつもの仕立てに戻る。",
+      },
+    ],
+  },
   // ============================================================
   // 皮革 craft_leather
   // ============================================================
@@ -829,7 +976,50 @@ GAME.registerEvents([
       },
     ],
   },
-
+  {
+    id: "craftsman_leather_02",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_leather"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_leather"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "老婦人の依頼だ。夫への記念日の贈り物に、財布がほしいらしい。",
+    choices: [
+      {
+        text: "好みを聞いて、見た目を優先する",
+        check: { stat: "ability", difficulty: 42 },
+        success: {
+          result: "色と型を合わせた一品になった。贈られた相手は、たいそう喜んだらしい。",
+          effects: { money: 16, ability: 1, reputation: 2 },
+        },
+        failure: {
+          result: "温めていた意匠を推したが、年配の手には余ったらしい。値は少し叩かれた。",
+          effects: { money: 6, reputation: -1 },
+        },
+      },
+      {
+        text: "出し入れしやすい実用を優先する",
+        check: { stat: "ability", difficulty: 40 },
+        success: {
+          result: "口が大きく、指の弱い人でも使いやすい。地味だが、毎日の味方だ。",
+          effects: { money: 12, ability: 1, reputation: 1 },
+        },
+        failure: {
+          result: "入りを稼ごうと大きくしすぎた。見栄えが目立ち、すられた、と後日苦情が来た。",
+          effects: { money: 5, reputation: -2 },
+        },
+      },
+      {
+        text: "今は手いっぱいだと断る",
+        result: "老婦人は残念そうに礼をして去った。",
+      },
+    ],
+  },
   // ============================================================
   // 鋳造 craft_casting（リボルバー部品の芽）
   // ============================================================
@@ -1402,6 +1592,43 @@ GAME.registerEvents([
         text: "どちらも断り、革をギルドへ返す",
         result: "「一枚で二つの命は救えない」——そう言って返した。銀は得ない。夜は、少し静かだ。",
         effects: { reputation: 3 },
+      },
+    ],
+  },
+  {
+    id: "craftsman_master_arms2",
+    tags: ["prime", "elder", "work", "craftsman", "master"],
+    weight: 8,
+    maxTimes: 1,
+    logOnce: true,
+    conditions: {
+      jobs: ["master_craftsman"],
+      flags: ["craft_master_arms"],
+      moneyUnlocked: true,
+      notFlags: ["slave", "craft_forge_blade"],
+    },
+    text: "剣を型に流すのではなく、熱した鉄を打って延べ、折り重ねて刃にする手法がある、と聞いた。この工房の設備でも、やれないことはない——挑戦するか。",
+    choices: [
+      {
+        text: "打って延べ、折り重ねてみる",
+        check: { stat: "ability", difficulty: 58 },
+        success: {
+          result: "湯ではなく槌の仕事だ。延ばし、畳み、研ぐ。溶けきれない地金も、刃の芯にできる手応えがあった。",
+          effects: { money: 25, ability: 4, reputation: 3, health: -3, addFlags: ["craft_forge_blade"] },
+          log: {
+            title: "鍛造で剣を仕上げる手法を身につける",
+            text: "鋳造ではなく、打って延べる刃物の作り方を会得した。",
+          },
+        },
+        failure: {
+          result: "温度を見誤り、途中で割れた。屑鉄は残る。次の火では、もう少し読める気がする。",
+          effects: { ability: 2, health: -2 },
+        },
+      },
+      {
+        text: "量産向きではないと見送る",
+        result: "数を出せない手法だ。今までの型と湯で、納期を守る方を選んだ。",
+        effects: { reputation: 1 },
       },
     ],
   },

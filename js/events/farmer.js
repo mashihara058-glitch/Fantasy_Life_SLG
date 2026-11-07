@@ -651,7 +651,46 @@ GAME.registerEvents([
       },
     ],
   },
-
+  {
+    id: "farmer_13",
+    tags: ["young", "prime", "elder", "work", "farmer"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 8,
+    conditions: {
+      ageMin: 16,
+      jobs: ["farmer"],
+      moneyUnlocked: true,
+      notFlags: ["slave", "farmer_revolt_done"],
+    },
+    text: "村で共用の物資保管庫を作ろうという話になった。行き来のよさか、涼しさか——場所で揉める。",
+    choices: [
+      {
+        text: "行き来しやすい村の中央に建てる",
+        check: { chance: 70 },
+        success: {
+          result: "老人や子どもでも、必要なものが持ち出しやすいと好評だった。",
+          effects: { reputation: 2, ability: 1 },
+        },
+        failure: {
+          result: "日当たりがよすぎて、保管していた食料が傷んでしまった。次は庇を足すしかない。",
+          effects: { health: -1, reputation: -1 },
+        },
+      },
+      {
+        text: "崖のそばの涼しい日陰に建てる",
+        check: { chance: 65 },
+        success: {
+          result: "ひんやりした半地下の貯蔵庫では、食料が長持ちすると喜ばれた。",
+          effects: { health: 2, ability: 1, reputation: 1 },
+        },
+        failure: {
+          result: "とある嵐の日、崖が崩れて保管庫が埋まった。建て直しの銀が、冬の備えを削る。",
+          effects: { money: -30, health: -2 },
+        },
+      },
+    ],
+  },
   // ---------- 一揆ルート：増税 → 扇動 → 決起 ----------
   {
     id: "farmer_levy",
