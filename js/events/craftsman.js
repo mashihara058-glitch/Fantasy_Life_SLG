@@ -310,6 +310,35 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+    id: "craftsman_04",
+    tags: ["young", "prime", "elder", "work", "craftsman"],
+    weight: 9,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      notFlags: ["slave"],
+    },
+    text: "組合の会合は人脈を作る好機だ。同期と横のつながりを作ってもいいし、年長者に顔を覚えてもらうのもいい。",
+    choices: [
+      {
+        text: "同期と話す",
+        result: "年の近い職人同士で情報交換をした。愚痴も多かったが、使える小ネタも教わった。",
+        effects: { reputation: 2, ability: 1 },
+      },
+      {
+        text: "年長者に酌をする",
+        result: "ドワーフの名工の隣で杯を重ねた。短い一言に、仕事のコツが混ざっている。",
+        effects: { ability: 2, reputation: 1 },
+      },
+      {
+        text: "交流はせず、耳だけ貸す",
+        result: "話には加わらず、聞こえる情報だけ拾った。出された食事は美味かった。",
+        effects: { health: 2, ability: 1 },
+      },
+    ],
+  },
   // ============================================================
   // 木工 craft_wood
   // ============================================================
@@ -1176,6 +1205,64 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+    id: "craftsman_casting_02",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_casting"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_casting"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "行商人からの依頼だ。農村へ売る農具を仕入れたいらしい。",
+    choices: [
+      {
+        text: "引き受ける",
+        result: "鍬、鋤、鎌——規格品を一通りそろえた。地味だが、堅実な仕事だ。",
+        effects: { money: 12, reputation: 1, ability: 1 },
+      },
+      {
+        text: "見送る",
+        result: "日程と予算が噛み合わず、今回は断った。",
+      },
+    ],
+  },
+  {
+    id: "craftsman_casting_03",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_casting"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 6,
+    maxTimes: 3,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_casting"],
+      notFlags: ["slave"],
+    },
+    text: "最近、農具や日用品より、武器の仕事が増えた気がする。炉の前で、ふと手が止まる。",
+    choices: [
+      {
+        text: "同僚と話す",
+        check: { chance: 70 },
+        success: {
+          result: "「たしかに」と一人が頷く。別の同僚は言った。「農具は減っていない。が、武器が妙に売れている」",
+          effects: { ability: 1 },
+        },
+        failure: {
+          result: "親方に見つかった。「口より手を動かせ」——湯を見る目が、短い。",
+          effects: { reputation: -1 },
+        },
+      },
+      {
+        text: "黙って炉に向かう",
+        result: "言わなくても、炭の減り方は知っている。槌の音だけが続く。",
+        effects: { ability: 1 },
+      },
+    ],
+  },
   // ============================================================
   // 組立 craft_assembly（リボルバー完成・魔道具）
   // ============================================================
@@ -1338,7 +1425,102 @@ GAME.registerEvents([
       },
     ],
   },
-
+  {
+    id: "craftsman_assembly_02",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_assembly"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_assembly"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "神殿からの依頼だ。「ワイン用の圧搾機を作ってほしい。混じりけのない上質な果汁が絞れるものがいい」",
+    choices: [
+      {
+        text: "引き受ける",
+        check: { stat: "ability", difficulty: 40 },
+        success: {
+          result: "力の弱い人でも扱えるよう、高さと持ち手を工夫した。神官は果汁の透明度に頷いた。",
+          effects: { money: 18, ability: 1, reputation: 1 },
+        },
+        failure: {
+          result: "よく絞れるよう重くしたら、若い男でないと動かせない品になった。値を叩かれる。",
+          effects: { money: 6, ability: 1 },
+        },
+      },
+      {
+        text: "今は手いっぱいだと断る",
+        result: "神官は短く礼をし、隣の工房の戸を叩いていく。",
+      },
+    ],
+  },
+  {
+    id: "craftsman_assembly_03",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_assembly"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_assembly"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "今日の作業は砂時計の組み立てだ。単純だが繊細で、砂の量ひとつで進みが変わる。破損させず、時間を合わせなければならない。",
+    choices: [
+      {
+        text: "慎重に進める",
+        check: { stat: "ability", difficulty: 40 },
+        success: {
+          result: "丁寧に進めるうち手が慣れ、後半は同じ精度のまま早くなった。",
+          effects: { money: 15, ability: 2 },
+        },
+        failure: {
+          result: "慎重にしすぎて数が足りず、残業で帳尻を合わせた。",
+          effects: { money: 5, health: -1, ability: 1 },
+        },
+      },
+      {
+        text: "別の作業に回してもらう",
+        result: "繊細な砂の調整は、今日の自分には向かないと伝えた。別票が机に置かれる。",
+      },
+    ],
+  },
+  {
+    id: "craftsman_assembly_04",
+    tags: ["young", "prime", "elder", "work", "craftsman", "craft_assembly"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 5,
+    conditions: {
+      jobs: ["apprentice", "craftsman", "master_craftsman"],
+      flags: ["craft_assembly"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "今日の作業は馬車の組み立てだ。揺れを抑え、曲がり道でもスムーズに向きを変えられる噛み合わせが要る。",
+    choices: [
+      {
+        text: "仕様書と見比べ、正確に仕上げる",
+        check: { stat: "ability", difficulty: 40 },
+        success: {
+          result: "前工程の粗い仕上げを見つけ、手直ししながら組み上げた。試走の揺れが、明らかに減る。",
+          effects: { money: 18, ability: 2, reputation: 1 },
+        },
+        failure: {
+          result: "合わせに時間を取られ、予定を越えて残業になった。車体は動く。腕は重い。",
+          effects: { money: 8, health: -2, ability: 1 },
+        },
+      },
+      {
+        text: "別の作業に回してもらう",
+        result: "大きな車体は今日の調子に合わないと伝え、別の部品箱を受け取った。",
+      },
+    ],
+  },
   // ============================================================
   // 名工専門（たたき台）
   // ============================================================
@@ -1480,7 +1662,7 @@ GAME.registerEvents([
     ],
   },
   {
-    id: "craftsman_master_dress",
+    id: "craftsman_master_dress1",
     tags: ["prime", "elder", "work", "craftsman", "master"],
     weight: 9,
     repeatable: true,
@@ -1510,6 +1692,71 @@ GAME.registerEvents([
         text: "下絵と見本布だけ納める",
         result: "構想料として十分な銀だ。針は、弟子に委ねる。",
         effects: { money: 30, reputation: 2 },
+      },
+    ],
+  },
+  {
+    // きな臭い季節の合間の清涼剤。暗転なし・モチーフだけの華やかさ
+    id: "craftsman_master_dress2",
+    tags: ["prime", "elder", "work", "craftsman", "master"],
+    weight: 8,
+    maxTimes: 1,
+    logOnce: true,
+    conditions: {
+      jobs: ["master_craftsman"],
+      flags: ["craft_master_dress"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "とある貴婦人からの依頼だ。舞踏会でひときわ印象に残る、美しいドレスを——予算に糸目はつけない、と。工房に、きな臭い匂いではなく、生地と香油の匂いだけが満ちる。",
+    choices: [
+      {
+        text: "花をモチーフにする",
+        check: { stat: "ability", difficulty: 55 },
+        success: {
+          result: "季節の花を色とりどりにかたどった一着。袖を動かせば、庭が一瞬だけ室内に咲く。貴婦人は妖精の女王のように華やかだった、と後日聞いた。",
+          effects: { money: 80, reputation: 8, ability: 3 },
+          log: {
+            title: "花をモチーフにした舞踏会のドレスを仕立てる",
+            text: "極彩色の花のドレスで、貴婦人の夜を飾った。",
+          },
+        },
+        failure: {
+          result: "花は揃ったが、色の呼吸が合わない。派手さが勝ち、何枚もの下絵が没になる。それでも、針はきれいな仕事のままだ。",
+          effects: { money: 25, ability: 1, health: -2 },
+        },
+      },
+      {
+        text: "海をモチーフにする",
+        check: { stat: "ability", difficulty: 55 },
+        success: {
+          result: "鮮烈な青を重ね、透ける布で海の深みを作った。裾のレースが、夜会の灯りの下でしぶきのように白い。",
+          effects: { money: 80, reputation: 8, ability: 3 },
+          log: {
+            title: "海をモチーフにした舞踏会のドレスを仕立てる",
+            text: "青の層とレースの波で、貴婦人の夜を飾った。",
+          },
+        },
+        failure: {
+          result: "狙った青が出ない。染め直しが続き、布だけが減っていく。海は、まだ遠い。",
+          effects: { money: 20, ability: 1, health: -2 },
+        },
+      },
+      {
+        text: "宝石をモチーフにする",
+        check: { stat: "ability", difficulty: 55 },
+        success: {
+          result: "家に伝わる思い出の石を核に、引き立てる布を選んだ。舞踏会の夜、家宝の赤がいつもより濃く見えた、と貴婦人が笑った。",
+          effects: { money: 90, reputation: 8, ability: 3 },
+          log: {
+            title: "宝石をモチーフにした舞踏会のドレスを仕立てる",
+            text: "家宝の輝きを主に、一着で夜会の視線を集めた。",
+          },
+        },
+        failure: {
+          result: "核になる石を求めて宝石商を巡ったが、しっくりくる一粒に出会えない。靴だけが減る。",
+          effects: { money: 15, ability: 1, health: -1 },
+        },
       },
     ],
   },

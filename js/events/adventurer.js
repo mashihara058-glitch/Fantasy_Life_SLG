@@ -610,7 +610,247 @@ GAME.registerEvents([
       },
     ],
   },
-
+  {
+    // 派手枠：近海の巨大烏賊。竜討伐より下、蜘蛛・墓所より上。回数制限あり
+    id: "adventurer_015",
+    tags: ["young", "prime", "elder", "work", "adventure"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 10,
+    maxTimes: 2,
+    logOnce: true,
+    conditions: {
+      ageMin: 18,
+      jobYearsMin: 5,
+      jobs: ["adventurer"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "近海に現れた巨大な烏賊の討伐依頼だ。港に船が入らず、豪商が困り切っている。船倉には遠い国の香辛料が満載だが、膠着が続けば船員の食料が先に尽きる。",
+    choices: [
+      {
+        text: "海中戦を挑み、近接で仕留める",
+        check: { stat: "ability", difficulty: 62 },
+        success: {
+          result: "触腕の間を抜け、両目の間に細い剣を突き立てた。体色が一瞬で変わり、「仕留めた」感触だけが残る。港に、ようやく帆が戻る。",
+          effects: { money: 90, reputation: 6, ability: 3, health: -8, addFlags: ["adventurer_kraken"] },
+          log: {
+            title: "近海の巨大烏賊を討伐する",
+            text: "海中の近接戦で烏賊を仕留め、港の船路を開いた。",
+          },
+        },
+        failure: {
+          result: "地の利は敵にある。触腕であしらわれ、息だけが上がる。生還できたことが精一杯だ。",
+          effects: { health: [-22, -10], ability: 1 },
+        },
+      },
+      {
+        text: "漁火と閃光で夜戦を仕掛ける",
+        check: { stat: "ability", difficulty: 58 },
+        success: {
+          result: "光に寄る習性を使い、漁火で引き寄せて閃光で目を奪った。動きが止まった隙に、味方が一気に攻め込む。",
+          effects: { money: 80, reputation: 5, ability: 3, health: -5, addFlags: ["adventurer_kraken"] },
+          log: {
+            title: "夜戦で巨大烏賊を討伐する",
+            text: "漁火と閃光で烏賊を封じ、船路を取り戻した。",
+          },
+        },
+        failure: {
+          result: "夜目は相手が上回る。連携が乱れ、闇の中で触腕の音だけが近い。",
+          effects: { health: [-18, -8], ability: 1 },
+        },
+      },
+      {
+        text: "囮になり、河の真水へ誘引する",
+        check: { stat: "ability", difficulty: 60 },
+        success: {
+          result: "縄張りから河へおびき寄せた。真水に弱ったところを、両岸の味方が仕留める。自分の舟は、半分しぶきで沈みかけた。",
+          effects: { money: 75, reputation: 7, ability: 2, health: -6, addFlags: ["adventurer_kraken"] },
+          log: {
+            title: "巨大烏賊を河へ誘引して討伐する",
+            text: "囮を務め、真水で弱った烏賊を仲間と仕留めた。",
+          },
+        },
+        failure: {
+          result: "烏賊は海の縄張りから出ようとしない。囮の灯だけが、無駄に揺れる。",
+          effects: { health: [-12, -5], money: -10 },
+        },
+      },
+      {
+        text: "今は手が足りないと断る",
+        result: "豪商の顔が暗くなる。別の札が、翌朝には掲示板の上段へ移っているだろう。",
+        effects: { reputation: -1 },
+      },
+    ],
+  },
+  {
+    // 派手枠：迷宮氾濫＋兵不在。私掠より防衛・評判寄り
+    id: "adventurer_016",
+    tags: ["young", "prime", "elder", "work", "adventure"],
+    weight: 8,
+    repeatable: true,
+    cooldown: 10,
+    maxTimes: 2,
+    logOnce: true,
+    conditions: {
+      ageMin: 18,
+      jobYearsMin: 4,
+      jobs: ["adventurer"],
+      moneyUnlocked: true,
+      notFlags: ["slave"],
+    },
+    text: "大量のモンスターが防壁に取りつく。迷宮の氾濫だ。兵士や騎士は遠征で町にほとんど残っていない——冒険者たちに、緊急の招集がかかった。",
+    choices: [
+      {
+        text: "壁の上から遠距離で食い止める",
+        check: { stat: "ability", difficulty: 56 },
+        success: {
+          result: "近づく影を次々と射抜く。倒れた個体は後続に踏みつぶされる。地獄のような光景のまま、夜が明ける。",
+          effects: { money: 35, reputation: 5, ability: 2, health: -6, addFlags: ["adventurer_wall_defense"] },
+          log: {
+            title: "迷宮氾濫の防衛戦で射撃を担う",
+            text: "壁上からモンスターの波を撃ち、町を持ちこたえた。",
+          },
+        },
+        failure: {
+          result: "距離が足りず、矢は皮膚をこそぐだけ。もっと引きつけてから、と誰かが叫ぶ。",
+          effects: { health: [-14, -6], ability: 1 },
+        },
+      },
+      {
+        text: "門から打って出て奮戦する",
+        check: { stat: "ability", difficulty: 60 },
+        success: {
+          result: "殺到する影を切り伏せ、足場に屍の段ができる。銀より先に、喉が焼ける。それでも門は、閉じたまま残った。",
+          effects: { money: 45, reputation: 7, ability: 3, health: -10, addFlags: ["adventurer_wall_defense"] },
+          log: {
+            title: "迷宮氾濫で門前に立ち奮戦する",
+            text: "打って出てモンスターの波を斬り、門を守り切った。",
+          },
+        },
+        failure: {
+          result: "腕は確かでも、スタミナが先に折れる。敵を減らしつつ、やむなく門内へ退く。",
+          effects: { health: [-20, -10], ability: 1, reputation: 1 },
+        },
+      },
+      {
+        text: "住民の避難と支援にあたる",
+        check: { stat: "reputation", difficulty: 50 },
+        success: {
+          result: "迫る区域から人を逃がす。子どもの手を引き、足の悪い老人を担ぐ。刃より、声と肩が仕事になる夜だ。",
+          effects: { money: 25, reputation: 8, ability: 2, health: -4, addFlags: ["adventurer_wall_defense"] },
+          log: {
+            title: "迷宮氾濫で住民の避難を支援する",
+            text: "防衛の刃ではなく、避難の手として町の夜を支えた。",
+          },
+        },
+        failure: {
+          result: "壁外の貧民街では、すでに間に合わない影があった。後ろ髪を引かれながら、まだ動ける者を急がせる。",
+          effects: { health: [-10, -4], reputation: 2, ability: 1 },
+        },
+      },
+      {
+        text: "招集に応じきれず、欠ける",
+        result: "理由はどうあれ、壁の上に自分の影はない。翌朝の町は、軋んだまま朝を迎える。",
+        effects: { reputation: -3 },
+      },
+    ],
+  },
+  {
+    // 貴族護衛：情報漏洩・武器供給の密書。後続用フラグ
+    //   adventurer_escort_overlook / _exposed / _held / _quit
+    id: "adventurer_017",
+    tags: ["young", "prime", "elder", "work", "adventure"],
+    weight: 8,
+    maxTimes: 1,
+    logOnce: true,
+    conditions: {
+      ageMin: 18,
+      jobYearsMin: 5,
+      jobs: ["adventurer"],
+      moneyUnlocked: true,
+      notFlags: ["slave", "adventurer_escort_overlook", "adventurer_escort_exposed", "adventurer_escort_held", "adventurer_escort_quit"],
+    },
+    text: "とある貴族の街道護衛を請けた。安全を確保するだけの仕事——はずだった。宿で、貴族が開いていた書面が目に入る。外国へ国の情報を漏らし、武器の供給まで約束する文面だ。",
+    choices: [
+      {
+        text: "任務を優先し、気づかなかったことにする",
+        check: { stat: "ability", difficulty: 52 },
+        success: {
+          result: "冒険者は信用が商売だ。仕事で見た秘密は、胸の奥へ沈めた。目的地で厚い銀が渡る。書面のことは、誰も口にしない。",
+          effects: {
+            money: 70,
+            reputation: 2,
+            ability: 2,
+            addFlags: ["adventurer_escort_overlook"],
+          },
+          log: {
+            title: "貴族の密書を見過ごして護衛を全うする",
+            text: "漏洩と武器供給の約束に目を留めつつ、任務として黙った。",
+          },
+        },
+        failure: {
+          result: "視線を貴族に読まれた。食事の毒でしびれているあいだに置き去りにされる。報酬は、もちろん無い。",
+          effects: { health: [-16, -8], money: -5, addFlags: ["adventurer_escort_quit"] },
+          log: {
+            title: "貴族の護衛中に毒を盛られ置き去りにされる",
+            text: "密書に気づいた気配を悟られ、道半ばで捨てられた。",
+          },
+        },
+      },
+      {
+        text: "道徳を優先し、次の街で摘発する",
+        check: { stat: "reputation", difficulty: 55 },
+        success: {
+          result: "衛兵に知らせた。だが貴族は到着より早く行方をくらませている。銀は得ない。代わりに、胸の鉛は少し軽い。",
+          effects: {
+            reputation: 6,
+            ability: 2,
+            money: -10,
+            addFlags: ["adventurer_escort_exposed"],
+          },
+          log: {
+            title: "護衛先の貴族の密書を衛兵へ知らせる",
+            text: "情報漏洩と武器供給の文面を告発した。本人は逃げた。",
+          },
+        },
+        failure: {
+          result: "取り調べは入ったが、証拠はすでに隠されていた。「依頼主に嫌疑をかけた」——悪評だけが残る。",
+          effects: { reputation: -4, ability: 1, addFlags: ["adventurer_escort_exposed"] },
+        },
+      },
+      {
+        text: "証拠の写しだけ取り、黙って送り届ける",
+        check: { chance: 65 },
+        success: {
+          result: "何も見ていない顔で護衛を終えた。袖の中の写しだけが、熱い。貴族の目は、読めない。",
+          effects: {
+            money: 55,
+            reputation: 1,
+            ability: 2,
+            addFlags: ["adventurer_escort_held"],
+          },
+          log: {
+            title: "貴族の密書の写しを握ったまま護衛する",
+            text: "漏洩の文面を控え、表向きは無事に送り届けた。",
+          },
+        },
+        failure: {
+          result: "写そうとして紙音が鳴った。貴族は何も言わず、翌日から護衛の配置を変える。目的地では銀が少し減らされた。",
+          effects: { money: 40, reputation: -1, health: -2, addFlags: ["adventurer_escort_held"] },
+        },
+      },
+      {
+        text: "危ないと見て、途中で降りる",
+        result: "前金だけ受け取り、次の街で依頼から外れた。後ろで何が運ばれるかは、もう自分の仕事ではない。",
+        effects: { money: 25, reputation: -2, ability: 1, addFlags: ["adventurer_escort_quit"] },
+        log: {
+          title: "貴族の護衛依頼から途中で降りる",
+          text: "密書の匂いに触れ、報酬の残りを捨てて手を引いた。",
+        },
+      },
+    ],
+  },
   // ---------- 他職からの委託（低〜中難度・復帰用）----------
   ...adventurerJobClient({
     id: "adventurer_job_medic",
