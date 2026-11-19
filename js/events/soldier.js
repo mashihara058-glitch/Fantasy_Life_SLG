@@ -40,7 +40,7 @@ GAME.registerEvents([
     repeatable: true,
     cooldown: 4,
     conditions: {
-      jobs: ["soldier"],
+      jobs: ["soldier","knight"],
       notFlags: ["slave"],
     },
     text: "夜警の仕事中、不審な人影を見つけた。",
@@ -71,7 +71,7 @@ GAME.registerEvents([
     repeatable: true,
     cooldown: 4,
     conditions: {
-      jobs: ["soldier"],
+      jobs: ["soldier","knight"],
       notFlags: ["slave"],
     },
     text: "今日は行軍訓練だ。重い荷物を背負って野外を駆ける。体力の少ない新入りの足が遅い。",
@@ -102,7 +102,7 @@ GAME.registerEvents([
     repeatable: true,
     cooldown: 5,
     conditions: {
-      jobs: ["soldier"],
+      jobs: ["soldier","knight"],
       moneyUnlocked: true,
       notFlags: ["slave"],
     },
@@ -141,7 +141,7 @@ GAME.registerEvents([
     repeatable: true,
     cooldown: 5,
     conditions: {
-      jobs: ["soldier"],
+      jobs: ["soldier","knight"],
       notFlags: ["slave"],
     },
     text: "警備中、さぼっている同僚を見つけた。",
@@ -222,7 +222,7 @@ GAME.registerEvents([
     repeatable: true,
     cooldown: 5,
     conditions: {
-      jobs: ["soldier"],
+      jobs: ["soldier","knight"],
       moneyUnlocked: true,
       notFlags: ["slave"],
     },
@@ -266,7 +266,7 @@ GAME.registerEvents([
     repeatable: true,
     cooldown: 5,
     conditions: {
-      jobs: ["soldier"],
+      jobs: ["soldier","knight"],
       notFlags: ["slave"],
     },
     text: "最近、治安が悪く出動が多い。なんだか、疲れた。",
