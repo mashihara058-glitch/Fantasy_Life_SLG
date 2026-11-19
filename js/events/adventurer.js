@@ -851,6 +851,296 @@ GAME.registerEvents([
       },
     ],
   },
+  {
+    // 017 quit の余韻（判定なし）
+    id: "adventurer_escort_quit",
+    tags: ["young", "prime", "elder", "work", "adventure"],
+    weight: 12,
+    maxTimes: 1,
+    conditions: {
+      jobs: ["adventurer"],
+      flags: ["adventurer_escort_quit"],
+      notFlags: ["slave"],
+    },
+    text: "掲示板を眺めていて気付く。しばらく、あの貴族の名を見ない。",
+    choices: [
+      {
+        text: "雑談として話題を振る",
+        result: "後日談が少しだけ聞こえた。別の護衛が、黙って運んだらしい——それ以上は、誰も知らない。",
+        effects: { ability: 1, removeFlags: ["adventurer_escort_quit"] },
+      },
+      {
+        text: "気にしないことにする",
+        result: "捕まった、という噂もない。その後どうなったかは、わからないままになる。",
+        effects: { removeFlags: ["adventurer_escort_quit"] },
+      },
+    ],
+  },
+  {
+    // held / overlook への口封じ。flags は AND なので custom で OR
+    id: "adventurer_escort_assassin",
+    tags: ["young", "prime", "elder", "work", "adventure"],
+    weight: 11,
+    maxTimes: 1,
+    logOnce: true,
+    conditions: {
+      ageMin: 18,
+      jobs: ["adventurer"],
+      moneyUnlocked: true,
+      notFlags: ["slave", "adventurer_escort_assassin"],
+      custom: (s) =>
+        s.flags.includes("adventurer_escort_held") ||
+        s.flags.includes("adventurer_escort_overlook"),
+    },
+    text: "夜道を歩いていたら、黒ずくめの男女に囲まれた。刃の光が、ランプの届かない位置にある。",
+    choices: [
+      {
+        text: "応戦する",
+        check: { stat: "ability", difficulty: 55 },
+        success: {
+          result: "一人を仕留めると、残りは仲間を抱えて退いた。路地に、血の匂いだけが残る。",
+          effects: { health: -4, ability: 2, reputation: 1, addFlags: ["adventurer_escort_assassin"] },
+          log: {
+            title: "口封じの襲撃者を返り討ちにする",
+            text: "貴族の密書に触れたあと、夜道で暗殺を退けた。",
+          },
+        },
+        failure: {
+          result: "腹にナイフが深々と沈む。口封じの代金は、自分の血だった。",
+          effects: { death: "暗殺" },
+          log: { title: "口封じのため殺される", text: "知ってはならないことを知った代償を払った。" },
+        },
+      },
+      {
+        text: "裏道へ逃げる",
+        check: { stat: "health", difficulty: 52 },
+        success: {
+          result: "この町の抜け道は、自分の方が詳しい。足音が遠ざかるまで、息を殺した。",
+          effects: { health: -3, ability: 2, addFlags: ["adventurer_escort_assassin"] },
+          log: {
+            title: "口封じの襲撃から逃げ切る",
+            text: "夜の裏道を知り尽くし、暗殺者を振り切った。",
+          },
+        },
+        failure: {
+          result: "背に矢が突き立つ。体が動かない。鏃の毒に気付いた頃には、もう遅い。",
+          effects: { death: "暗殺" },
+          log: { title: "口封じのため殺される", text: "陰謀の手に、逃げ切れなかった。" },
+        },
+      },
+      {
+        text: "助けを呼ぶ",
+        check: { stat: "reputation", difficulty: 52 },
+        success: {
+          result: "声に応えて、店の灯りがいくつも開く。襲撃者は、光が届く前に消えた。",
+          effects: { health: -2, ability: 1, reputation: 2, addFlags: ["adventurer_escort_assassin"] },
+          log: {
+            title: "住民の灯りで暗殺者を退ける",
+            text: "夜の呼びかけに町が応じ、口封じを阻んだ。",
+          },
+        },
+        failure: {
+          result: "叫びは、乾いた破裂音に掻き消された。見慣れない筒の先が、闇で一瞬だけ光る。",
+          effects: { death: "暗殺" },
+          log: { title: "口封じのため殺される", text: "火薬の音とともに、声が途切れた。" },
+        },
+      },
+      {
+        conditions: { flags: ["adventurer_escort_held"] },
+        text: "写しを渡せば命は助かると考え交渉する",
+        check: { chance: 55 },
+        success: {
+          result: "差し金はあの貴族だと読んだ。写しと引き換えに、命と少なからぬ銀を得た。袖は空だ。胸の奥も、少し空だ。",
+          effects: {
+            money: 80,
+            health: -2,
+            ability: 1,
+            addFlags: ["adventurer_escort_assassin"],
+            removeFlags: ["adventurer_escort_held"],
+          },
+          log: {
+            title: "密書の写しを渡して命を買う",
+            text: "暗殺者に証拠を売り、口封じを金で止めた。",
+          },
+        },
+        failure: {
+          result: "「代金は刃で払う」——それでも写しを置かせろ、と短刀が迫る。やむなく差し出し、命だけ拾った。",
+          effects: {
+            health: -5,
+            ability: 1,
+            addFlags: ["adventurer_escort_assassin"],
+            removeFlags: ["adventurer_escort_held"],
+          },
+          log: {
+            title: "密書の写しを奪われ命だけ残る",
+            text: "交渉は通じず、証拠を奪われて生き残った。",
+          },
+        },
+      },
+    ],
+  },
+  {
+    // 濡れ衣。overlook / exposed / held のいずれか。health.max:-4 は発火不能だったため削除
+    id: "adventurer_escort_doubt",
+    tags: ["young", "prime", "elder", "work", "adventure"],
+    weight: 11,
+    maxTimes: 1,
+    logOnce: true,
+    conditions: {
+      ageMin: 18,
+      jobs: ["adventurer"],
+      notFlags: ["slave", "adventurer_escort_doubt", "adventurer_escort_accused"],
+      custom: (s) =>
+        s.flags.includes("adventurer_escort_overlook") ||
+        s.flags.includes("adventurer_escort_exposed") ||
+        s.flags.includes("adventurer_escort_held"),
+    },
+    text: "兵士が戸を叩く。とある貴族への罪だと言うが、身に覚えはない。ただ——その貴族の名には、覚えがあった。",
+    choices: [
+      {
+        conditions: { flags: ["adventurer_escort_held"] },
+        text: "写しを証拠に差し出す",
+        result: "知られたくない秘密を自分が握っている、と伝えた。憲兵は「追加の調査をする」と言い、監視付きながら一旦は自由になる。",
+        effects: {
+          reputation: 2,
+          ability: 1,
+          addFlags: ["adventurer_escort_doubt"],
+          removeFlags: ["adventurer_escort_held"],
+        },
+        log: {
+          title: "濡れ衣に密書の写しで抗弁する",
+          text: "護衛のおりの写しを差し出し、監視付きで釈放された。",
+        },
+      },
+      {
+        text: "身に覚えはないと釈明する",
+        check: { stat: "reputation", difficulty: 55 },
+        success: {
+          result: "証拠不十分で釈放された。だが疑惑は残る。街の目が、少しだけ冷たい。",
+          effects: {
+            health: -3,
+            reputation: -4,
+            ability: 1,
+            addFlags: ["adventurer_escort_doubt"],
+          },
+          log: {
+            title: "貴族案件の濡れ衣を釈明し釈放される",
+            text: "罪は晴れたが、噂だけが後を引く。",
+          },
+        },
+        failure: {
+          result: "訴えは聞き入れられない。犯してもいない罪の代償に、犯罪奴隷の鎖が手首へかかる。",
+          effects: {
+            job: "slave",
+            addFlags: ["slave", "adventurer_escort_enslaved"],
+            removeFlags: [
+              "adventurer_escort_overlook",
+              "adventurer_escort_exposed",
+              "adventurer_escort_held",
+              "adventurer_escort_doubt",
+            ],
+            health: -10,
+            housing: "none",
+            setStats: { money: 0 },
+          },
+          log: {
+            title: "濡れ衣のまま犯罪奴隷となる",
+            text: "貴族の名にまつわる嫌疑で、奴隷の身分へ落とされた。",
+          },
+        },
+      },
+    ],
+  },
+  {
+    // 疑惑のあと、一揆／騎士団へ動くか
+    id: "adventurer_escort_accuse",
+    tags: ["young", "prime", "elder", "work", "adventure"],
+    weight: 10,
+    maxTimes: 1,
+    logOnce: true,
+    conditions: {
+      ageMin: 18,
+      jobs: ["adventurer"],
+      flags: ["adventurer_escort_doubt"],
+      notFlags: ["slave", "adventurer_escort_accused"],
+    },
+    text: "あの貴族の陰謀を、これ以上見過ごせる気がしない。騎士の門か、憤る農村か——動くなら、今しかない。",
+    choices: [
+      {
+        text: "騎士団に訴える",
+        check: { stat: "reputation", difficulty: 55 },
+        success: {
+          result: "訴えが通った。貴族は捕縛され、街道に流れる武器の話が一度止まる。灰は残るが、火種は小さい。",
+          effects: {
+            reputation: 6,
+            ability: 2,
+            money: 20,
+            addFlags: ["adventurer_escort_accused", "adventurer_revolt_averted"],
+            removeFlags: ["adventurer_escort_doubt", "adventurer_escort_overlook", "adventurer_escort_exposed"],
+          },
+          log: {
+            title: "騎士団へ貴族の陰謀を訴えて捕縛させる",
+            text: "漏洩と武器供給の件で貴族を捕らえ、一揆の火を小さくした。",
+          },
+        },
+        failure: {
+          result: "騎士団は動いたが、向かったのは扇動される側だった。武器と計画が見つかり、平民の首謀者が斬られる。反乱は止まった。あの貴族の名は、まだ白い。",
+          effects: {
+            reputation: -3,
+            ability: 1,
+            health: -2,
+            addFlags: ["adventurer_escort_accused", "adventurer_revolt_averted"],
+            removeFlags: ["adventurer_escort_doubt"],
+          },
+          log: {
+            title: "陰謀の訴えが農民側の粛清になる",
+            text: "貴族は罰せられず、憤る側だけが切り取られた。",
+          },
+        },
+      },
+      {
+        text: "扇動される農村へ真実を伝える",
+        check: { stat: "reputation", difficulty: 52 },
+        success: {
+          result: "憤りを抱えた村は、蜂起の寸前だった。貴族の糸を明かした夜、一揆は保留になる。畑の匂いと、苦い酒の匂いが残る。",
+          effects: {
+            reputation: 5,
+            ability: 2,
+            health: -3,
+            addFlags: ["adventurer_escort_accused", "adventurer_revolt_averted", "adventurer_warned_farmers"],
+            removeFlags: ["adventurer_escort_doubt"],
+          },
+          log: {
+            title: "農村へ貴族の扇動を伝え一揆を思いとどまらせる",
+            text: "増税と武器の糸を明かし、決起をひとまず止めた。",
+          },
+        },
+        failure: {
+          result: "村は蜂起の寸前だった。真実を話しても、聞く耳はもう持たれない。背中に、燃える藁の匂いがついて回る。",
+          effects: {
+            reputation: -2,
+            ability: 1,
+            health: -4,
+            addFlags: ["adventurer_escort_accused", "adventurer_revolt_ignored"],
+            removeFlags: ["adventurer_escort_doubt"],
+          },
+          log: {
+            title: "農村は貴族の扇動を信じ一揆へ向かう",
+            text: "止めようとしたが、憤りはすでに火になっていた。",
+          },
+        },
+      },
+      {
+        text: "やはり、何もしない",
+        result: "真実は胸の奥へ戻した。掲示板の依頼は、いつも通り貼られる。",
+        effects: {
+          ability: 1,
+          addFlags: ["adventurer_escort_accused"],
+          removeFlags: ["adventurer_escort_doubt"],
+        },
+      },
+    ],
+  },
   // ---------- 他職からの委託（低〜中難度・復帰用）----------
   ...adventurerJobClient({
     id: "adventurer_job_medic",
